@@ -1,0 +1,122 @@
+'menu': [
+  {
+    'label': 'View'
+    'submenu': [
+      {
+        'label': 'Toggle Git Tab'
+        'command': 'git-panel:toggle-git-tab'
+      }
+    ]
+  }
+  {
+    'label': 'Packages'
+    'submenu': [
+      {
+        'label': 'Git Panel',
+        'submenu': [
+          {
+            'label': 'Toggle Git Tab'
+            'command': 'git-panel:toggle-git-tab'
+          }
+        ]
+      }
+    ]
+  }
+]
+'context-menu':
+  '.git-panel-FilePatchListView-item': [
+    {
+      'label': 'Jump to File'
+      'command': 'git-panel:jump-to-file'
+    }
+  ]
+  '.git-panel-FilePatchView--staged': [
+    {
+      'type': 'separator'
+    }
+    {
+      'label': 'Jump to File'
+      'command': 'git-panel:jump-to-file'
+      'after': ['core:confirm']
+    }
+    {
+      'label': 'Unstage Selection'
+      'command': 'core:confirm'
+      'beforeGroupContaining': ['core:undo']
+    }
+  ]
+  '.git-panel-FilePatchView--unstaged': [
+    {
+      'type': 'separator'
+    }
+    {
+      'label': 'Jump to File'
+      'command': 'git-panel:jump-to-file'
+      'after': ['core:confirm']
+    }
+    {
+      'label': 'Stage Selection'
+      'command': 'core:confirm'
+      'beforeGroupContaining': ['core:undo']
+    }
+    {
+      'label': 'Discard Selection'
+      'command': 'git-panel:discard-selected-lines'
+    }
+  ]
+  '.git-panel-CommitView': [
+    {
+      'type': 'separator'
+    }
+    {
+      'label': 'Toggle Expanded Commit Message Editor'
+      'command': 'git-panel:toggle-expanded-commit-message-editor'
+    }
+  ]
+  '.item-views > atom-text-editor': [
+    {
+      'label': 'View Unstaged Changes',
+      'command': 'git-panel:view-unstaged-changes-for-current-file'
+    }
+    {
+      'label': 'View Staged Changes',
+      'command': 'git-panel:view-staged-changes-for-current-file'
+    }
+  ]
+  '.git-panel-PushPull': [
+    {
+      'label': 'Fetch',
+      'command': 'git-panel:fetch'
+    }
+    {
+      'label': 'Pull',
+      'command': 'git-panel:pull'
+    }
+    {
+        'type': 'separator'
+    }
+    {
+        'label': 'Push',
+        'command': 'git-panel:push'
+    }
+    {
+        'label': 'Force Push',
+        'command': 'git-panel:force-push'
+    }
+  ]
+  '.most-recent': [
+    {
+      'label': 'Amend'
+      'command': 'git-panel:amend-last-commit'
+    }
+  ]
+  '.git-panel-RecentCommit': [
+    {
+      'label': 'Copy Commit SHA'
+      'command': 'git-panel:copy-commit-sha'
+    }
+    {
+      'label': 'Copy Commit Subject'
+      'command': 'git-panel:copy-commit-subject'
+    }
+  ]

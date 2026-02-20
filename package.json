@@ -1,0 +1,176 @@
+{
+  "name": "git-panel",
+  "main": "./lib/index",
+  "version": "0.0.0",
+  "description": "A Git integration panel.",
+  "repository": "https://github.com/asiloisad/pulsar-git-panel",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.100.0"
+  },
+  "dependencies": {
+    "bintrees": "1.0.2",
+    "classnames": "2.5.1",
+    "compare-sets": "1.0.1",
+    "dayjs": "^1.11.19",
+    "dugite": "3.0.0",
+    "node-emoji": "2.2.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-select": "5.10.2",
+    "tree-kill": "1.2.2",
+    "what-the-diff": "0.6.0",
+    "what-the-status": "1.0.3",
+    "yubikiri": "2.0.0"
+  },
+  "consumedServices": {
+    "status-bar": {
+      "versions": {
+        "^1.0.0": "consumeStatusBar"
+      }
+    },
+    "metrics-reporter": {
+      "versions": {
+        "^1.1.0": "consumeReporter"
+      }
+    }
+  },
+  "configSchema": {
+    "keyboardNavigationDelay": {
+      "order": 1,
+      "type": "number",
+      "default": 300,
+      "description": "How long to wait before showing a diff view after navigating to an entry with the keyboard"
+    },
+    "viewChangesForCurrentFileDiffPaneSplitDirection": {
+      "order": 2,
+      "type": "string",
+      "default": "none",
+      "enum": [
+        "none",
+        "right",
+        "down"
+      ],
+      "title": "Direction to open diff pane",
+      "description": "Direction to split the active pane when showing diff associated with open file. If 'none', the results will be shown in the active pane."
+    },
+    "gitDiagnostics": {
+      "order": 3,
+      "type": "boolean",
+      "default": false,
+      "description": "Write detailed diagnostic information about git operations to the console"
+    },
+    "filesystemEventDiagnostics": {
+      "order": 4,
+      "type": "boolean",
+      "default": false,
+      "description": "Trace observed filesystem events to the console"
+    },
+    "performanceMask": {
+      "order": 5,
+      "type": "array",
+      "default": [
+        ".*"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "description": "Performance event stream patterns to capture"
+    },
+    "performanceToConsole": {
+      "order": 6,
+      "type": "boolean",
+      "default": false,
+      "description": "Log performance data to the console"
+    },
+    "performanceToDirectory": {
+      "order": 7,
+      "type": "string",
+      "default": "",
+      "description": "Log performance data to JSON files in a directory"
+    },
+    "performanceToProfile": {
+      "order": 8,
+      "type": "boolean",
+      "default": false,
+      "description": "Capture CPU profiles"
+    },
+    "automaticCommitMessageWrapping": {
+      "order": 9,
+      "type": "boolean",
+      "default": true,
+      "description": "Hard wrap commit message body in commit box to 72 characters. Does not apply to expanded commit editors, where message formatting is preserved."
+    },
+    "graphicalConflictResolution": {
+      "order": 10,
+      "type": "boolean",
+      "default": true,
+      "description": "Resolve merge conflicts with in-editor controls"
+    },
+    "showDiffIconGutter": {
+      "order": 11,
+      "type": "boolean",
+      "default": false,
+      "description": "Show change regions within a file patch with icons in addition to color"
+    },
+    "excludedUsers": {
+      "order": 12,
+      "type": "string",
+      "default": "",
+      "description": "Comma-separated list of email addresses to exclude from the co-author selection list"
+    },
+    "reportCannotLocateWorkspaceError": {
+      "order": 13,
+      "type": "boolean",
+      "default": false,
+      "description": "Log an error to the console if a git repository cannot be located for the opened file"
+    },
+    "sourceRemoteName": {
+      "order": 14,
+      "type": "string",
+      "default": "origin",
+      "description": "Name of the git remote to create when creating a new repository"
+    },
+    "remoteFetchProtocol": {
+      "order": 15,
+      "type": "string",
+      "default": "https",
+      "enum": [
+        "https",
+        "ssh"
+      ],
+      "description": "Transport protocol to prefer when creating a new git remote"
+    },
+    "projectScanDepth": {
+      "order": 16,
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 3,
+      "description": "Scan subdirectories of project roots for nested git repositories (0 = only root, 1 = one level deep, etc.)"
+    },
+    "openGitTabOnStart": {
+      "order": 17,
+      "type": "boolean",
+      "default": false,
+      "description": "Automatically open the Git tab when the editor starts"
+    },
+    "debug": {
+      "order": 18,
+      "type": "boolean",
+      "default": false,
+      "description": "Log additional debug information to the console, including caught errors and diagnostics"
+    }
+  },
+  "deserializers": {
+    "GitTimingsView": "createGitTimingsView",
+    "GitDockItem": "createDockItemStub",
+    "FilePatchControllerStub": "createFilePatchControllerStub",
+    "CommitPreviewStub": "createCommitPreviewStub",
+    "CommitDetailStub": "createCommitDetailStub"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-plugin-react": "^7.37.5"
+  }
+}
