@@ -6,14 +6,14 @@ Fork of [github](https://github.com/pulsar-edit/github), but forge-agnostic Git 
 
 ## Features
 
-- **Staging area** -- Stage, unstage, and discard changes per-file or per-hunk
-- **Commit** -- Compose commit messages with co-author support and automatic message wrapping
-- **Branching** -- Create, switch, and manage branches from the status bar
-- **Push / Pull / Fetch** -- Sync with remotes directly from the status bar
-- **Diff viewer** -- Inline diff view with hunk and line-level selection
-- **Merge conflict resolution** -- Graphical in-editor conflict resolution controls
-- **Clone / Init** -- Initialize new repositories or clone from a URL
-- **Multi-repo support** -- Scan project subdirectories for nested git repositories
+- **Staging area**: Stage, unstage, and discard changes per-file or per-hunk.
+- **Commit**: Compose commit messages with co-author support and automatic message wrapping.
+- **Branching**: Create, switch, and manage branches from the status bar.
+- **Push / Pull / Fetch**: Sync with remotes directly from the status bar.
+- **Diff viewer**: Inline diff view with hunk and line-level selection.
+- **Merge conflict resolution**: Graphical in-editor conflict resolution controls.
+- **Clone / Init**: Initialize new repositories or clone from a URL.
+- **Multi-repo support**: Scan project subdirectories for nested git repositories.
 
 ## Installation
 
