@@ -19,20 +19,20 @@ Fork of [github](https://github.com/pulsar-edit/github), but forge-agnostic Git 
 
 To install, search for [git-panel](https://web.pulsar-edit.dev/packages/git-panel) in the Install pane of the Pulsar settings or run `ppm install git-panel`. Alternatively, run `ppm install asiloisad/pulsar-git-panel` to install directly from the GitHub repository.
 
-> **Note:** This package automatically disables the built-in `github` package to avoid conflicts.
+**Note**: This package automatically disables the built-in `github` package to avoid conflicts.
 
 ## Commands
 
 Commands available in `.workspace`:
 
-- `git-panel:toggle-git-tab-focus`: (`Ctrl+9`) toggle and focus the Git tab,
-- `git-panel:toggle-git-tab`: (`Ctrl+Shift+9`) toggle Git tab visibility,
-- `git-panel:commit`: (`Alt+G Enter`) commit staged changes,
-- `git-panel:fetch`: (`Alt+G F`) fetch from remote,
-- `git-panel:pull`: (`Alt+G Shift+F`) pull from remote,
-- `git-panel:push`: (`Alt+G P`) push to remote,
-- `git-panel:force-push`: (`Alt+G Shift+P`) force push to remote,
-- `git-panel:clone`: (`Alt+G =`) open clone dialog,
+- `git-panel:toggle-git-tab-focus`: <kbd>Ctrl+9</kbd> toggle and focus the Git tab,
+- `git-panel:toggle-git-tab`: <kbd>Ctrl+Shift+9</kbd> toggle Git tab visibility,
+- `git-panel:commit`: <kbd>Alt+G Enter</kbd> commit staged changes,
+- `git-panel:fetch`: <kbd>Alt+G F</kbd> fetch from remote,
+- `git-panel:pull`: <kbd>Alt+G Shift+F</kbd> pull from remote,
+- `git-panel:push`: <kbd>Alt+G P</kbd> push to remote,
+- `git-panel:force-push`: <kbd>Alt+G Shift+P</kbd> force push to remote,
+- `git-panel:clone`: <kbd>Alt+G =</kbd> open clone dialog,
 - `git-panel:initialize`: initialize a new git repository,
 - `git-panel:open-commit`: open commit by SHA dialog,
 - `git-panel:toggle-commit-preview`: toggle commit preview pane,
@@ -43,11 +43,11 @@ Commands available in `.workspace`:
 
 Commands available in `atom-text-editor` (conflict resolution):
 
-- `git-panel:resolve-as-ours`: (`Alt+M 1`) resolve conflict as ours,
-- `git-panel:resolve-as-theirs`: (`Alt+M 2`) resolve conflict as theirs,
-- `git-panel:resolve-as-base`: (`Alt+M 3`) resolve conflict as base,
-- `git-panel:resolve-as-current`: (`Alt+M Enter`) resolve as current side,
-- `git-panel:revert-current`: (`Alt+M R`) revert conflict marker,
+- `git-panel:resolve-as-ours`: <kbd>Alt+M 1</kbd> resolve conflict as ours,
+- `git-panel:resolve-as-theirs`: <kbd>Alt+M 2</kbd> resolve conflict as theirs,
+- `git-panel:resolve-as-base`: <kbd>Alt+M 3</kbd> resolve conflict as base,
+- `git-panel:resolve-as-current`: <kbd>Alt+M Enter</kbd> resolve as current side,
+- `git-panel:revert-current`: <kbd>Alt+M R</kbd> revert conflict marker,
 - `git-panel:resolve-as-ours-then-theirs`: resolve as ours then theirs,
 - `git-panel:resolve-as-theirs-then-ours`: resolve as theirs then ours,
 - `git-panel:revert-conflict-modifications`: revert all conflict modifications,
@@ -55,8 +55,8 @@ Commands available in `atom-text-editor` (conflict resolution):
 
 Commands available in `.git-panel-StagingView`:
 
-- `git-panel:jump-to-file`: (`O`) open file in editor,
-- `git-panel:discard-changes-in-selected-files`: (`Ctrl+Backspace`) discard changes in selected files,
+- `git-panel:jump-to-file`: <kbd>O</kbd> open file in editor,
+- `git-panel:discard-changes-in-selected-files`: <kbd>Ctrl+Backspace</kbd> discard changes in selected files,
 - `git-panel:show-diff-view`: show diff for selected file,
 - `git-panel:activate-next-list`: move focus to next file list,
 - `git-panel:activate-previous-list`: move focus to previous file list,
@@ -69,26 +69,26 @@ Commands available in `.git-panel-StagingView`:
 
 Commands available in `.git-panel-CommitView`:
 
-- `git-panel:commit`: (`Ctrl+Enter`) commit staged changes,
+- `git-panel:commit`: <kbd>Ctrl+Enter</kbd> commit staged changes,
 - `git-panel:amend-last-commit`: amend the last commit,
 - `git-panel:toggle-expanded-commit-message-editor`: toggle expanded editor,
-- `git-panel:dive`: (`Left`) open commit preview,
-- `git-panel:co-author-exclude`: (`Shift+Backspace`) exclude co-author from list.
+- `git-panel:dive`: <kbd>Left</kbd> open commit preview,
+- `git-panel:co-author-exclude`: <kbd>Shift+Backspace</kbd> exclude co-author from list.
 
 Commands available in `.git-panel-RecentCommits`:
 
-- `git-panel:dive`: (`Enter`) open commit detail view,
+- `git-panel:dive`: <kbd>Enter</kbd> open commit detail view,
 - `git-panel:copy-commit-sha`: copy commit SHA to clipboard,
 - `git-panel:copy-commit-subject`: copy commit subject to clipboard.
 
 Commands available in `.git-panel-FilePatchView` (diff view):
 
-- `git-panel:toggle-patch-selection-mode`: (`/` or `Ctrl+/`) toggle hunk/line selection mode,
-- `git-panel:discard-selected-lines`: (`Backspace` or `Ctrl+Backspace`) discard selected lines,
-- `git-panel:jump-to-file`: (`O` or `Ctrl+O`) jump to file at selected line,
-- `git-panel:surface`: (`Right` or `Ctrl+Right`) navigate back to parent view,
-- `git-panel:select-next-hunk`: (`Down`) select next hunk (in hunk mode),
-- `git-panel:select-previous-hunk`: (`Up`) select previous hunk (in hunk mode).
+- `git-panel:toggle-patch-selection-mode`: <kbd>/</kbd> or <kbd>Ctrl+/</kbd> toggle hunk/line selection mode,
+- `git-panel:discard-selected-lines`: <kbd>Backspace</kbd> or <kbd>Ctrl+Backspace</kbd> discard selected lines,
+- `git-panel:jump-to-file`: <kbd>O</kbd> or <kbd>Ctrl+O</kbd> jump to file at selected line,
+- `git-panel:surface`: <kbd>Right</kbd> or <kbd>Ctrl+Right</kbd> navigate back to parent view,
+- `git-panel:select-next-hunk`: <kbd>Down</kbd> select next hunk (in hunk mode),
+- `git-panel:select-previous-hunk`: <kbd>Up</kbd> select previous hunk (in hunk mode).
 
 ## Contributing
 
