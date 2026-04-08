@@ -154,6 +154,13 @@
       "type": "boolean",
       "default": false,
       "description": "Log additional debug information to the console, including caught errors and diagnostics"
+    },
+    "allowDubiousOwnership": {
+      "order": 19,
+      "type": "boolean",
+      "default": true,
+      "title": "Allow dubious ownership",
+      "description": "Pass `safe.directory=*` to git to allow operations on repositories where the directory owner does not match the current user (e.g. WSL paths opened from Windows). When disabled, a notification will guide you to resolve the issue manually."
     }
   },
   "deserializers": {
