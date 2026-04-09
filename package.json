@@ -119,12 +119,6 @@
       "default": false,
       "description": "Log an error to the console if a git repository cannot be located for the opened file"
     },
-    "sourceRemoteName": {
-      "order": 14,
-      "type": "string",
-      "default": "origin",
-      "description": "Name of the git remote to create when creating a new repository"
-    },
     "remoteFetchProtocol": {
       "order": 15,
       "type": "string",
