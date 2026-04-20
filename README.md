@@ -34,8 +34,8 @@ Commands available in `.workspace`:
 - `git-panel:force-push`: <kbd>Alt+G Shift+P</kbd> force push to remote,
 - `git-panel:clone`: <kbd>Alt+G =</kbd> open clone dialog,
 - `git-panel:initialize`: initialize a new git repository,
-- `git-panel:open-commit`: open commit by SHA dialog,
-- `git-panel:toggle-commit-preview`: toggle commit preview pane,
+- `git-panel:open-commit`: <kbd>Alt+G O</kbd> open commit by SHA dialog,
+- `git-panel:toggle-commit-preview`: <kbd>Alt+G V</kbd> toggle commit preview pane,
 - `git-panel:view-unstaged-changes-for-current-file`: show unstaged diff for current file,
 - `git-panel:view-staged-changes-for-current-file`: show staged diff for current file,
 - `git-panel:close-all-diff-views`: close all open diff views,
@@ -62,15 +62,15 @@ Commands available in `.git-panel-StagingView`:
 - `git-panel:activate-previous-list`: move focus to previous file list,
 - `git-panel:resolve-file-as-ours`: resolve selected file as ours,
 - `git-panel:resolve-file-as-theirs`: resolve selected file as theirs,
-- `git-panel:stage-all-changes`: stage all unstaged changes,
-- `git-panel:unstage-all-changes`: unstage all staged changes,
+- `git-panel:stage-all-changes`: <kbd>Alt+G A</kbd> stage all unstaged changes,
+- `git-panel:unstage-all-changes`: <kbd>Alt+G Shift+A</kbd> unstage all staged changes,
 - `git-panel:discard-all-changes`: discard all unstaged changes,
 - `git-panel:undo-last-discard-in-git-tab`: undo last discard.
 
 Commands available in `.git-panel-CommitView`:
 
 - `git-panel:commit`: <kbd>Ctrl+Enter</kbd> commit staged changes,
-- `git-panel:amend-last-commit`: amend the last commit,
+- `git-panel:amend-last-commit`: <kbd>Alt+G Shift+Enter</kbd> amend the last commit,
 - `git-panel:toggle-expanded-commit-message-editor`: toggle expanded editor,
 - `git-panel:dive`: <kbd>Left</kbd> open commit preview,
 - `git-panel:co-author-exclude`: <kbd>Shift+Backspace</kbd> exclude co-author from list.
