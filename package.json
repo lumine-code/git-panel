@@ -13,12 +13,12 @@
     "classnames": "2.5.1",
     "compare-sets": "1.0.1",
     "dayjs": "^1.11.19",
+    "diff": "^9.0.0",
     "node-emoji": "2.2.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-select": "5.10.2",
     "tree-kill": "1.2.2",
-    "what-the-diff": "0.6.0",
     "what-the-status": "1.0.3",
     "yubikiri": "2.0.0"
   },

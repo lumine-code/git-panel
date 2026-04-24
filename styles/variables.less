@@ -9,10 +9,10 @@
 @gh-background-color-green: #28a745;
 
 // diff colors -----------------
-// Needs to be semi transparent to make it work with selections and different themes
+// Derived from syntax theme colors, semi-transparent to work with selections and different themes
 
-@git-panel-diff-deleted: fade(hsl(353, 100%, 66%), 15%); // similar to .com's hsl(353, 100%, 97%)
-@git-panel-diff-added: fade(hsl(137, 100%, 55%), 15%); // similar to .com's hsl(137, 100%, 95%)
+@git-panel-diff-deleted: fade(@syntax-color-removed, 15%);
+@git-panel-diff-added: fade(@syntax-color-added, 15%);
 
-@git-panel-diff-deleted-highlight: fade(hsl(353, 95%, 66%), 25%); // similar to .com's hsl(353, 95%, 86%)
-@git-panel-diff-added-highlight: fade(hsl(135, 73%, 55%), 25%); // similar to .com's hsl(135, 73%, 81%)
+@git-panel-diff-deleted-highlight: fade(@syntax-color-removed, 25%);
+@git-panel-diff-added-highlight: fade(@syntax-color-added, 25%);

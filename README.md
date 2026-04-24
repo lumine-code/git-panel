@@ -10,7 +10,7 @@ Fork of [github](https://github.com/pulsar-edit/github), but forge-agnostic Git 
 - **Commit**: Compose commit messages with co-author support and automatic message wrapping.
 - **Branching**: Create, switch, and manage branches from the status bar.
 - **Push / Pull / Fetch**: Sync with remotes directly from the status bar.
-- **Diff viewer**: Inline diff view with hunk and line-level selection.
+- **Diff viewer**: Inline diff view with hunk and line-level selection, including word-level highlights within changed lines.
 - **Merge conflict resolution**: Graphical in-editor conflict resolution controls.
 - **Clone / Init**: Initialize new repositories or clone from a URL.
 - **Multi-repo support**: Scan project subdirectories for nested git repositories.

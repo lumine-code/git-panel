@@ -247,6 +247,18 @@
     }
   }
 
+  // Word-level diff highlights
+  &-word {
+    &--deleted .region {
+      background-color: @git-panel-diff-deleted-highlight;
+      border-radius: 2px;
+    }
+    &--added .region {
+      background-color: @git-panel-diff-added-highlight;
+      border-radius: 2px;
+    }
+  }
+
   // Gutter
 
   .gutter {
