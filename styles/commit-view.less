@@ -1,4 +1,4 @@
-@import 'variables';
+@import "variables";
 
 .git-panel-CommitView {
   padding: @component-padding;
@@ -163,7 +163,7 @@
       left: -1px;
       right: -1px;
       width: auto;
-      bottom: calc(100% ~'+' 2px);
+      bottom: calc(100% ~"+" 2px);
       border-radius: @component-border-radius;
       border: 1px solid @overlay-border-color;
       background-color: @overlay-background-color;
@@ -294,7 +294,7 @@
         margin-right: (@component-padding / 2);
       }
       &::after {
-        content: 'Toggle expanded commit message';
+        content: "Toggle expanded commit message";
       }
       &:active {
         opacity: 0.3;

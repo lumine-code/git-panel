@@ -1,6 +1,6 @@
-@import 'variables';
-@import 'octicon-utf-codes';
-@import 'octicon-mixins';
+@import "variables";
+@import "octicon-utf-codes";
+@import "octicon-mixins";
 
 @header-bg-color: mix(@syntax-text-color, @syntax-background-color, 6%);
 
@@ -288,11 +288,11 @@
       }
 
       &.git-panel-FilePatchView-line--added:before {
-        content: '+';
+        content: "+";
       }
 
       &.git-panel-FilePatchView-line--deleted:before {
-        content: '-';
+        content: "-";
       }
 
       &.git-panel-FilePatchView-line--nonewline:before {
@@ -327,7 +327,7 @@
     &.old .line-number,
     &.new .line-number,
     &.icons .line-number,
-    &[gutter-name='git-panel-comment-icon'] .git-panel-editorCommentGutterIcon {
+    &[gutter-name="git-panel-comment-icon"] .git-panel-editorCommentGutterIcon {
       &.git-panel-FilePatchView-line--selected {
         color: @text-color-selected;
         background: @background-color-selected;
@@ -351,7 +351,7 @@
     &.old .line-number,
     &.new .line-number,
     &.icons .line-number,
-    &[gutter-name='git-panel-comment-icon'] .git-panel-editorCommentGutterIcon {
+    &[gutter-name="git-panel-comment-icon"] .git-panel-editorCommentGutterIcon {
       &.git-panel-FilePatchView-line--selected {
         color: contrast(@button-background-color-selected);
         background: @button-background-color-selected;
