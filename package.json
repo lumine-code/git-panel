@@ -155,6 +155,13 @@
       "default": true,
       "title": "Allow dubious ownership",
       "description": "Pass `safe.directory=*` to git to allow operations on repositories where the directory owner does not match the current user (e.g. WSL paths opened from Windows). When disabled, a notification will guide you to resolve the issue manually."
+    },
+    "warnLargeRepo": {
+      "order": 20,
+      "type": "boolean",
+      "default": true,
+      "title": "Warn if repository is too large",
+      "description": "Show a warning notification when a repository has too many changed files to display completely."
     }
   },
   "deserializers": {
