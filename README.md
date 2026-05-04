@@ -34,6 +34,7 @@ Commands available in `.workspace`:
 - `git-panel:force-push`: <kbd>Alt+G Shift+P</kbd> force push to remote,
 - `git-panel:clone`: <kbd>Alt+G =</kbd> open clone dialog,
 - `git-panel:initialize`: initialize a new git repository,
+- `git-panel:update-repositories`: rescan all project paths, refresh existing repositories, add newly found ones, and remove stale ones,
 - `git-panel:open-commit`: <kbd>Alt+G O</kbd> open commit by SHA dialog,
 - `git-panel:toggle-commit-preview`: <kbd>Alt+G V</kbd> toggle commit preview pane,
 - `git-panel:view-unstaged-changes-for-current-file`: show unstaged diff for current file,
