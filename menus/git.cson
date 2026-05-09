@@ -112,6 +112,10 @@
   ]
   '.git-panel-RecentCommit': [
     {
+      'label': 'Checkout to Commit'
+      'command': 'git-panel:checkout-to-commit'
+    }
+    {
       'label': 'Copy Commit SHA'
       'command': 'git-panel:copy-commit-sha'
     }
