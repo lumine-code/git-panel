@@ -50,13 +50,8 @@
 '.git-panel-CommitView-editor atom-text-editor:not([mini])':
   'tab': 'core:focus-next'
   'shift-tab': 'core:focus-previous'
-'.platform-darwin .git-panel-CommitView-editor atom-text-editor:not([mini])':
-  'cmd-enter': 'git-panel:commit'
-'.platform-win32 .git-panel-CommitView-editor atom-text-editor:not([mini])':
-  'ctrl-enter': 'git-panel:commit'
-'.platform-linux .git-panel-CommitView-editor atom-text-editor:not([mini])':
-  # Repeated to avoid line length
-  'ctrl-enter': 'git-panel:commit'
+  'enter': 'git-panel:commit'
+  'shift-enter': 'editor:newline'
 
 '.git-panel-CommitView-commitPreview':
   'left': 'git-panel:dive'
