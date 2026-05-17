@@ -57,7 +57,7 @@ Commands available in `atom-text-editor` (conflict resolution):
 Commands available in `.git-panel-StagingView`:
 
 - `git-panel:jump-to-file`: <kbd>O</kbd> open file in editor,
-- `git-panel:discard-changes-in-selected-files`: <kbd>Ctrl+Backspace</kbd> discard changes in selected files,
+- `git-panel:discard-changes-in-selected-files`: <kbd>Cmd/Ctrl+Backspace</kbd> discard changes in selected files,
 - `git-panel:show-diff-view`: show diff for selected file,
 - `git-panel:activate-next-list`: move focus to next file list,
 - `git-panel:activate-previous-list`: move focus to previous file list,
@@ -70,7 +70,7 @@ Commands available in `.git-panel-StagingView`:
 
 Commands available in `.git-panel-CommitView`:
 
-- `git-panel:commit`: <kbd>Ctrl+Enter</kbd> commit staged changes,
+- `git-panel:commit`: <kbd>Cmd/Ctrl+Enter</kbd> commit staged changes,
 - `git-panel:amend-last-commit`: <kbd>Alt+G Shift+Enter</kbd> amend the last commit,
 - `git-panel:toggle-expanded-commit-message-editor`: toggle expanded editor,
 - `git-panel:dive`: <kbd>Left</kbd> open commit preview,
@@ -84,10 +84,10 @@ Commands available in `.git-panel-RecentCommits`:
 
 Commands available in `.git-panel-FilePatchView` (diff view):
 
-- `git-panel:toggle-patch-selection-mode`: <kbd>/</kbd> or <kbd>Ctrl+/</kbd> toggle hunk/line selection mode,
-- `git-panel:discard-selected-lines`: <kbd>Backspace</kbd> or <kbd>Ctrl+Backspace</kbd> discard selected lines,
-- `git-panel:jump-to-file`: <kbd>O</kbd> or <kbd>Ctrl+O</kbd> jump to file at selected line,
-- `git-panel:surface`: <kbd>Right</kbd> or <kbd>Ctrl+Right</kbd> navigate back to parent view,
+- `git-panel:toggle-patch-selection-mode`: <kbd>/</kbd> or <kbd>Cmd/Ctrl+/</kbd> toggle hunk/line selection mode,
+- `git-panel:discard-selected-lines`: <kbd>Backspace</kbd> or <kbd>Cmd/Ctrl+Backspace</kbd> discard selected lines,
+- `git-panel:jump-to-file`: <kbd>O</kbd> or <kbd>Cmd/Ctrl+O</kbd> jump to file at selected line,
+- `git-panel:surface`: <kbd>Right</kbd> or <kbd>Cmd/Ctrl+Right</kbd> navigate back to parent view,
 - `git-panel:select-next-hunk`: <kbd>Down</kbd> select next hunk (in hunk mode),
 - `git-panel:select-previous-hunk`: <kbd>Up</kbd> select previous hunk (in hunk mode).
 

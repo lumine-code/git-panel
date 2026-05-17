@@ -1,4 +1,4 @@
-'.workspace':
+'atom-workspace':
   'ctrl-9': 'git-panel:toggle-git-tab-focus'
   'ctrl-shift-9': 'git-panel:toggle-git-tab'
   'alt-g enter': 'git-panel:commit'
@@ -13,39 +13,22 @@
   'alt-g o': 'git-panel:open-commit'
   'alt-g =': 'git-panel:clone'
 
-'atom-text-editor':
-  'alt-m 1': 'git-panel:resolve-as-ours'
-  'alt-m 2': 'git-panel:resolve-as-theirs'
-  'alt-m 3': 'git-panel:resolve-as-base'
-  'alt-m enter': 'git-panel:resolve-as-current'
-  'alt-m r': 'git-panel:revert-current'
-
-'.platform-darwin .git-panel-Git':
-  'cmd-enter': 'git-panel:commit'
-'.platform-win32 .git-panel-Git, .platform-linux .git-panel-Git':
-  'ctrl-enter': 'git-panel:commit'
+'.git-panel-Git':
+  'cmdorctrl-enter': 'git-panel:commit'
 
 '.git-panel-StagingView':
   'tab': 'core:focus-next'
   'shift-tab': 'core:focus-previous'
   'o': 'git-panel:jump-to-file'
   'left': 'core:move-left'
-'.platform-darwin .git-panel-StagingView':
-  'cmd-left': 'core:move-left'
-'.platform-linux .git-panel-StagingView, .platform-win32 .git-panel-StagingView':
-  'ctrl-left': 'core-move-left'
+  'cmdorctrl-left': 'core:move-left'
 
 '.git-panel-CommitView button':
   'tab': 'core:focus-next'
   'shift-tab': 'core:focus-previous'
 
-'.platform-darwin .git-panel-StagingView.unstaged-changes-focused':
-  'cmd-backspace': 'git-panel:discard-changes-in-selected-files'
-'.platform-linux .git-panel-StagingView.unstaged-changes-focused':
-  'ctrl-backspace': 'git-panel:discard-changes-in-selected-files'
-'.platform-win32 .git-panel-StagingView.unstaged-changes-focused':
-  # Repeated to avoid line length
-  'ctrl-backspace': 'git-panel:discard-changes-in-selected-files'
+'.git-panel-StagingView.unstaged-changes-focused':
+  'cmdorctrl-backspace': 'git-panel:discard-changes-in-selected-files'
 
 '.git-panel-CommitView-editor atom-text-editor:not([mini])':
   'tab': 'core:focus-next'
@@ -56,22 +39,14 @@
 '.git-panel-CommitView-commitPreview':
   'left': 'git-panel:dive'
   'enter': 'native!'
-'.platform-darwin .git-panel-CommitView-commitPreview':
-  'cmd-left': 'git-panel:dive'
-'.platform-win32 .git-panel-CommitView-commitPreview':
-  'ctrl-left': 'git-panel:dive'
-'.platform-linux .git-panel-CommitView-commitPreview':
-  'ctrl-left': 'git-panel:dive'
+  'cmdorctrl-left': 'git-panel:dive'
 
 '.git-panel-RecentCommits':
   'left': 'git-panel:dive'
   'enter': 'git-panel:dive'
   'tab': 'core:focus-next'
   'shift-tab': 'core:focus-previous'
-'.platform-darwin .git-panel-RecentCommits':
-  'cmd-left': 'git-panel:dive'
-'.platform-win32 .git-panel-RecentCommits, .platform-linux .git-panel-RecentCommits':
-  'ctrl-left': 'git-panel:dive'
+  'cmdorctrl-left': 'git-panel:dive'
 
 '.git-panel-FilePatchView atom-text-editor:not([mini])':
   # Only support unprefixed file patch keybindings until MultiFilePatch is
@@ -81,24 +56,11 @@
   'enter': 'core:confirm'
   'right': 'git-panel:surface'
   'o': 'git-panel:jump-to-file'
-'.platform-darwin .git-panel-FilePatchView atom-text-editor:not([mini])':
-  'cmd-/': 'git-panel:toggle-patch-selection-mode'
-  'cmd-backspace': 'git-panel:discard-selected-lines'
-  'cmd-enter': 'core:confirm'
-  'cmd-right': 'git-panel:surface'
-  'cmd-o': 'git-panel:jump-to-file'
-'.platform-win32 .git-panel-FilePatchView atom-text-editor:not([mini])':
-  'ctrl-/': 'git-panel:toggle-patch-selection-mode'
-  'ctrl-backspace': 'git-panel:discard-selected-lines'
-  'ctrl-enter': 'core:confirm'
-  'ctrl-right': 'git-panel:surface'
-  'ctrl-o': 'git-panel:jump-to-file'
-'.platform-linux .git-panel-FilePatchView atom-text-editor:not([mini])':
-  'ctrl-/': 'git-panel:toggle-patch-selection-mode'
-  'ctrl-backspace': 'git-panel:discard-selected-lines'
-  'ctrl-enter': 'core:confirm'
-  'ctrl-right': 'git-panel:surface'
-  'ctrl-o': 'git-panel:jump-to-file'
+  'cmdorctrl-/': 'git-panel:toggle-patch-selection-mode'
+  'cmdorctrl-backspace': 'git-panel:discard-selected-lines'
+  'cmdorctrl-enter': 'core:confirm'
+  'cmdorctrl-right': 'git-panel:surface'
+  'cmdorctrl-o': 'git-panel:jump-to-file'
 
 '.git-panel-FilePatchView--hunkMode atom-text-editor:not([mini])':
   'down': 'git-panel:select-next-hunk'
@@ -118,7 +80,7 @@
 '.git-panel-CoAuthorForm input':
   'enter': 'core:confirm'
 
-'body .git-panel-TabbableWrapper':
+'.git-panel-TabbableWrapper':
   'down': 'git-panel:selectbox-down'
   'up': 'git-panel:selectbox-up'
   'enter': 'git-panel:selectbox-enter'
@@ -131,5 +93,5 @@
   'delete': 'git-panel:selectbox-delete'
   'escape': 'git-panel:selectbox-escape'
 
-'body .git-panel-CommitView-coAuthorEditor':
+'.git-panel-CommitView-coAuthorEditor':
   'shift-backspace': 'git-panel:co-author-exclude'
