@@ -25,8 +25,8 @@ To install, search for [git-panel](https://web.pulsar-edit.dev/packages/git-pane
 
 Commands available in `.workspace`:
 
-- `git-panel:toggle-git-tab-focus`: <kbd>Ctrl+9</kbd> toggle and focus the Git tab,
-- `git-panel:toggle-git-tab`: <kbd>Ctrl+Shift+9</kbd> toggle Git tab visibility,
+- `git-panel:toggle-focus`: <kbd>Alt+G</kbd> open and focus the Git tab, or return focus to editor if already focused,
+- `git-panel:toggle-git-tab`: toggle Git tab visibility,
 - `git-panel:commit`: <kbd>Alt+G Enter</kbd> commit staged changes,
 - `git-panel:fetch`: <kbd>Alt+G F</kbd> fetch from remote,
 - `git-panel:pull`: <kbd>Alt+G Shift+F</kbd> pull from remote,

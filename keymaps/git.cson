@@ -1,17 +1,5 @@
 'atom-workspace':
-  'ctrl-9': 'git-panel:toggle-git-tab-focus'
-  'ctrl-shift-9': 'git-panel:toggle-git-tab'
-  'alt-g enter': 'git-panel:commit'
-  'alt-g shift-enter': 'git-panel:amend-last-commit'
-  'alt-g a': 'git-panel:stage-all-changes'
-  'alt-g shift-a': 'git-panel:unstage-all-changes'
-  'alt-g f': 'git-panel:fetch'
-  'alt-g shift-f': 'git-panel:pull'
-  'alt-g p': 'git-panel:push'
-  'alt-g shift-p': 'git-panel:force-push'
-  'alt-g v': 'git-panel:toggle-commit-preview'
-  'alt-g o': 'git-panel:open-commit'
-  'alt-g =': 'git-panel:clone'
+  'alt-g': 'git-panel:toggle-focus'
 
 '.git-panel-Git':
   'cmdorctrl-enter': 'git-panel:commit'
