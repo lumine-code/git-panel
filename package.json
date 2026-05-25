@@ -30,12 +30,6 @@
     }
   },
   "configSchema": {
-    "keyboardNavigationDelay": {
-      "order": 1,
-      "type": "number",
-      "default": 300,
-      "description": "How long to wait before showing a diff view after navigating to an entry with the keyboard"
-    },
     "viewChangesForCurrentFileDiffPaneSplitDirection": {
       "order": 2,
       "type": "string",

@@ -54,17 +54,34 @@ Commands available in `atom-text-editor` (conflict resolution):
 - `git-panel:revert-conflict-modifications`: revert all conflict modifications,
 - `git-panel:dismiss-conflict`: dismiss current conflict.
 
+Commands available in `.git-panel-Git`:
+
+- `git-panel:focus-project`: <kbd>P</kbd> focus project selector,
+- `git-panel:focus-unstaged`: <kbd>U</kbd> focus unstaged changes,
+- `git-panel:focus-staged`: <kbd>S</kbd> focus staged changes,
+- `git-panel:focus-commit`: <kbd>C</kbd> focus commit message,
+- `git-panel:focus-recent-commits`: <kbd>R</kbd> focus recent commits.
+
+Project focus shortcuts:
+
+- <kbd>Up</kbd> / <kbd>Down</kbd>: open project list and move highlight,
+- <kbd>Enter</kbd>: switch to highlighted project,
+- <kbd>Escape</kbd>: close project list,
+- <kbd>Left</kbd> / <kbd>Right</kbd>: switch to previous / next project,
+- <kbd>Home</kbd> / <kbd>End</kbd>: switch to first / last project.
+
 Commands available in `.git-panel-StagingView`:
 
 - `git-panel:jump-to-file`: <kbd>O</kbd> open file in editor,
 - `git-panel:discard-changes-in-selected-files`: <kbd>Cmd/Ctrl+Backspace</kbd> discard changes in selected files,
-- `git-panel:show-diff-view`: show diff for selected file,
+- `git-panel:show-diff-view`: <kbd>Shift+Left</kbd> show diff for selected file,
+- `git-panel:focus-diff-view`: <kbd>Left</kbd> show and focus diff for selected file,
 - `git-panel:activate-next-list`: move focus to next file list,
 - `git-panel:activate-previous-list`: move focus to previous file list,
 - `git-panel:resolve-file-as-ours`: resolve selected file as ours,
 - `git-panel:resolve-file-as-theirs`: resolve selected file as theirs,
-- `git-panel:stage-all-changes`: <kbd>Alt+G A</kbd> stage all unstaged changes,
-- `git-panel:unstage-all-changes`: <kbd>Alt+G Shift+A</kbd> unstage all staged changes,
+- `git-panel:stage-all-changes`: <kbd>Alt+G A</kbd>, <kbd>Ctrl+Enter</kbd> in unstaged changes, stage all unstaged changes,
+- `git-panel:unstage-all-changes`: <kbd>Alt+G Shift+A</kbd>, <kbd>Ctrl+Enter</kbd> in staged changes, unstage all staged changes,
 - `git-panel:discard-all-changes`: discard all unstaged changes,
 - `git-panel:undo-last-discard-in-git-tab`: undo last discard.
 
@@ -72,13 +89,22 @@ Commands available in `.git-panel-CommitView`:
 
 - `git-panel:commit`: <kbd>Cmd/Ctrl+Enter</kbd> commit staged changes,
 - `git-panel:amend-last-commit`: <kbd>Alt+G Shift+Enter</kbd> amend the last commit,
+- `git-panel:toggle-co-authors`: <kbd>F6</kbd> toggle the co-authors editor,
 - `git-panel:toggle-expanded-commit-message-editor`: toggle expanded editor,
 - `git-panel:dive`: <kbd>Left</kbd> open commit preview,
-- `git-panel:co-author-exclude`: <kbd>Shift+Backspace</kbd> exclude co-author from list.
+- `git-panel:co-author-exclude`: <kbd>Cmd/Ctrl+Backspace</kbd> exclude co-author from list.
+
+Commands available in `.git-panel-CoAuthorForm`:
+
+- `core:cancel`: <kbd>Escape</kbd> close the new co-author form,
+- `core:focus-next`: <kbd>Tab</kbd> switch between name and e-mail,
+- `core:focus-previous`: <kbd>Shift+Tab</kbd> switch between name and e-mail,
+- `core:confirm`: <kbd>Enter</kbd> add the co-author.
 
 Commands available in `.git-panel-RecentCommits`:
 
 - `git-panel:dive`: <kbd>Enter</kbd> open commit detail view,
+- `git-panel:undo-last-commit`: <kbd>Backspace</kbd> undo the last commit,
 - `git-panel:copy-commit-sha`: copy commit SHA to clipboard,
 - `git-panel:copy-commit-subject`: copy commit subject to clipboard.
 

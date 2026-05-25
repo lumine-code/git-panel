@@ -2,70 +2,69 @@
   'alt-g': 'git-panel:toggle-focus'
 
 '.git-panel-Git':
-  'cmdorctrl-enter': 'git-panel:commit'
+  'tab': 'core:focus-next'
+  'shift-tab': 'core:focus-previous'
+  'escape': 'tool-panel:unfocus'
+  'p': 'git-panel:focus-project'
+  'u': 'git-panel:focus-unstaged'
+  's': 'git-panel:focus-staged'
+  'c': 'git-panel:focus-commit'
+  'r': 'git-panel:focus-recent-commits'
+  'f5': 'git-panel:fetch'
+  'f6': 'git-panel:pull'
+  'f7': 'git-panel:push'
+  'f8': 'git-panel:force-push'
+
+'.git-panel-Project select':
+  'enter': 'native!'
+  'escape': 'native!'
 
 '.git-panel-StagingView':
-  'tab': 'core:focus-next'
-  'shift-tab': 'core:focus-previous'
   'o': 'git-panel:jump-to-file'
-  'left': 'core:move-left'
-  'cmdorctrl-left': 'core:move-left'
-
-'.git-panel-CommitView button':
-  'tab': 'core:focus-next'
-  'shift-tab': 'core:focus-previous'
+  'left': 'git-panel:focus-diff-view'
+  'shift-left': 'git-panel:show-diff-view'
 
 '.git-panel-StagingView.unstaged-changes-focused':
-  'cmdorctrl-backspace': 'git-panel:discard-changes-in-selected-files'
+  'backspace': 'git-panel:discard-changes-in-selected-files'
+  'cmdorctrl-enter': 'git-panel:stage-all-changes'
+
+'.git-panel-StagingView.staged-changes-focused':
+  'cmdorctrl-enter': 'git-panel:unstage-all-changes'
 
 '.git-panel-CommitView-editor atom-text-editor:not([mini])':
   'tab': 'core:focus-next'
   'shift-tab': 'core:focus-previous'
   'enter': 'git-panel:commit'
   'shift-enter': 'editor:newline'
+  'cmdorctrl-enter': 'git-panel:amend-last-commit'
 
-'.git-panel-CommitView-commitPreview':
-  'left': 'git-panel:dive'
-  'enter': 'native!'
-  'cmdorctrl-left': 'git-panel:dive'
+'.git-panel-CommitView-coAuthorEditor':
+  'cmdorctrl-backspace': 'git-panel:co-author-exclude'
 
 '.git-panel-RecentCommits':
   'left': 'git-panel:dive'
-  'enter': 'git-panel:dive'
-  'tab': 'core:focus-next'
-  'shift-tab': 'core:focus-previous'
-  'cmdorctrl-left': 'git-panel:dive'
+  'backspace': 'git-panel:undo-last-commit'
 
 '.git-panel-FilePatchView atom-text-editor:not([mini])':
-  # Only support unprefixed file patch keybindings until MultiFilePatch is
-  # editable
+  'enter': 'core:confirm'
+  'o': 'git-panel:jump-to-file'
   '/': 'git-panel:toggle-patch-selection-mode'
   'backspace': 'git-panel:discard-selected-lines'
-  'enter': 'core:confirm'
-  'right': 'git-panel:surface'
-  'o': 'git-panel:jump-to-file'
-  'cmdorctrl-/': 'git-panel:toggle-patch-selection-mode'
-  'cmdorctrl-backspace': 'git-panel:discard-selected-lines'
-  'cmdorctrl-enter': 'core:confirm'
-  'cmdorctrl-right': 'git-panel:surface'
-  'cmdorctrl-o': 'git-panel:jump-to-file'
 
 '.git-panel-FilePatchView--hunkMode atom-text-editor:not([mini])':
-  'down': 'git-panel:select-next-hunk'
   'up': 'git-panel:select-previous-hunk'
+  'down': 'git-panel:select-next-hunk'
+
+'.git-panel-CoAuthorForm input':
+  'escape': 'core:cancel'
+  'tab': 'core:focus-next'
+  'shift-tab': 'core:focus-previous'
+  'enter': 'core:confirm'
 
 '.git-panel-Prompt-input':
   'enter': 'core:confirm'
-  'esc': 'tool-panel:unfocus'
-
-'.git-panel-Dialog':
-  'tab': 'core:focus-next'
-  'shift-tab': 'core:focus-previous'
 
 '.git-panel-Dialog input':
-  'enter': 'core:confirm'
-
-'.git-panel-CoAuthorForm input':
   'enter': 'core:confirm'
 
 '.git-panel-TabbableWrapper':
@@ -80,6 +79,3 @@
   'home': 'git-panel:selectbox-home'
   'delete': 'git-panel:selectbox-delete'
   'escape': 'git-panel:selectbox-escape'
-
-'.git-panel-CommitView-coAuthorEditor':
-  'shift-backspace': 'git-panel:co-author-exclude'
