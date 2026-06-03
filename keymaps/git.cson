@@ -15,6 +15,13 @@
   'f7': 'git-panel:push'
   'f8': 'git-panel:force-push'
 
+'.git-panel-Git.is-no-repository':
+  'down': 'core:move-down'
+  'up': 'core:move-up'
+  'home': 'core:move-to-top'
+  'end': 'core:move-to-bottom'
+  'enter': 'core:confirm'
+
 '.git-panel-Project select':
   'enter': 'native!'
   'escape': 'native!'
