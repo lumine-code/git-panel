@@ -10,6 +10,7 @@
   's': 'git-panel:focus-staged'
   'c': 'git-panel:focus-commit'
   'r': 'git-panel:focus-recent-commits'
+  'f4': 'git-panel:stage-all-changes'
   'f5': 'git-panel:fetch'
   'f6': 'git-panel:pull'
   'f7': 'git-panel:push'
