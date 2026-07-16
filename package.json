@@ -15,7 +15,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node --test spec/*.test.js"
+    "test": "node --test spec/*.test.js",
+    "lint": "eslint .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "bintrees": "1.0.2",
@@ -168,6 +170,7 @@
   },
   "devDependencies": {
     "eslint": "^8.57.1",
-    "eslint-plugin-react": "^7.37.5"
+    "eslint-plugin-react": "^7.37.5",
+    "prettier": "^3.9.5"
   }
 }
