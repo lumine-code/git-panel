@@ -1,0 +1,158 @@
+atom-text-editor .git-panel-ConflictBlock {
+  display: flex;
+  align-items: center;
+  margin-right: var(--component-padding);
+  padding: calc(var(--component-padding) / 2);
+  cursor: default;
+  color: color-mix(in srgb, var(--syntax-text-color) 75%, transparent);
+}
+atom-text-editor .git-panel-ConflictBlock .git-panel-ResolutionControls {
+  flex: 1;
+}
+atom-text-editor .git-panel-ConflictBlock .git-panel-ResolutionControls button {
+  margin-right: var(--component-padding);
+}
+atom-text-editor .git-panel-ConflictBlock .git-panel-ResolutionControls span {
+  cursor: pointer;
+}
+atom-text-editor .git-panel-SideDescription {
+  font-family: var(--font-family);
+  font-size: 0.9em;
+}
+atom-text-editor .git-panel-ResolutionControls .icon {
+  line-height: 0;
+}
+atom-text-editor .git-panel-ConflictTopBlock {
+  margin-top: var(--component-padding);
+  border-top-left-radius: calc(var(--component-border-radius) * 1.5);
+  border-top-right-radius: calc(var(--component-border-radius) * 1.5);
+}
+atom-text-editor .git-panel-ConflictBottomBlock {
+  margin-bottom: var(--component-padding);
+  border-bottom-left-radius: calc(var(--component-border-radius) * 1.5);
+  border-bottom-right-radius: calc(var(--component-border-radius) * 1.5);
+}
+atom-text-editor .git-panel-ConflictOurs {
+  margin-right: var(--component-padding);
+  background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 15%, transparent);
+}
+atom-text-editor .git-panel-ConflictOurs.cursor-line {
+  background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 25%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictOursBanner {
+  margin-right: var(--component-padding);
+  background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 15%, transparent);
+}
+atom-text-editor .git-panel-ConflictOursBanner.cursor-line {
+  background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 25%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictOursBanner.git-panel-ConflictUnmodifiedBanner span {
+  color: color-mix(in srgb, var(--git-panel-conflict-ours) 66%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictOursBlock {
+  color: color-mix(in srgb, var(--syntax-text-color) 66%, transparent);
+  background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 35%, transparent);
+}
+atom-text-editor .git-panel-ConflictOursBlock .btn {
+  color: white;
+  border-color: hsla(0, 0%, 0%, 0.15);
+  border: none;
+  background: var(--git-panel-conflict-ours);
+}
+atom-text-editor .git-panel-ConflictTheirs {
+  margin-right: var(--component-padding);
+  background-color: color-mix(in srgb, var(--syntax-color-renamed) 15%, transparent);
+}
+atom-text-editor .git-panel-ConflictTheirs.cursor-line {
+  background-color: color-mix(in srgb, var(--syntax-color-renamed) 25%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictTheirsBanner {
+  margin-right: var(--component-padding);
+  background-color: color-mix(in srgb, var(--syntax-color-renamed) 15%, transparent);
+}
+atom-text-editor .git-panel-ConflictTheirsBanner.cursor-line {
+  background-color: color-mix(in srgb, var(--syntax-color-renamed) 25%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictTheirsBanner.git-panel-ConflictUnmodifiedBanner span {
+  color: color-mix(in srgb, var(--syntax-color-renamed) 66%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictTheirsBlock {
+  color: color-mix(in srgb, var(--syntax-text-color) 66%, transparent);
+  background-color: color-mix(in srgb, var(--syntax-color-renamed) 35%, transparent);
+}
+atom-text-editor .git-panel-ConflictTheirsBlock .btn {
+  color: white;
+  border-color: hsla(0, 0%, 0%, 0.15);
+  border: none;
+  background: color-mix(in srgb, var(--syntax-color-renamed) 100%, transparent);
+}
+atom-text-editor .git-panel-ConflictBase {
+  margin-right: var(--component-padding);
+  background-color: color-mix(in srgb, var(--git-panel-conflict-base) 15%, transparent);
+}
+atom-text-editor .git-panel-ConflictBase.cursor-line {
+  background-color: color-mix(in srgb, var(--git-panel-conflict-base) 25%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictBaseBanner {
+  margin-right: var(--component-padding);
+  background-color: color-mix(in srgb, var(--git-panel-conflict-base) 15%, transparent);
+}
+atom-text-editor .git-panel-ConflictBaseBanner.cursor-line {
+  background-color: color-mix(in srgb, var(--git-panel-conflict-base) 25%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictBaseBanner.git-panel-ConflictUnmodifiedBanner span {
+  color: color-mix(in srgb, var(--git-panel-conflict-base) 66%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictBaseBlock {
+  color: color-mix(in srgb, var(--syntax-text-color) 66%, transparent);
+  background-color: color-mix(in srgb, var(--git-panel-conflict-base) 35%, transparent);
+}
+atom-text-editor .git-panel-ConflictBaseBlock .btn {
+  color: white;
+  border-color: hsla(0, 0%, 0%, 0.15);
+  border: none;
+  background: var(--git-panel-conflict-base);
+}
+atom-text-editor .git-panel-ConflictModified {
+  margin-right: var(--component-padding);
+  background-color: color-mix(in srgb, var(--syntax-color-modified) 15%, transparent);
+}
+atom-text-editor .git-panel-ConflictModified.cursor-line {
+  background-color: color-mix(in srgb, var(--syntax-color-modified) 25%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictModifiedBanner {
+  margin-right: var(--component-padding);
+  background-color: color-mix(in srgb, var(--syntax-color-modified) 15%, transparent);
+}
+atom-text-editor .git-panel-ConflictModifiedBanner.cursor-line {
+  background-color: color-mix(in srgb, var(--syntax-color-modified) 25%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictModifiedBanner.git-panel-ConflictUnmodifiedBanner span {
+  color: color-mix(in srgb, var(--syntax-color-modified) 66%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictModifiedBlock {
+  color: color-mix(in srgb, var(--syntax-text-color) 66%, transparent);
+  background-color: color-mix(in srgb, var(--syntax-color-modified) 35%, transparent);
+}
+atom-text-editor .git-panel-ConflictModifiedBlock .btn {
+  color: white;
+  border-color: hsla(0, 0%, 0%, 0.15);
+  border: none;
+  background: color-mix(in srgb, var(--syntax-color-modified) 100%, transparent);
+}
+atom-text-editor .git-panel-ConflictSeparator {
+  margin-right: var(--component-padding);
+  background-color: color-mix(in srgb, var(--git-panel-conflict-base) 15%, transparent);
+}
+atom-text-editor .git-panel-ConflictSeparator.cursor-line {
+  background-color: color-mix(in srgb, var(--git-panel-conflict-base) 25%, transparent) !important;
+}
+atom-text-editor .git-panel-ConflictSeparator span {
+  color: color-mix(in srgb, var(--git-panel-conflict-base) 66%, transparent) !important;
+}
+atom-text-editor .git-panel-ResolvedLines {
+  background-color: color-mix(in srgb, var(--syntax-color-added) 15%, transparent);
+}
+atom-text-editor .git-panel-ResolvedLines.cursor-line {
+  background-color: color-mix(in srgb, var(--syntax-color-added) 25%, transparent) !important;
+}

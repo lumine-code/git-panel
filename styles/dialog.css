@@ -1,0 +1,226 @@
+.git-panel-DialogPrompt {
+  margin: var(--component-padding);
+  text-align: center;
+  font-size: 1.2em;
+  user-select: none;
+}
+.git-panel-DialogForm {
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--component-padding) / 2);
+}
+.git-panel-DialogLabel {
+  flex: 1;
+  margin: calc(var(--component-padding) / 2);
+  position: relative;
+  line-height: 2;
+}
+.git-panel-DialogLabel--horizontal {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+.git-panel-DialogLabel--horizontal input {
+  margin: 0 var(--component-padding);
+}
+.git-panel-DialogLabel--horizontal input[type="text"],
+.git-panel-DialogLabel--horizontal input[type="password"] {
+  width: 85%;
+}
+.git-panel-DialogLabel .git-panel-AtomTextEditor-container {
+  margin-top: calc(var(--component-padding) / 2);
+}
+.git-panel-DialogFooter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.git-panel-DialogInfo {
+  display: inline-block;
+  flex-grow: 1;
+  margin: calc(var(--component-padding) / 2);
+  padding: calc(var(--component-padding) / 2);
+}
+.git-panel-DialogInfo li {
+  display: inline-block;
+}
+.git-panel-DialogButtons {
+  flex-grow: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: calc(var(--component-padding) / 2);
+}
+.platform-win32 .git-panel-DialogButtons {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+.git-panel-DialogButtons .btn {
+  margin: calc(var(--component-padding) / 2);
+}
+.git-panel-DialogButtons-leftItem,
+.git-panel-DialogButtons-leftItem.btn {
+  margin: calc(var(--component-padding) / 2);
+  margin-right: auto;
+}
+.git-panel-Dialog--insetButton {
+  position: absolute;
+  background: transparent;
+  right: 1em;
+  top: 0;
+  bottom: 0;
+  border: none;
+  color: var(--text-color-subtle);
+  cursor: pointer;
+}
+.git-panel-Dialog--insetButton:hover {
+  color: var(--text-color-highlight);
+}
+.git-panel-Dialog--insetButton:focus {
+  border: solid 1px var(--button-background-color-selected);
+  border-radius: 4px;
+}
+.git-panel-DialogSpinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--component-padding);
+}
+.git-panel-DialogSpinner .loading {
+  margin: var(--component-padding);
+}
+.git-panel-Dialog-row {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+.git-panel-Dialog atom-text-editor[mini].editor {
+  margin: 0;
+}
+.git-panel-Dialog atom-text-editor[mini].editor[readOnly] {
+  color: var(--text-color-subtle);
+}
+.git-panel-Dialog:not(:focus-within) {
+  padding-bottom: 1px;
+  transition: padding-bottom 0.01s;
+}
+.git-panel-TabbableWrapper {
+  display: flex;
+  flex: 1;
+}
+.git-panel-RepositoryHome {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+.git-panel-RepositoryHome-owner {
+  flex: 1;
+}
+.git-panel-RepositoryHome-owner .Select__control {
+  border-color: var(--button-border-color);
+}
+.git-panel-RepositoryHome-owner .Select__single-value {
+  background: var(--button-background-color);
+  color: var(--text-color);
+}
+.git-panel-RepositoryHome-owner .Select__option {
+  background: var(--button-background-color);
+  color: var(--text-color);
+}
+.git-panel-RepositoryHome-owner .Select__option--is-focused {
+  background: var(--button-background-color-selected);
+}
+.git-panel-RepositoryHome-owner .Select__option--is-disabled {
+  color: var(--text-color-subtle);
+}
+.git-panel-RepositoryHome-ownerOption {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.git-panel-RepositoryHome-ownerAvatar {
+  flex: 0;
+  border-radius: calc(var(--component-padding) / 4);
+  margin: 0 var(--component-padding) 0 0;
+}
+.git-panel-RepositoryHome-ownerUnwritable {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+.git-panel-RepositoryHome-separator {
+  flex: 0;
+  margin: 0 var(--component-padding);
+}
+.git-panel-RepositoryHome .git-panel-AtomTextEditor-container {
+  flex: 1.5;
+}
+.git-panel-RemoteConfiguration-details summary {
+  cursor: default;
+  user-select: none;
+  margin: var(--component-padding) 0;
+}
+.git-panel-RemoteConfiguration-details summary:focus {
+  border: solid 1px var(--button-background-color-selected);
+  border-radius: 4px;
+}
+.git-panel-RemoteConfiguration-details main {
+  padding-top: var(--component-padding);
+}
+.git-panel-RemoteConfiguration-protocol {
+  display: inline-flex;
+  align-items: center;
+}
+.git-panel-RemoteConfiguration-protocolHeading {
+  display: inline-block;
+  margin-right: var(--component-padding);
+}
+.git-panel-RemoteConfiguration-protocolOption {
+  display: inline-flex;
+  align-items: center;
+  padding: calc(var(--component-padding) / 4);
+  margin-right: var(--component-padding);
+}
+.git-panel-RemoteConfiguration-protocolOption:focus-within {
+  border: solid 1px var(--button-background-color-selected);
+  border-radius: 4px;
+}
+.git-panel-RemoteConfiguration-sourceRemote {
+  width: 60%;
+}
+.git-panel-RemoteConfiguration-sourceRemote label {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.git-panel-RemoteConfiguration-sourceRemote label .git-panel-AtomTextEditor-container {
+  flex: 1;
+  margin-left: var(--component-padding);
+}
+.git-panel-Create-visibility {
+  display: inline-flex;
+  align-items: center;
+}
+.git-panel-Create-visibilityHeading {
+  display: inline-block;
+  margin-right: calc(var(--component-padding) * 2);
+}
+.git-panel-Create-visibilityOption {
+  display: inline-flex;
+  align-items: center;
+  padding: calc(var(--component-padding) / 4);
+  margin-right: var(--component-padding);
+}
+.git-panel-Create-visibilityOption:focus-within {
+  border: solid 1px var(--button-background-color-selected);
+  border-radius: 4px;
+}
+.git-panel-Create-visibilityOption span::before {
+  margin-left: calc(var(--component-padding) / 2);
+  margin-right: calc(var(--component-padding) / 2);
+}

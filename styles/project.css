@@ -1,0 +1,57 @@
+.git-panel-Project {
+  display: flex;
+  align-items: center;
+  padding: calc(var(--component-padding) / 2) var(--component-padding);
+  border-bottom: 1px solid var(--base-border-color);
+}
+.git-panel-Project-path {
+  flex: 1;
+  margin-left: var(--component-padding);
+  min-width: 0;
+}
+.git-panel-Project-avatarBtn {
+  height: 23px;
+  width: 23px;
+  padding: 0;
+  border-radius: var(--component-border-radius);
+  background-color: var(--pane-item-background-color);
+  border: none;
+}
+.git-panel-Project-avatar {
+  width: 23px;
+  height: 23px;
+  border-radius: var(--component-border-radius);
+  color: transparent;
+  overflow: hidden;
+}
+.git-panel-Project-lock.btn {
+  width: 40px;
+  height: 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: baseline;
+  border: none;
+  background-color: transparent;
+  background-image: none;
+}
+.git-panel-Project-lock.btn:active,
+.git-panel-Project-lock.btn:hover {
+  background-color: transparent;
+  background-image: none;
+}
+.git-panel-Project .icon {
+  padding: 0;
+  margin: 0;
+  line-height: 1em;
+  fill: var(--text-color);
+}
+.git-panel-Project .icon:hover {
+  fill: var(--text-color-highlight);
+}
+.git-panel-Project .icon.icon-unlock {
+  width: 21px;
+  height: 17px;
+  padding-left: 1px;
+}

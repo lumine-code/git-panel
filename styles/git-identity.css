@@ -1,0 +1,24 @@
+.git-panel-GitIdentity {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--component-padding);
+}
+.git-panel-GitIdentity-title {
+  margin-bottom: var(--component-padding);
+}
+.git-panel-GitIdentity-explanation {
+  margin-bottom: calc(var(--component-padding) * 3);
+}
+.git-panel-GitIdentity-text {
+  width: 90%;
+  margin-bottom: calc(var(--component-padding) * 2);
+}
+.git-panel-GitIdentity-text .git-panel-AtomTextEditor-container {
+  margin: var(--component-padding) 0;
+  height: inherit;
+}
+.git-panel-GitIdentity-buttons .btn {
+  margin: calc(var(--component-padding) / 2);
+}

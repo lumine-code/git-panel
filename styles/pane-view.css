@@ -1,6 +1,3 @@
-@import "variables";
-@import "ui-variables";
-
 .git-panel-PaneView {
   display: flex;
   height: 100%;

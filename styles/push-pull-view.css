@@ -1,0 +1,7 @@
+.git-panel-PushPull-icon.icon.icon.icon {
+  margin-right: 0;
+  text-align: center;
+}
+.git-panel-PushPull .secondary {
+  color: var(--text-color-subtle);
+}

@@ -1,0 +1,50 @@
+/* Usage: ---------------------------------------------
+
+<div className="git-panel-Message">
+  <div className="git-panel-Message-wrapper">
+    <h1 className="git-panel-Message-title">Whooops</h1>
+    <p className="git-panel-Message-description">Bad things happened</p>
+    <p className="git-panel-Message-action">
+      <button className="git-panel-Message-button btn btn-primary">Get me out of here</button>
+    </p>
+  </div>
+</div>
+
+--------------------------------------------------- */
+.git-panel-Message {
+  flex: 1;
+  display: flex;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.git-panel-Message-wrapper {
+  margin: auto;
+  padding: calc(var(--component-padding) * 2);
+  text-align: center;
+  width: 100%;
+}
+.git-panel-Message-title {
+  color: var(--text-color-highlight);
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
+}
+.git-panel-Message-description {
+  font-size: 1.2em;
+  line-height: 1.4;
+  margin-bottom: 0;
+}
+pre.git-panel-Message-description {
+  text-align: left;
+}
+.git-panel-Message-longDescription {
+  font-size: 1.1em;
+  line-height: 1.4;
+  text-align: left;
+  margin-bottom: 0;
+}
+.git-panel-Message-action {
+  margin-top: calc(var(--component-padding) * 2);
+}
+.git-panel-Message-button {
+  margin: calc(var(--component-padding) / 2);
+}

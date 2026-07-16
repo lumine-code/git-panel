@@ -1,0 +1,14 @@
+:root {
+  --git-panel-color-blue: var(--accent-color, #006eeb);
+  --git-panel-color-purple: var(--syntax-color-keyword, #6f42c1);
+  --git-panel-conflict-ours: hsl(from var(--syntax-color-renamed) calc(h + 80) s l);
+  --git-panel-conflict-base: hsl(from var(--syntax-color-renamed) h 0 l);
+  --git-panel-diff-deleted: color-mix(in srgb, var(--syntax-color-removed) 15%, transparent);
+  --git-panel-diff-added: color-mix(in srgb, var(--syntax-color-added) 15%, transparent);
+  --git-panel-diff-deleted-highlight: color-mix(
+    in srgb,
+    var(--syntax-color-removed) 25%,
+    transparent
+  );
+  --git-panel-diff-added-highlight: color-mix(in srgb, var(--syntax-color-added) 25%, transparent);
+}

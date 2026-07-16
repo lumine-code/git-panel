@@ -1,0 +1,127 @@
+atom-dock.bottom .git-panel-Git {
+  flex-direction: row;
+}
+atom-dock.bottom .git-panel-StagingView {
+  display: contents;
+}
+atom-dock.bottom .git-panel-Git > div {
+  flex: 1;
+}
+atom-dock.bottom .git-panel-StagedChanges {
+  border-left: 1px solid var(--base-border-color);
+  border-right: 1px solid var(--base-border-color);
+}
+atom-dock.bottom .git-panel-StagingView-header {
+  flex-wrap: wrap;
+}
+atom-dock.bottom .git-panel-StagingView-group:first-child .git-panel-StagingView-header {
+  border-top: 1px solid var(--base-border-color);
+}
+atom-dock.bottom .git-panel-RecentCommits {
+  max-height: none;
+  border-left: 1px solid var(--base-border-color);
+}
+atom-dock.left .git-panel-IssueishDetailView-header,
+atom-dock.right .git-panel-IssueishDetailView-header {
+  display: block;
+  padding: var(--component-padding);
+  background-color: var(--tool-panel-background-color);
+}
+atom-dock.left .git-panel-IssueishDetailView-avatar,
+atom-dock.right .git-panel-IssueishDetailView-avatar {
+  position: absolute;
+}
+atom-dock.left .git-panel-IssueishDetailView-avatarImage,
+atom-dock.right .git-panel-IssueishDetailView-avatarImage {
+  width: 20px;
+  height: 20px;
+}
+atom-dock.left .git-panel-IssueishDetailView-headerRow:nth-child(1),
+atom-dock.right .git-panel-IssueishDetailView-headerRow:nth-child(1) {
+  padding-left: 25px;
+  overflow: hidden;
+}
+atom-dock.left .git-panel-IssueishDetailView-title,
+atom-dock.right .git-panel-IssueishDetailView-title {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+atom-dock.left .git-panel-IssueishDetailView-checkoutButton,
+atom-dock.right .git-panel-IssueishDetailView-checkoutButton {
+  margin: var(--component-padding) 0 0 0;
+}
+atom-dock.left .git-panel-IssueishDetailView-tablist,
+atom-dock.right .git-panel-IssueishDetailView-tablist {
+  flex-wrap: wrap;
+}
+atom-dock.left .git-panel-IssueishDetailView-tab,
+atom-dock.right .git-panel-IssueishDetailView-tab {
+  padding: calc(var(--component-padding) / 2) var(--component-padding);
+}
+atom-dock.left .git-panel-IssueishDetailView-tab-icon,
+atom-dock.right .git-panel-IssueishDetailView-tab-icon {
+  display: none;
+}
+atom-dock.left .git-panel-IssueishDetailView-overview,
+atom-dock.right .git-panel-IssueishDetailView-overview {
+  font-size: 0.9em;
+}
+atom-dock.left .git-panel-IssueishDetailView-overview > .git-panel-DotComMarkdownHtml,
+atom-dock.right .git-panel-IssueishDetailView-overview > .git-panel-DotComMarkdownHtml,
+atom-dock.left .git-panel-IssueishDetailView-overview .timeline-item,
+atom-dock.right .git-panel-IssueishDetailView-overview .timeline-item {
+  padding: var(--component-padding);
+}
+atom-dock.left .git-panel-IssueishDetailView-buildStatus,
+atom-dock.right .git-panel-IssueishDetailView-buildStatus {
+  padding: 0;
+}
+atom-dock.left .git-panel-IssueishDetailView .git-panel-PrStatuses-header,
+atom-dock.right .git-panel-IssueishDetailView .git-panel-PrStatuses-header {
+  border-top: none;
+}
+atom-dock.left .git-panel-IssueishDetailView .git-panel-PrStatuses-header,
+atom-dock.right .git-panel-IssueishDetailView .git-panel-PrStatuses-header,
+atom-dock.left .git-panel-IssueishDetailView .git-panel-PrStatuses-list-item,
+atom-dock.right .git-panel-IssueishDetailView .git-panel-PrStatuses-list-item {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+}
+atom-dock.left .git-panel-IssueishDetailView .git-panel-PrCommitsView-commitWrapper,
+atom-dock.right .git-panel-IssueishDetailView .git-panel-PrCommitsView-commitWrapper {
+  padding: 0;
+}
+atom-dock.left .git-panel-IssueishDetailView .git-panel-PrCommitView-container,
+atom-dock.right .git-panel-IssueishDetailView .git-panel-PrCommitView-container {
+  font-size: 0.9em;
+  border-left: none;
+  border-right: none;
+}
+atom-dock.left .git-panel-IssueishDetailView .git-panel-PrCommitView-container:first-child,
+atom-dock.right .git-panel-IssueishDetailView .git-panel-PrCommitView-container:first-child {
+  border-top: none;
+  border-radius: 0;
+}
+atom-dock.left .git-panel-IssueishDetailView .git-panel-PrCommitView-container:last-child,
+atom-dock.right .git-panel-IssueishDetailView .git-panel-PrCommitView-container:last-child {
+  border-bottom: none;
+  border-radius: 0;
+}
+atom-dock.left .git-panel-CommitDetailView-header,
+atom-dock.right .git-panel-CommitDetailView-header {
+  background-color: var(--tool-panel-background-color);
+}
+atom-dock.left .git-panel-CommitDetailView-commit,
+atom-dock.right .git-panel-CommitDetailView-commit {
+  padding: var(--component-padding) var(--component-padding) 0 var(--component-padding);
+}
+atom-dock.left .git-panel-CommitDetailView-meta,
+atom-dock.right .git-panel-CommitDetailView-meta {
+  margin-bottom: var(--component-padding);
+}
+atom-dock.left .git-panel-CommitDetailView-moreText,
+atom-dock.right .git-panel-CommitDetailView-moreText {
+  padding: var(--component-padding) 0;
+}

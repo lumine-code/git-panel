@@ -1,0 +1,80 @@
+.git-panel-StagingView {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.git-panel-StagingView-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.git-panel-StagingView-header {
+  display: flex;
+  align-items: center;
+  padding: 0 0 0 var(--component-padding);
+  font-weight: 600;
+  border-top: 1px solid var(--panel-heading-border-color);
+  border-bottom: 1px solid var(--panel-heading-border-color);
+}
+.git-panel-UnstagedChanges > .git-panel-StagingView-header {
+  border-top: none;
+}
+.git-panel-StagingView-header .icon {
+  text-align: center;
+}
+.git-panel-StagingView-header .icon:before {
+  color: var(--text-color-subtle);
+  margin-right: calc(var(--component-padding) / 1.2);
+  vertical-align: middle;
+}
+.git-panel-StagingView-headerButton {
+  height: 2.5em;
+  border: none;
+  padding: 0 var(--component-padding);
+  font-weight: normal;
+  border-left: 1px solid var(--panel-heading-border-color);
+  white-space: nowrap;
+  background: none;
+  cursor: default;
+}
+.git-panel-StagingView-headerButton:disabled {
+  color: var(--text-color-subtle);
+}
+.git-panel-StagingView-headerButton:active {
+  background-color: var(--button-background-color-hover);
+}
+.git-panel-StagingView-headerButton.icon:before {
+  margin-right: 0;
+  font-size: 1em;
+  text-align: left;
+}
+.git-panel-StagingView-headerButton--fullWidth {
+  border-left: none;
+  border-bottom: 1px solid var(--panel-heading-border-color);
+}
+.git-panel-StagingView-headerButton--iconOnly:before {
+  width: auto;
+}
+.git-panel-StagingView-title {
+  flex: 1;
+  margin-right: var(--component-padding);
+  line-height: 2.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.git-panel-StagingView-list {
+  flex: 1 1 0;
+  overflow-x: auto;
+}
+.git-panel-StagingView-group-truncatedMsg {
+  padding: calc(var(--component-padding) / 2) var(--component-padding);
+}
+.git-panel-StagingView-group.is-focused .is-selected {
+  color: var(--text-color-selected);
+  background: var(--background-color-selected);
+}
+.git-panel-StagingView:focus .git-panel-StagingView-group.is-focused .is-selected {
+  color: var(--button-text-color-selected);
+  background: var(--button-background-color-selected);
+}

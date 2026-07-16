@@ -1,0 +1,267 @@
+.git-panel-CommitView {
+  padding: var(--component-padding);
+  flex: 0 0 auto;
+}
+.git-panel-CommitView-editor {
+  position: relative;
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--component-border-radius);
+  font-size: var(--font-size);
+  background-color: var(--syntax-background-color);
+  overflow: hidden;
+}
+.git-panel-CommitView-editor:focus-within {
+  border-color: var(--button-background-color-selected);
+}
+.git-panel-CommitView-editor .git-panel-CommitView-hardwrap {
+  position: absolute;
+  right: 20px;
+  bottom: 0;
+  padding: calc(var(--component-padding) / 5) calc(var(--component-padding) / 2);
+  line-height: 1;
+  border: none;
+  background-color: var(--syntax-background-color);
+  cursor: default;
+  opacity: 0.3;
+}
+.git-panel-CommitView-editor .git-panel-CommitView-hardwrap:hover {
+  opacity: 1;
+}
+.git-panel-CommitView-editor .git-panel-CommitView-hardwrap:active {
+  opacity: 0.5;
+}
+.git-panel-CommitView-editor.hidden {
+  display: none;
+}
+.git-panel-CommitView-editor atom-text-editor {
+  height: 100px;
+  padding: calc(var(--component-padding) / 2);
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+.git-panel-CommitView-editor atom-text-editor.is-focused {
+  border: none;
+  box-shadow: none;
+}
+.git-panel-CommitView-editor atom-text-editor .cursor-line.cursor-line.cursor-line {
+  background-color: transparent;
+}
+.git-panel-CommitView-coAuthorToggle {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: calc(var(--component-padding) / 2);
+  line-height: 1;
+  border: none;
+  background-color: var(--syntax-background-color);
+  cursor: default;
+  opacity: 0.3;
+  z-index: 1;
+}
+.git-panel-CommitView-coAuthorToggle:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+.git-panel-CommitView-coAuthorToggle:active {
+  opacity: 0.5;
+}
+.git-panel-CommitView-coAuthorToggle.focused {
+  opacity: 1;
+}
+.git-panel-CommitView-coAuthorToggleIcon {
+  width: 12px;
+  height: 7px;
+  fill: var(--text-color);
+}
+.git-panel-CommitView-coAuthorToggleIcon.focused {
+  fill: var(--button-background-color-selected);
+}
+.git-panel-CommitView-buttonWrapper {
+  align-items: center;
+  display: flex;
+  margin: 0 -var(--component-padding) var(--component-padding) -var(--component-padding);
+  padding: var(--component-padding);
+  padding-top: 0;
+  border-bottom: 1px solid var(--base-border-color);
+}
+.git-panel-CommitView-coAuthorEditor {
+  position: relative;
+  margin-top: calc(var(--component-padding) / 2);
+  padding: calc(var(--component-padding) / 4) calc(var(--component-padding) / 2);
+  border: 1px solid var(--base-border-color);
+  color: var(--syntax-text-color);
+  border-radius: var(--component-border-radius);
+  background-color: var(--syntax-background-color);
+  cursor: text;
+}
+.git-panel-CommitView-coAuthorEditor .Select__control {
+  background-color: inherit;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  cursor: inherit;
+  min-height: var(--component-line-height);
+  box-shadow: none;
+}
+.git-panel-CommitView-coAuthorEditor .Select__placeholder {
+  line-height: var(--component-line-height);
+  padding: 0;
+  color: var(--text-color-subtle);
+}
+.git-panel-CommitView-coAuthorEditor .Select__input-container {
+  line-height: var(--component-line-height);
+  padding: 0;
+  margin: 0;
+}
+.git-panel-CommitView-coAuthorEditor .Select__input-container input {
+  padding: 0;
+  line-height: inherit;
+}
+.git-panel-CommitView-coAuthorEditor .Select__value-container {
+  padding: 0;
+}
+.git-panel-CommitView-coAuthorEditor .Select__multi-value {
+  margin: 0;
+  margin-right: 0.5em;
+  vertical-align: middle;
+  line-height: 1.1;
+  color: color-mix(in srgb, var(--text-color-highlight) 70%, var(--text-color-info));
+  border-color: color-mix(in srgb, var(--background-color-info) 15%, transparent);
+  background-color: color-mix(in srgb, var(--background-color-info) 10%, transparent);
+}
+.git-panel-CommitView-coAuthorEditor .Select__multi-value__remove {
+  border-color: inherit;
+  cursor: pointer;
+}
+.git-panel-CommitView-coAuthorEditor .Select__menu {
+  top: auto;
+  left: -1px;
+  right: -1px;
+  width: auto;
+  bottom: calc(100% + 2px);
+  border-radius: var(--component-border-radius);
+  border: 1px solid var(--overlay-border-color);
+  background-color: var(--overlay-background-color);
+  box-shadow: 0 2px 4px hsla(0, 0%, 0%, 0.15);
+  overflow: hidden;
+}
+.git-panel-CommitView-coAuthorEditor .Select__option {
+  display: inline-block;
+  margin: 0;
+  border-radius: 0;
+  border: 0;
+  background-color: transparent;
+  width: 100%;
+  padding: calc(var(--component-padding) / 2);
+  padding-right: 10px;
+  border-top: 1px solid var(--overlay-border-color);
+  white-space: nowrap;
+}
+.git-panel-CommitView-coAuthorEditor .Select__option:first-child {
+  border-top: none;
+}
+.git-panel-CommitView-coAuthorEditor .Select__option--is-focused {
+  color: white;
+  background-color: var(--background-color-info);
+}
+.git-panel-CommitView-coAuthorEditor
+  .Select__option--is-focused
+  .git-panel-CommitView-coAuthorEditor-selectListItem
+  > span {
+  color: inherit;
+}
+.git-panel-CommitView-coAuthorEditor-selectListItem {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.git-panel-CommitView-coAuthorEditor-selectListItem > span:first-child {
+  font-weight: 600;
+  color: var(--text-color-highlight);
+}
+.git-panel-CommitView-coAuthorEditor-selectListItem > span {
+  color: var(--text-color-subtle);
+  margin-right: 0.75em;
+}
+.git-panel-CommitView-coAuthorEditor-selectListItem > span:last-child {
+  margin-right: 0;
+}
+.git-panel-CommitView-coAuthorEditor .new-author {
+  font-style: italic;
+}
+.git-panel-CommitView-expandButton {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: calc(var(--component-padding) / 2);
+  line-height: 1;
+  border: none;
+  background-color: var(--syntax-background-color);
+  cursor: default;
+  opacity: 0.3;
+}
+.git-panel-CommitView-expandButton:hover {
+  opacity: 1;
+}
+.git-panel-CommitView-expandButton:active {
+  opacity: 0.5;
+}
+.git-panel-CommitView-expandButton:before {
+  margin: 0;
+}
+.git-panel-CommitView-bar {
+  display: flex;
+  align-items: center;
+  margin-top: var(--component-padding);
+}
+.git-panel-CommitView-label {
+  margin-right: var(--component-padding);
+}
+.git-panel-CommitView-button {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+.git-panel-CommitView-button.is-secondary {
+  flex: 0 1 auto;
+  margin-right: var(--component-padding);
+}
+.git-panel-CommitView-remaining-characters {
+  width: 1.25em;
+  text-align: right;
+  margin-left: var(--component-padding);
+  color: var(--text-color-subtle);
+}
+.git-panel-CommitView-remaining-characters.is-warning {
+  color: var(--text-color-warning);
+}
+.git-panel-CommitView-remaining-characters.is-error {
+  color: var(--text-color-error);
+}
+.git-panel-CommitView-editor.is-expanded {
+  background-color: transparent;
+}
+.git-panel-CommitView-editor.is-expanded atom-text-editor {
+  display: none;
+}
+.git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton {
+  position: relative;
+  width: 100%;
+  line-height: inherit;
+  background-color: transparent;
+  opacity: 0.5;
+}
+.git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton::before {
+  margin-right: calc(var(--component-padding) / 2);
+}
+.git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton::after {
+  content: "Toggle expanded commit message";
+}
+.git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton:active {
+  opacity: 0.3;
+}
+.git-panel-CommitView .hard-wrap-icons {
+  fill: var(--text-color);
+}

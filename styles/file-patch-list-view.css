@@ -1,0 +1,35 @@
+.git-panel-FilePatchListView:empty:before {
+  content: "No changes";
+  display: block;
+  padding: var(--component-padding);
+  text-align: center;
+  color: var(--text-color-subtle);
+  font-style: italic;
+}
+.git-panel-FilePatchListView-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  padding: calc(var(--component-padding) / 2) var(--component-padding);
+  padding-left: calc(var(--component-padding) * 3.5);
+  overflow: hidden;
+  -webkit-user-select: none;
+  cursor: default;
+}
+.git-panel-FilePatchListView-icon {
+  text-align: right;
+}
+.git-panel-FilePatchListView-icon:before {
+  margin-right: calc(var(--component-padding) / 1.2);
+}
+.git-panel-FilePatchListView-path {
+  flex: 1;
+  word-break: break-word;
+}
+.git-panel-FilePatchListView-resolutionItem {
+  padding-top: 0;
+  padding-bottom: calc(var(--component-padding) / 2);
+}
+.git-panel-MergeConflictPaths .git-panel-FilePatchListView-icon:last-child {
+  margin-left: calc(var(--component-padding) / 2);
+}

@@ -1,0 +1,339 @@
+.git-panel-FilePatchView {
+  display: flex;
+  flex-direction: column;
+  -webkit-user-select: none;
+  cursor: default;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+.git-panel-FilePatchView--blank .git-panel-FilePatchView-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.2em;
+  padding: var(--component-padding);
+}
+.git-panel-FilePatchView-controlBlock {
+  background-color: var(--syntax-background-color);
+  display: flow-root;
+}
+.git-panel-FilePatchView-controlBlock .git-panel-FilePatchView-header {
+  margin: calc(var(--component-padding) * 4) var(--component-padding) var(--component-padding) 0;
+}
+.git-panel-FilePatchView-controlBlock .git-panel-HunkHeaderView {
+  margin: var(--component-padding) var(--component-padding) var(--component-padding) 0;
+}
+.git-panel-FilePatchView-controlBlock
+  + .git-panel-FilePatchView-controlBlock
+  .git-panel-FilePatchView-header,
+.git-panel-FilePatchView-controlBlock
+  + .git-panel-FilePatchView-controlBlock
+  .git-panel-HunkHeaderView {
+  margin-top: 0;
+}
+.git-panel-FilePatchView-header {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--base-border-color);
+  border-radius: var(--component-border-radius);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  background-color: color-mix(in srgb, var(--syntax-text-color) 6%, var(--syntax-background-color));
+  cursor: default;
+}
+.git-panel-FilePatchView-header .btn {
+  font-size: 0.9em;
+}
+.git-panel-FilePatchView-header .btn.icon-move-up::before,
+.git-panel-FilePatchView-header .btn.icon-move-down::before {
+  font-size: 1em;
+  margin-right: 0.5em;
+}
+.git-panel-FilePatchView-header .btn-group {
+  margin: calc(var(--component-padding) / 2);
+}
+.git-panel-FilePatchView-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: var(--component-padding);
+}
+.git-panel-FilePatchView-message {
+  font-family: var(--font-family);
+  text-align: center;
+  margin: 15px 0 0 0;
+}
+.git-panel-FilePatchView-showDiffButton {
+  background: transparent;
+  border: none;
+  color: var(--text-color-highlight);
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+.git-panel-FilePatchView-showDiffButton:hover {
+  color: var(--git-panel-color-blue);
+}
+.git-panel-FilePatchView-collapseButton {
+  background: transparent;
+  border: none;
+  padding: calc(var(--component-padding) / 1.5);
+}
+.git-panel-FilePatchView-collapseButton + .git-panel-FilePatchView-title {
+  margin-left: 0;
+}
+.git-panel-FilePatchView-collapseButtonIcon:before {
+  margin-right: 0;
+  vertical-align: -2px;
+}
+.git-panel-FilePatchView-container {
+  flex: 1;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+.git-panel-FilePatchView-container .large-file-patch {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.2em;
+  padding: var(--component-padding);
+}
+.git-panel-FilePatchView-container .large-file-patch {
+  flex-direction: column;
+}
+.git-panel-FilePatchView-container atom-text-editor {
+  width: 100%;
+  height: 100%;
+}
+.git-panel-FilePatchView-meta {
+  font-family: var(--font-family);
+  padding-top: var(--component-padding);
+}
+.git-panel-FilePatchView-metaContainer {
+  border: 1px solid var(--base-border-color);
+  border-radius: var(--component-border-radius);
+}
+.git-panel-FilePatchView-metaHeader {
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  border-bottom: 1px solid var(--base-border-color);
+}
+.git-panel-FilePatchView-metaTitle {
+  flex: 1;
+  margin: 0;
+  padding-left: var(--component-padding);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.git-panel-FilePatchView-metaControls {
+  margin-left: var(--component-padding);
+}
+.git-panel-FilePatchView-metaButton {
+  line-height: 1.9;
+  padding-left: var(--component-padding);
+  padding-right: var(--component-padding);
+  font-family: var(--font-family);
+  border: none;
+  border-left: 1px solid var(--base-border-color);
+  background-color: transparent;
+  cursor: default;
+}
+.git-panel-FilePatchView-metaButton:hover {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
+}
+.git-panel-FilePatchView-metaButton:active {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 2%, var(--syntax-background-color));
+}
+.git-panel-FilePatchView-metaButton.icon-move-up::before,
+.git-panel-FilePatchView-metaButton.icon-move-down::before {
+  font-size: 1em;
+  margin-right: 0.25em;
+  vertical-align: baseline;
+}
+.git-panel-FilePatchView-metaDetails {
+  padding: var(--component-padding);
+}
+.git-panel-FilePatchView-metaDiff {
+  margin: 0 0.2em;
+  padding: 0.2em 0.4em;
+  line-height: 1.6;
+  border-radius: var(--component-border-radius);
+}
+.git-panel-FilePatchView-metaDiff--added {
+  color: color-mix(in srgb, var(--text-color-highlight) 40%, var(--text-color-success));
+  background-color: color-mix(
+    in srgb,
+    var(--base-background-color) 80%,
+    var(--background-color-success)
+  );
+}
+.git-panel-FilePatchView-metaDiff--removed {
+  color: color-mix(in srgb, var(--text-color-highlight) 40%, var(--text-color-error));
+  background-color: color-mix(
+    in srgb,
+    var(--base-background-color) 80%,
+    var(--background-color-error)
+  );
+}
+.git-panel-FilePatchView-metaDiff--fullWidth {
+  display: block;
+  margin: calc(var(--component-padding) / 2) 0 0 0;
+}
+.git-panel-FilePatchView-metaDiff--fullWidth:first-child {
+  margin-top: 0;
+}
+.git-panel-FilePatchView-metaDiff code {
+  margin: 0 0.2em;
+  padding: 0 0.2em;
+  font-size: 0.9em;
+  color: inherit;
+  line-height: 1;
+  vertical-align: middle;
+  word-break: break-all;
+  background-color: var(--base-background-color);
+}
+.git-panel-FilePatchView-line--deleted {
+  background-color: var(--git-panel-diff-deleted);
+}
+.git-panel-FilePatchView-line--deleted.line.cursor-line {
+  background-color: color-mix(in srgb, var(--syntax-color-removed) 18%, transparent);
+}
+.git-panel-FilePatchView-line--added {
+  background-color: var(--git-panel-diff-added);
+}
+.git-panel-FilePatchView-line--added.line.cursor-line {
+  background-color: color-mix(in srgb, var(--syntax-color-added) 18%, transparent);
+}
+.git-panel-FilePatchView-word--deleted .region {
+  background-color: var(--git-panel-diff-deleted-highlight);
+  border-radius: 2px;
+}
+.git-panel-FilePatchView-word--added .region {
+  background-color: var(--git-panel-diff-added-highlight);
+  border-radius: 2px;
+}
+.git-panel-FilePatchView .gutter .icon-right {
+  display: none;
+}
+.git-panel-FilePatchView .gutter.old .line-number,
+.git-panel-FilePatchView .gutter.new .line-number {
+  min-width: 6ch;
+  opacity: 1;
+  padding: 0 1ch 0 0;
+}
+.git-panel-FilePatchView .gutter.icons .line-number {
+  padding: 0;
+  opacity: 1;
+  width: 2ch;
+  font-family: var(--font-family);
+  text-align: center;
+  color: color-mix(in srgb, var(--syntax-gutter-text-color) 50%, var(--syntax-text-color));
+  -webkit-font-smoothing: antialiased;
+}
+.git-panel-FilePatchView .gutter.icons .line-number:before {
+  display: inline-block;
+  min-width: 2ch;
+}
+.git-panel-FilePatchView .gutter.icons .line-number.git-panel-FilePatchView-line--added:before {
+  content: "+";
+}
+.git-panel-FilePatchView .gutter.icons .line-number.git-panel-FilePatchView-line--deleted:before {
+  content: "-";
+}
+.git-panel-FilePatchView .gutter.icons .line-number.git-panel-FilePatchView-line--nonewline:before {
+  content: "\f09c";
+  font-family: "Octicons Regular";
+  font-weight: normal;
+  font-style: normal;
+  width: inherit;
+  min-width: auto;
+}
+.git-panel-FilePatchView--inactive .highlights .highlight.selection {
+  display: none;
+}
+.git-panel-FilePatchView atom-text-editor[readonly] .cursors {
+  display: none;
+}
+.git-panel-FilePatchView .gutter.old .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView .gutter.new .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView .gutter.icons .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView
+  .gutter[gutter-name="git-panel-comment-icon"]
+  .git-panel-editorCommentGutterIcon.git-panel-FilePatchView-line--selected {
+  color: var(--text-color-selected);
+  background: var(--background-color-selected);
+}
+.git-panel-FilePatchView
+  .gutter.old
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView
+  .gutter.new
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView
+  .gutter.icons
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView
+  .gutter[gutter-name="git-panel-comment-icon"]
+  .git-panel-editorCommentGutterIcon.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty {
+  z-index: -1;
+}
+.git-panel-FilePatchView atom-text-editor .selection .region {
+  background-color: transparent;
+}
+.git-panel-FilePatchView:focus-within
+  .gutter.old
+  .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView:focus-within
+  .gutter.new
+  .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView:focus-within
+  .gutter.icons
+  .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView:focus-within
+  .gutter[gutter-name="git-panel-comment-icon"]
+  .git-panel-editorCommentGutterIcon.git-panel-FilePatchView-line--selected {
+  color: var(--button-text-color-selected);
+  background: var(--button-background-color-selected);
+}
+.git-panel-FilePatchView:focus-within
+  .gutter.old
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView:focus-within
+  .gutter.new
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView:focus-within
+  .gutter.icons
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView:focus-within
+  .gutter[gutter-name="git-panel-comment-icon"]
+  .git-panel-editorCommentGutterIcon.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty {
+  z-index: -1;
+}
+.git-panel-FilePatchView:focus-within atom-text-editor .selection .region {
+  background-color: color-mix(
+    in srgb,
+    var(--button-background-color-selected) 25%,
+    var(--syntax-background-color)
+  );
+}
+.git-panel-FilePatchView.git-panel-FilePatchView--hunkMode:focus-within
+  atom-text-editor
+  .selection
+  .region {
+  background-color: color-mix(
+    in srgb,
+    var(--button-background-color-selected) 8%,
+    var(--syntax-background-color)
+  );
+}
+.gitub-FilePatchHeaderView-basename {
+  font-weight: bold;
+}

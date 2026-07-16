@@ -105,6 +105,18 @@ Commands available in `.git-panel-FilePatchView` (diff view):
 - `git-panel:select-next-hunk`: select next hunk (in hunk mode),
 - `git-panel:select-previous-hunk`: select previous hunk (in hunk mode).
 
+## Customization
+
+Override the package custom properties in your `styles.css` to adjust its accent and diff colors:
+
+```css
+.git-panel-Git {
+  --git-panel-color-blue: var(--text-color-info);
+  --git-panel-diff-added: color-mix(in srgb, var(--syntax-color-added) 22%, transparent);
+  --git-panel-diff-deleted: color-mix(in srgb, var(--syntax-color-removed) 22%, transparent);
+}
+```
+
 ## Services
 
 - **status-bar** (`^1.0.0`): consumed to display branch and synchronization controls in the status bar.

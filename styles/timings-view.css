@@ -1,0 +1,89 @@
+.git-panel-GitTimingsView {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+.git-panel-GitTimingsView-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--component-padding);
+  border-bottom: 1px solid var(--base-border-color);
+}
+.git-panel-GitTimingsView .waterfall-widget {
+  border-radius: var(--component-border-radius);
+  border: 1px solid var(--pane-item-border-color);
+  background-color: var(--pane-item-background-color);
+  margin: 10px;
+}
+.git-panel-GitTimingsView .waterfall-header {
+  padding: 5px 5px 0 5px;
+  color: var(--text-color);
+  font-size: var(--font-size);
+  display: flex;
+  border-bottom: 1px solid var(--pane-item-border-color);
+}
+.git-panel-GitTimingsView .waterfall-header .collapse-toggle {
+  cursor: pointer;
+  margin-right: 2px;
+}
+.git-panel-GitTimingsView .waterfall-header-text {
+  flex: 1;
+}
+.git-panel-GitTimingsView .waterfall-header-controls {
+  flex-basis: 250px;
+  display: flex;
+  align-items: center;
+}
+.git-panel-GitTimingsView .waterfall-export-button {
+  margin: 0 10px 3px 0;
+}
+.git-panel-GitTimingsView .waterfall-scroller {
+  overflow: auto;
+}
+.git-panel-GitTimingsView .waterfall-container {
+  position: relative;
+  display: inline-block;
+  min-width: 100%;
+}
+.git-panel-GitTimingsView .waterfall-time-marker {
+  position: absolute;
+  height: 100%;
+  width: 1px;
+  border-left: 1px solid var(--pane-item-border-color);
+}
+.git-panel-GitTimingsView .waterfall-timeline {
+  position: relative;
+  margin: 5px 0;
+}
+.git-panel-GitTimingsView .waterfall-timeline-label {
+  position: absolute;
+  padding-left: 5px;
+  color: var(--text-color);
+}
+.git-panel-GitTimingsView .waterfall-row {
+  position: relative;
+  min-height: 15px;
+  padding: 2px 0;
+}
+.git-panel-GitTimingsView .waterfall-row:nth-child(2n + 1) {
+  background-color: var(--app-background-color);
+}
+.git-panel-GitTimingsView .waterfall-row:hover {
+  background-color: var(--pane-item-border-color);
+}
+.git-panel-GitTimingsView .waterfall-row-label {
+  position: relative;
+  margin: 0 5px;
+  white-space: nowrap;
+}
+.git-panel-GitTimingsView .waterfall-marker {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+}
+.git-panel-GitTimingsView .waterfall-marker-section {
+  display: inline-block;
+  position: relative;
+  height: 100%;
+  vertical-align: top;
+}

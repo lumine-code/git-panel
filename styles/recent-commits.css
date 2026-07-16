@@ -1,0 +1,102 @@
+.git-panel-RecentCommits {
+  max-height: calc(3 * 16px + var(--component-padding) * 3 + var(--component-padding) + 1px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-top: 1px solid var(--base-border-color);
+}
+.git-panel-RecentCommits-list {
+  margin: 0;
+  padding: calc(var(--component-padding) / 2) 0;
+  list-style: none;
+}
+.git-panel-RecentCommits-message {
+  padding: calc(var(--component-padding) / 2) var(--component-padding);
+  text-align: center;
+  color: var(--text-color-subtle);
+}
+.git-panel-RecentCommit {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--component-padding);
+  line-height: calc(16px + var(--component-padding));
+}
+.git-panel-RecentCommit-authors {
+  position: absolute;
+  display: flex;
+}
+.git-panel-RecentCommit-avatar {
+  position: relative;
+  margin-right: -13px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--component-border-radius);
+  color: transparent;
+  background-color: color-mix(in srgb, var(--text-color) 15%, var(--base-background-color));
+  box-shadow: 1px 0 var(--base-background-color);
+  overflow: hidden;
+  transition: margin 0.12s cubic-bezier(0.5, 0.1, 0, 1);
+}
+.git-panel-RecentCommit-avatar:nth-child(1) {
+  z-index: 3;
+}
+.git-panel-RecentCommit-avatar:nth-child(2) {
+  z-index: 2;
+  opacity: 0.7;
+}
+.git-panel-RecentCommit-avatar:nth-child(3) {
+  z-index: 1;
+  opacity: 0.4;
+}
+.git-panel-RecentCommit-avatar:nth-child(n + 4) {
+  display: none;
+}
+.git-panel-RecentCommit-avatar:only-child,
+.git-panel-RecentCommit-avatar:last-child {
+  box-shadow: none;
+}
+.git-panel-RecentCommit-authors:hover .git-panel-RecentCommit-avatar {
+  display: inline-block;
+  margin-right: 1px;
+  opacity: 1;
+}
+.git-panel-RecentCommit-message {
+  flex: 1;
+  margin: 0 0.5em;
+  margin-left: calc(16px + var(--component-padding));
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.git-panel-RecentCommit-undoButton.btn {
+  padding: 0 calc(var(--component-padding) / 1.5);
+  margin-right: calc(var(--component-padding) / 2);
+  height: 20px;
+  line-height: 1;
+  font-size: 0.9em;
+}
+.git-panel-RecentCommit-time {
+  color: var(--text-color-subtle);
+}
+.git-panel-RecentCommit:hover {
+  color: var(--text-color-highlight);
+  background: var(--background-color-highlight);
+}
+.git-panel-RecentCommit.is-selected {
+  color: var(--text-color-selected);
+  background: var(--background-color-selected);
+}
+.git-panel-RecentCommits:focus .git-panel-RecentCommit.is-selected {
+  color: var(--button-text-color-selected);
+  background: var(--button-background-color-selected);
+}
+@media (min-height: 900px) {
+  .git-panel-RecentCommits {
+    max-height: calc(5 * 16px + var(--component-padding) * 5 + var(--component-padding) + 1px);
+  }
+}
+@media (min-height: 1200px) {
+  .git-panel-RecentCommits {
+    max-height: calc(10 * 16px + var(--component-padding) * 10 + var(--component-padding) + 1px);
+  }
+}

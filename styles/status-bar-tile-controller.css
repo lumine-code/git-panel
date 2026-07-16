@@ -1,0 +1,84 @@
+.git-panel-StatusBarTileController {
+  display: inline-block;
+}
+.git-panel-StatusBarTileController-tooltipMenu.tooltip {
+  width: 400px;
+  padding-left: var(--component-padding);
+  padding-right: var(--component-padding);
+  box-sizing: border-box;
+}
+.git-panel-StatusBarTileController-tooltipMenu .tooltip-inner.tooltip-inner {
+  padding: calc(var(--component-padding) / 2);
+  background-color: var(--tool-panel-background-color);
+  border: 1px solid var(--base-border-color);
+  box-shadow: 0 4px 8px hsla(0, 0%, 0%, 0.1);
+  color: var(--text-color);
+}
+.git-panel-StatusBarTileController-tooltipMenu.top .tooltip-arrow.tooltip-arrow {
+  width: var(--component-padding);
+  height: var(--component-padding);
+  border-width: 0 0 1px 1px;
+  border-color: var(--base-border-color);
+  background-color: var(--tool-panel-background-color);
+  border-bottom-right-radius: 2px;
+  transform: rotate(-45deg);
+}
+.git-panel-StatusBarTileController > .inline-block:hover {
+  text-decoration: underline;
+  cursor: default;
+}
+@keyframes git-panel-StatusBarAnimation-fade {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.git-panel-StatusBarTileController .animate-rotate.git-panel-PushPull-icon::before {
+  animation: git-panel-StatusBarAnimation-rotate 1s linear infinite;
+}
+@keyframes git-panel-StatusBarAnimation-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.git-panel-StatusBarTileController .animate-up.git-panel-PushPull-icon::before {
+  animation:
+    git-panel-StatusBarAnimation-up 800ms ease-out infinite,
+    git-panel-StatusBarAnimation-fade 800ms ease-out infinite;
+}
+@keyframes git-panel-StatusBarAnimation-up {
+  0% {
+    transform: translateY(40%);
+  }
+  100% {
+    transform: translateY(-20%);
+  }
+}
+.git-panel-StatusBarTileController .animate-down.git-panel-PushPull-icon::before {
+  animation:
+    git-panel-StatusBarAnimation-down 800ms ease-out infinite,
+    git-panel-StatusBarAnimation-fade 800ms ease-out infinite;
+}
+@keyframes git-panel-StatusBarAnimation-down {
+  0% {
+    transform: translateY(-20%);
+  }
+  100% {
+    transform: translateY(40%);
+  }
+}
+.git-panel-StatusBarTileController .git-panel-ChangedFilesCount .icon-alert {
+  margin-left: calc(var(--component-padding) / 2);
+}
+.git-panel-StatusBarTileController .git-panel-branch-detached {
+  color: var(--text-color-subtle);
+  font-style: italic;
+}

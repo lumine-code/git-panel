@@ -1,0 +1,57 @@
+/* Usage: ---------------------------------------------
+
+<div className="git-panel-Loader">
+  <span className="git-panel-Spinner"></span>
+</div>
+
+--------------------------------------------------- */
+.git-panel-Loader {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: var(--git-panel-color-purple);
+}
+.tooltip .git-panel-Loader {
+  color: inherit;
+}
+.git-panel-Spinner {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  width: 2em;
+  height: 2em;
+}
+.git-panel-Spinner::before {
+  display: inline-block;
+  width: inherit;
+  height: inherit;
+  content: "\f008";
+  font-family: "Octicons Regular";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 2;
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+}
+.git-panel-Spinner::after {
+  content: "";
+  position: absolute;
+  width: inherit;
+  height: inherit;
+  top: 0;
+  left: 0;
+  border-right: 2px dotted;
+  border-bottom: 2px dotted;
+  border-left: 2px solid transparent;
+  border-radius: 1em;
+  animation:
+    git-panel-Spinner-animation 4s linear 12,
+    git-panel-Spinner-animation 4s 48s steps(12) 100;
+}
+@keyframes git-panel-Spinner-animation {
+  100% {
+    transform: rotate(360deg);
+  }
+}

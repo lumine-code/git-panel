@@ -1,0 +1,49 @@
+.git-panel-CacheView {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+.git-panel-CacheView header {
+  text-align: center;
+  border-bottom: 1px solid var(--base-border-color);
+  padding: var(--component-padding);
+}
+.git-panel-CacheView-Controls {
+  padding: 0 var(--component-padding);
+  text-align: right;
+}
+.git-panel-CacheView-Clear {
+  margin-left: 1em;
+}
+.git-panel-CacheView-Order select {
+  margin-left: 0.5em;
+}
+.git-panel-CacheView table {
+  margin: 10px 20px;
+  width: 90%;
+}
+.git-panel-CacheView thead {
+  color: var(--text-color-highlight);
+  background-color: var(--background-color-highlight);
+  font-weight: bold;
+}
+.git-panel-CacheView td {
+  padding: calc(var(--component-padding) / 2);
+  vertical-align: top;
+}
+.git-panel-CacheView-Key button {
+  width: 100%;
+  font-family: monospace;
+  text-align: left;
+}
+.git-panel-CacheView-Age {
+  min-width: 100px;
+}
+.git-panel-CacheView-Hits {
+  min-width: 50px;
+}
+.git-panel-CacheView-Content {
+  white-space: pre-wrap;
+  max-height: 100px;
+  overflow-y: scroll;
+}

@@ -1,0 +1,55 @@
+.git-panel-StubItem-git,
+.git-panel-Git-root {
+  flex: 1;
+  display: flex;
+}
+.git-panel-Git {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  color: var(--text-color);
+  -webkit-user-select: none;
+  cursor: default;
+}
+.git-panel-Git.is-loading {
+  color: var(--text-color-subtle);
+}
+.git-panel-Git.is-switching-repository {
+  pointer-events: none;
+}
+.git-panel-Git.no-repository,
+.git-panel-Git.too-many-changes,
+.git-panel-Git.unsupported-directory {
+  display: flex;
+  justify-content: center;
+  font-size: 1.25em;
+  padding: calc(var(--component-padding) * 3);
+  text-align: center;
+}
+.git-panel-Git.no-repository > *,
+.git-panel-Git.too-many-changes > *,
+.git-panel-Git.unsupported-directory > * {
+  margin: var(--component-padding) 0;
+}
+.git-panel-Git.no-repository h1,
+.git-panel-Git.too-many-changes h1,
+.git-panel-Git.unsupported-directory h1 {
+  margin-bottom: calc(var(--component-padding) * 3);
+}
+.git-panel-Git.no-repository button,
+.git-panel-Git.too-many-changes button,
+.git-panel-Git.unsupported-directory button {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.git-panel-Git-LargeIcon:before {
+  margin-right: 0;
+  margin-bottom: calc(var(--component-padding) * 5);
+  width: auto;
+  height: auto;
+  font-size: 8em;
+  color: color-mix(in srgb, var(--base-background-color) 66%, var(--text-color));
+}

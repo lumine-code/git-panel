@@ -1,0 +1,107 @@
+.git-panel-HunkHeaderView {
+  display: flex;
+  align-items: stretch;
+  font-size: var(--font-size);
+  border: 1px solid var(--base-border-color);
+  border-radius: var(--component-border-radius);
+  background-color: color-mix(in srgb, var(--syntax-text-color) 0%, var(--syntax-background-color));
+  cursor: default;
+}
+.git-panel-HunkHeaderView-title {
+  flex: 1;
+  line-height: 2.4;
+  padding: 0 var(--component-padding);
+  color: var(--text-color-subtle);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -webkit-font-smoothing: antialiased;
+}
+.git-panel-HunkHeaderView-title:hover {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView-title:active {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 2%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView-stageButton,
+.git-panel-HunkHeaderView-discardButton {
+  line-height: 1;
+  padding-left: var(--component-padding);
+  padding-right: var(--component-padding);
+  font-family: var(--font-family);
+  border: none;
+  border-left: inherit;
+  background-color: transparent;
+  cursor: default;
+}
+.git-panel-HunkHeaderView-stageButton:hover,
+.git-panel-HunkHeaderView-discardButton:hover {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView-stageButton:active,
+.git-panel-HunkHeaderView-discardButton:active {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 2%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView-stageButton .keystroke,
+.git-panel-HunkHeaderView-discardButton .keystroke {
+  margin-right: 1em;
+}
+.git-panel-HunkHeaderView-discardButton:before {
+  text-align: left;
+  width: auto;
+  vertical-align: 2px;
+}
+.git-panel-HunkHeaderView-title:hover,
+.git-panel-HunkHeaderView-stageButton:hover,
+.git-panel-HunkHeaderView-discardButton:hover {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView-title:active,
+.git-panel-HunkHeaderView-stageButton:active,
+.git-panel-HunkHeaderView-discardButton:active {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 2%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView--isSelected {
+  color: var(--text-color-selected);
+  background-color: var(--background-color-selected);
+  border-color: transparent;
+}
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-title {
+  color: inherit;
+}
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-title:hover,
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-stageButton:hover,
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-discardButton:hover {
+  background-color: var(--background-color-highlight);
+}
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-title:active,
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-stageButton:active,
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-discardButton:active {
+  background-color: var(--background-color-selected);
+}
+.git-panel-FilePatchView:focus-within .git-panel-HunkHeaderView--isSelected {
+  color: var(--button-text-color-selected);
+  background-color: var(--button-background-color-selected);
+}
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-title:hover,
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-stageButton:hover,
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-discardButton:hover {
+  background-color: color-mix(in srgb, var(--button-background-color-selected) 96%, white);
+}
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-title:active,
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-stageButton:active,
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-discardButton:active {
+  background-color: color-mix(in srgb, var(--button-background-color-selected) 96%, black);
+}
