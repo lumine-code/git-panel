@@ -132,6 +132,11 @@ describe("Lumine Git transport", () => {
           sheet.replaceSync(element.textContent);
         }
       }).not.toThrow();
+      for (const element of styleElements) {
+        // Negated custom properties need calc(-1 * var(...)); a bare -var() is
+        // invalid and the browser silently drops the whole declaration.
+        expect(element.textContent).not.toMatch(/-var\(/);
+      }
       expect(CSS.supports("color", "color-mix(in srgb, red 50%, blue)")).toBe(true);
       expect(CSS.supports("color", "hsl(from red calc(h + 80) s l)")).toBe(true);
     } finally {
