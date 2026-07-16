@@ -1,9 +1,14 @@
 {
   "name": "git-panel",
+  "author": "lumine-code",
   "main": "./lib/index",
   "version": "1.6.2",
-  "description": "A Git integration panel",
-  "repository": "https://github.com/asiloisad/pulsar-git-panel",
+  "description": "A forge-agnostic Git integration panel for Lumine.",
+  "repository": "https://github.com/lumine-code/git-panel",
+  "bugs": {
+    "url": "https://github.com/lumine-code/git-panel/issues"
+  },
+  "homepage": "https://github.com/lumine-code/git-panel#readme",
   "license": "MIT",
   "engines": {
     "atom": ">=1.132.0 <2.0.0"

@@ -1,25 +1,21 @@
 # git-panel
 
-A Git integration panel.
+A forge-agnostic Git integration panel for Lumine.
 
-Fork of [github](https://github.com/pulsar-edit/github), but forge-agnostic Git operations only.
+Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package, with hosting-provider features removed.
 
 ## Features
 
-- **Staging area**: Stage, unstage, and discard changes per-file or per-hunk.
-- **Commit**: Compose commit messages with co-author support and automatic message wrapping.
-- **Branching**: Create, switch, and manage branches from the status bar.
-- **Push / Pull / Fetch**: Sync with remotes directly from the status bar.
-- **Diff viewer**: Inline diff view with hunk and line-level selection, including word-level highlights within changed lines.
-- **Merge conflict resolution**: Graphical in-editor conflict resolution controls.
-- **Clone / Init**: Initialize new repositories or clone from a URL.
-- **Multi-repo support**: Scan project subdirectories for nested git repositories.
+- **Staging area**: stage, unstage, and discard changes per file, hunk, or selected line.
+- **Commits and branches**: compose commits and create, switch, or manage branches.
+- **Remote synchronization**: fetch, pull, push, and force-push with Git remotes.
+- **Diff viewer**: inspect changes with hunk, line, and word-level highlighting.
+- **Conflict resolution**: resolve merge conflicts with in-editor controls.
+- **Repository management**: initialize, clone, and work with multiple repositories.
 
 ## Installation
 
-To install, search for [git-panel](https://web.pulsar-edit.dev/packages/git-panel) in the Install pane of the Pulsar settings or run `ppm install git-panel`. Alternatively, run `ppm install asiloisad/pulsar-git-panel` to install directly from the GitHub repository.
-
-**Note**: This package automatically disables the built-in `github` package to avoid conflicts.
+`git-panel` is delivered as a bundled Lumine package and does not need to be installed separately.
 
 ## Commands
 
@@ -108,6 +104,10 @@ Commands available in `.git-panel-FilePatchView` (diff view):
 - `git-panel:surface`: navigate back to parent view,
 - `git-panel:select-next-hunk`: select next hunk (in hunk mode),
 - `git-panel:select-previous-hunk`: select previous hunk (in hunk mode).
+
+## Services
+
+- **status-bar** (`^1.0.0`): consumed to display branch and synchronization controls in the status bar.
 
 ## Contributing
 
