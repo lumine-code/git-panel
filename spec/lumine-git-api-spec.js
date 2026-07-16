@@ -6,8 +6,32 @@ import os from "os";
 import path from "path";
 
 import GitShellOutStrategy from "../lib/git-shell-out-strategy";
+import Repository from "../lib/models/repository";
 
 describe("Lumine Git transport", () => {
+  it("stages through the panel repository model and its composite strategy proxy", async () => {
+    // The model wraps strategies in the firstImplementer Proxy, so `this`
+    // inside delegated operations is the proxy rather than the strategy.
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-model-stage-")),
+    );
+    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const panelRepository = new Repository(workingDirectory);
+
+    try {
+      await panelRepository.getLoadPromise();
+      fs.writeFileSync(path.join(workingDirectory, "a.txt"), "panel\n");
+      await panelRepository.stageFiles(["a.txt"]);
+      const statuses = await panelRepository.getStatusesForChangedFiles();
+      expect(statuses.stagedFiles["a.txt"]).toBe("added");
+    } finally {
+      panelRepository.destroy();
+      atom.repositories.forget(coreRepository);
+    }
+  });
+
   it("executes with Lumine's embedded Git without a package-local Dugite", async () => {
     const strategy = new GitShellOutStrategy(process.cwd());
 
