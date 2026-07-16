@@ -16,6 +16,10 @@
   -webkit-user-select: none;
   cursor: default;
 }
+.git-panel-FilePatchListView > .git-panel-FilePatchListView-item:hover,
+.git-panel-FilePatchListView > .git-panel-MergeConflictListView-item:hover {
+  background-color: var(--background-color-highlight);
+}
 .git-panel-FilePatchListView-icon {
   text-align: right;
 }
