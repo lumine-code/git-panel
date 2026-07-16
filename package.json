@@ -2,7 +2,7 @@
   "name": "git-panel",
   "author": "lumine-code",
   "main": "./lib/index",
-  "version": "1.6.2",
+  "version": "2.0.0",
   "description": "A forge-agnostic Git integration panel for Lumine.",
   "repository": "https://github.com/lumine-code/git-panel",
   "bugs": {
@@ -11,7 +11,11 @@
   "homepage": "https://github.com/lumine-code/git-panel#readme",
   "license": "MIT",
   "engines": {
-    "atom": ">=1.132.0 <2.0.0"
+    "atom": "*",
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test spec/*.test.js"
   },
   "dependencies": {
     "bintrees": "1.0.2",
@@ -19,7 +23,6 @@
     "compare-sets": "1.0.1",
     "dayjs": "^1.11.19",
     "diff": "^9.0.0",
-    "dugite": "^2.5.2",
     "node-emoji": "2.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -87,14 +90,6 @@
         "ssh"
       ],
       "description": "Transport protocol to prefer when creating a new git remote"
-    },
-    "projectScanDepth": {
-      "order": 16,
-      "type": "integer",
-      "default": 0,
-      "minimum": 0,
-      "maximum": 3,
-      "description": "Scan subdirectories of project roots for nested git repositories (0 = only root, 1 = one level deep, etc.)"
     },
     "openGitTabOnStart": {
       "order": 17,

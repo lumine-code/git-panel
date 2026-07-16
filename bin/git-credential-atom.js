@@ -5,8 +5,42 @@ const fs = require("fs");
 const path = require("path");
 const https = require("https");
 const { execFile } = require("child_process");
-const { GitProcess } = require(process.env.ATOM_GITHUB_DUGITE_PATH);
 const { createStrategy, UNAUTHENTICATED } = require(process.env.ATOM_GITHUB_KEYTAR_STRATEGY_PATH);
+
+const gitExecutablePath = process.env.ATOM_GITHUB_GIT_PATH;
+if (!gitExecutablePath) {
+  throw new Error("Missing $ATOM_GITHUB_GIT_PATH");
+}
+
+function executeGit(args, workingDirectory, options = {}) {
+  return new Promise((resolve, reject) => {
+    const child = execFile(
+      gitExecutablePath,
+      args,
+      {
+        cwd: workingDirectory,
+        env: { ...process.env, ...options.env },
+        encoding: options.encoding || "utf8",
+        maxBuffer: options.maxBuffer || 10 * 1024 * 1024,
+      },
+      (error, stdout, stderr) => {
+        if (error && typeof error.code !== "number") {
+          reject(error);
+          return;
+        }
+        resolve({
+          exitCode: error ? error.code : 0,
+          signal: error ? error.signal : null,
+          stdout,
+          stderr,
+        });
+      },
+    );
+
+    child.stdin.on("error", () => {});
+    child.stdin.end(options.stdin || "", options.stdinEncoding || "utf8");
+  });
+}
 
 const diagnosticsEnabled = process.env.GIT_TRACE && process.env.GIT_TRACE.length !== 0;
 const workdirPath = process.env.ATOM_GITHUB_WORKDIR_PATH;
@@ -50,7 +84,7 @@ function getSockOptions() {
 }
 
 /*
- * Because the git within dugite was (possibly) built with a different $PREFIX than the user's native git,
+ * Because Lumine's embedded Git may be built with a different $PREFIX than the user's native Git,
  * credential helpers or other config settings from the system configuration may not be discovered. Attempt
  * to collect them by running the native git, if one is present.
  */
@@ -121,7 +155,7 @@ async function withAllHelpers(query, subAction) {
   log(`arguments = ${args.join(" ")}`);
   log(`stdin =\n${stdin.replace(/password=[^\n]+/, "password=*******")}`);
 
-  return GitProcess.exec(args, workdirPath, { env, stdin, stdinEncoding });
+  return executeGit(args, workdirPath, { env, stdin, stdinEncoding });
 }
 
 /*

@@ -49,7 +49,7 @@ function userHelper() {
 
     log(`attempting user askpass: ${userAskPass}`);
 
-    // Present on ${PATH} even in Windows from dugite!
+    // Present on ${PATH} even on Windows in Lumine's embedded Git environment.
     execFile(
       "sh",
       ["-c", `'${userAskPass}' '${prompt}'`],
