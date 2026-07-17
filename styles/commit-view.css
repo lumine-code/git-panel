@@ -1,6 +1,7 @@
 .git-panel-CommitView {
   padding: var(--component-padding);
   flex: 0 0 auto;
+  border-top: 1px solid var(--base-border-color);
 }
 .git-panel-CommitView-editor {
   position: relative;
@@ -76,15 +77,6 @@
 }
 .git-panel-CommitView-coAuthorToggleIcon.focused {
   fill: var(--button-background-color-selected);
-}
-.git-panel-CommitView-buttonWrapper {
-  align-items: center;
-  display: flex;
-  margin: 0 calc(-1 * var(--component-padding)) var(--component-padding)
-    calc(-1 * var(--component-padding));
-  padding: var(--component-padding);
-  padding-top: 0;
-  border-bottom: 1px solid var(--base-border-color);
 }
 .git-panel-CommitView-coAuthorEditor {
   position: relative;

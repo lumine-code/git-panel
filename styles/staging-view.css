@@ -55,6 +55,10 @@
 .git-panel-StagingView-headerButton--iconOnly:before {
   width: auto;
 }
+.git-panel-StagingView-headerButton.selected {
+  color: var(--text-color-selected);
+  background-color: var(--button-background-color-selected);
+}
 .git-panel-StagingView-title {
   flex: 1;
   margin-right: var(--component-padding);
