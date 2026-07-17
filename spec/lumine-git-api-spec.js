@@ -228,6 +228,43 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("follows opened files with the window's active repository", async () => {
+    const workdirA = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-active-a-")),
+    );
+    const workdirB = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-active-b-")),
+    );
+    const repoA = await atom.repositories.initialize(workdirA, { initialBranch: "main" });
+    const repoB = await atom.repositories.initialize(workdirB, { initialBranch: "main" });
+
+    try {
+      fs.writeFileSync(path.join(workdirA, "a.txt"), "a\n");
+      fs.writeFileSync(path.join(workdirB, "b.txt"), "b\n");
+
+      await atom.workspace.open(path.join(workdirA, "a.txt"));
+      expect(atom.repositories.getActiveRepository()).toBe(repoA);
+
+      await atom.workspace.open(path.join(workdirB, "b.txt"));
+      expect(atom.repositories.getActiveRepository()).toBe(repoB);
+
+      // A pinned manual selection survives item changes; clearing it follows
+      // the current item again.
+      atom.repositories.setActiveRepository(repoA, { pin: true });
+      await atom.workspace.open(path.join(workdirB, "b2.txt"));
+      expect(atom.repositories.getActiveRepository()).toBe(repoA);
+      expect(atom.repositories.isActiveRepositoryPinned()).toBe(true);
+
+      atom.repositories.setActiveRepository(null);
+      expect(atom.repositories.getActiveRepository()).toBe(repoB);
+      expect(atom.repositories.isActiveRepositoryPinned()).toBe(false);
+    } finally {
+      atom.repositories.setActiveRepository(null);
+      atom.repositories.forget(repoA);
+      atom.repositories.forget(repoB);
+    }
+  });
+
   it("loads only native CSS stylesheets", () => {
     const packagePath = path.resolve(__dirname, "..");
     const pack = atom.packages.loadPackage(packagePath);
