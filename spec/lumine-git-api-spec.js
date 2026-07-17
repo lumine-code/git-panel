@@ -7,6 +7,17 @@ import path from "path";
 
 import GitShellOutStrategy from "../lib/git-shell-out-strategy";
 import Repository from "../lib/models/repository";
+import WorkdirContext from "../lib/models/workdir-context";
+
+async function waitUntil(check, attempts = 500) {
+  for (let i = 0; i < attempts; i++) {
+    if (await check()) {
+      return;
+    }
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  throw new Error("Condition was not met");
+}
 
 describe("Lumine Git transport", () => {
   it("stages through the panel repository model and its composite strategy proxy", async () => {
@@ -135,6 +146,85 @@ describe("Lumine Git transport", () => {
     } finally {
       strategy.destroy();
       atom.repositories.forget(repository);
+    }
+  });
+
+  it("builds the status bundle from the core status snapshot", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-status-bundle-")),
+    );
+    const repository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const strategy = new GitShellOutStrategy(workingDirectory);
+
+    try {
+      await strategy.setConfig("user.name", "Git Panel Specs");
+      await strategy.setConfig("user.email", "specs@lumine.invalid");
+      fs.writeFileSync(path.join(workingDirectory, "a.txt"), "one\n");
+      fs.writeFileSync(path.join(workingDirectory, "b.txt"), "two\n");
+      await strategy.stageFiles(["a.txt", "b.txt"]);
+      await strategy.commit("Initial commit", {});
+
+      fs.writeFileSync(path.join(workingDirectory, "a.txt"), "one!\n");
+      fs.writeFileSync(path.join(workingDirectory, "c.txt"), "three\n");
+      await strategy.exec(["mv", "b.txt", "d.txt"]);
+
+      const bundle = await strategy.getStatusBundle();
+      expect(bundle.branch.head).toBe("main");
+      expect(bundle.branch.aheadBehind).toEqual({ ahead: null, behind: null });
+      expect(bundle.changedEntries.length).toBe(1);
+      expect(bundle.changedEntries[0].filePath).toBe("a.txt");
+      expect(bundle.changedEntries[0].unstagedStatus).toBe("M");
+      expect(bundle.changedEntries[0].stagedStatus).toBeFalsy();
+      expect(bundle.untrackedEntries).toEqual([{ filePath: "c.txt" }]);
+      expect(bundle.renamedEntries.length).toBe(1);
+      expect(bundle.renamedEntries[0].filePath).toBe("d.txt");
+      expect(bundle.renamedEntries[0].origFilePath).toBe("b.txt");
+      expect(bundle.renamedEntries[0].stagedStatus).toBe("R");
+      expect(bundle.unmergedEntries).toEqual([]);
+
+      // A bundle built right after a delegated write reuses the snapshot the registry
+      // already refreshed instead of spawning another status subprocess.
+      await strategy.stageFiles(["c.txt"]);
+      const generation = repository.getStatusSnapshot().generation;
+      const afterWrite = await strategy.getStatusBundle();
+      expect(afterWrite.changedEntries.some((entry) => entry.filePath === "c.txt")).toBe(true);
+      expect(repository.getStatusSnapshot().generation).toBe(generation);
+    } finally {
+      strategy.destroy();
+      atom.repositories.forget(repository);
+    }
+  });
+
+  it("refreshes panel status caches from core snapshot events", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-core-events-")),
+    );
+    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const context = new WorkdirContext(workingDirectory);
+
+    try {
+      const panelRepository = context.getRepository();
+      await panelRepository.getLoadPromise();
+      await waitUntil(() => context.coreRepositoryLease);
+
+      expect((await panelRepository.getStatusesForChangedFiles()).unstagedFiles).toEqual({});
+
+      // A change observed by core (no panel filesystem watcher is running here) invalidates
+      // the panel's cached status through the snapshot change event.
+      fs.writeFileSync(path.join(workingDirectory, "external.txt"), "external\n");
+      await coreRepository.refreshStatusSnapshot();
+
+      await waitUntil(async () => {
+        const { unstagedFiles } = await panelRepository.getStatusesForChangedFiles();
+        return unstagedFiles["external.txt"] === "added";
+      });
+    } finally {
+      await context.destroy();
+      atom.repositories.forget(coreRepository);
     }
   });
 
