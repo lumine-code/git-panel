@@ -43,6 +43,31 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("reports the unborn branch as the current branch before the first commit", async () => {
+    // A freshly initialized repository is on an unborn branch: HEAD names it
+    // but `git for-each-ref` lists nothing, so the branch set is empty. The
+    // current branch must still be reported (not a detached HEAD), matching the
+    // core status snapshot other consumers read.
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-unborn-")),
+    );
+    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const panelRepository = new Repository(workingDirectory);
+
+    try {
+      await panelRepository.getLoadPromise();
+      const branch = await panelRepository.getCurrentBranch();
+      expect(branch.isPresent()).toBe(true);
+      expect(branch.isDetached()).toBe(false);
+      expect(branch.getName()).toBe("main");
+    } finally {
+      panelRepository.destroy();
+      atom.repositories.forget(coreRepository);
+    }
+  });
+
   it("executes with Lumine's embedded Git without a package-local Dugite", async () => {
     const strategy = new GitShellOutStrategy(process.cwd());
 
