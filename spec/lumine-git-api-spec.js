@@ -284,6 +284,59 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("reads file diffs and per-file status through the core diff APIs", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-diff-")),
+    );
+    const repository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const strategy = new GitShellOutStrategy(workingDirectory);
+
+    try {
+      await strategy.setConfig("user.name", "Author One");
+      await strategy.setConfig("user.email", "one@example.com");
+      fs.writeFileSync(path.join(workingDirectory, "tracked.txt"), "one\ntwo\n");
+      await strategy.stageFiles(["tracked.txt"]);
+      await strategy.commit("seed", {});
+
+      fs.writeFileSync(path.join(workingDirectory, "tracked.txt"), "one\nTWO\n");
+      fs.writeFileSync(path.join(workingDirectory, "new.txt"), "brand new\n");
+      fs.writeFileSync(path.join(workingDirectory, "staged.txt"), "staged\n");
+      await strategy.stageFiles(["staged.txt"]);
+      await repository.refreshStatusSnapshot();
+
+      expect(await strategy.getUntrackedFiles()).toEqual(["new.txt"]);
+
+      const unstaged = await strategy.getDiffsForFilePath("tracked.txt", { staged: false });
+      expect(unstaged.length).toBe(1);
+      expect(unstaged[0].newPath).toBe("tracked.txt");
+      expect(unstaged[0].hunks[0].lines).toContain("-two");
+      expect(unstaged[0].hunks[0].lines).toContain("+TWO");
+
+      // An untracked file is synthesized as an added patch from disk.
+      const untracked = await strategy.getDiffsForFilePath("new.txt", { staged: false });
+      expect(untracked.length).toBe(1);
+      expect(untracked[0].status).toBe("added");
+      expect(untracked[0].newPath).toBe("new.txt");
+
+      // A staged addition diffs against the empty tree base when needed.
+      const staged = await strategy.getDiffsForFilePath("staged.txt", { staged: true });
+      expect(staged[0].status).toBe("added");
+
+      const stagedPatch = await strategy.getStagedChangesPatch();
+      expect(stagedPatch.some((diff) => diff.newPath === "staged.txt")).toBe(true);
+
+      const statusToHead = await strategy.diffFileStatus({ target: "HEAD" });
+      expect(statusToHead["tracked.txt"]).toBe("modified");
+      expect(statusToHead["staged.txt"]).toBe("added");
+      expect(statusToHead["new.txt"]).toBe("added");
+    } finally {
+      strategy.destroy();
+      atom.repositories.forget(repository);
+    }
+  });
+
   it("builds the status bundle from the core status snapshot", async () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-status-bundle-")),
