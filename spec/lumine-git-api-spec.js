@@ -221,6 +221,69 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("reads commit history, patches, and co-authors through the core log APIs", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-log-")),
+    );
+    const repository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const strategy = new GitShellOutStrategy(workingDirectory);
+
+    try {
+      await strategy.setConfig("user.name", "Author One");
+      await strategy.setConfig("user.email", "one@example.com");
+      fs.writeFileSync(path.join(workingDirectory, "a.txt"), "one\n");
+      await strategy.stageFiles(["a.txt"]);
+      await strategy.commit("First commit", {
+        coAuthors: [{ name: "Co Author", email: "co@example.com" }],
+      });
+
+      const head = await strategy.getHeadCommit();
+      expect(head.unbornRef).toBe(false);
+      expect(head.messageSubject).toBe("First commit");
+      expect(head.authorDate).toBeGreaterThan(0);
+      expect(head.coAuthors.length).toBe(1);
+
+      // includePatch diffs a root commit against the empty tree.
+      const [withPatch] = await strategy.getCommits({
+        max: 1,
+        ref: head.sha,
+        includePatch: true,
+      });
+      expect(withPatch.patch.length).toBe(1);
+      expect(withPatch.patch[0].status).toBe("added");
+      expect(withPatch.patch[0].newPath).toBe("a.txt");
+
+      // getAuthors aggregates authors and co-author trailers into a name map.
+      const authors = await strategy.getAuthors({ max: 10 });
+      expect(authors["one@example.com"]).toBe("Author One");
+      expect(authors["co@example.com"]).toBe("Co Author");
+    } finally {
+      strategy.destroy();
+      atom.repositories.forget(repository);
+    }
+  });
+
+  it("reports an unborn repository as an empty commit history", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-unborn-log-")),
+    );
+    const repository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const strategy = new GitShellOutStrategy(workingDirectory);
+
+    try {
+      expect(await strategy.getHeadCommit()).toEqual({ sha: "", message: "", unbornRef: true });
+      expect(await strategy.getCommits({ max: 5 })).toEqual([]);
+      expect(await strategy.getAuthors()).toEqual({});
+    } finally {
+      strategy.destroy();
+      atom.repositories.forget(repository);
+    }
+  });
+
   it("builds the status bundle from the core status snapshot", async () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-status-bundle-")),
