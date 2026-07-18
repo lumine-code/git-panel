@@ -174,6 +174,49 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("reads branches, remotes, and config through the core typed APIs", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-reads-")),
+    );
+    const repository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const strategy = new GitShellOutStrategy(workingDirectory);
+
+    try {
+      await strategy.setConfig("user.name", "Git Panel Specs");
+      await strategy.setConfig("user.email", "specs@lumine.invalid");
+      fs.writeFileSync(path.join(workingDirectory, "a.txt"), "one\n");
+      await strategy.stageFiles(["a.txt"]);
+      await strategy.commit("Initial commit", {});
+
+      await strategy.addRemote("origin", "https://example.com/repo.git");
+      await strategy.setConfig("branch.main.remote", "origin");
+      await strategy.setConfig("branch.main.merge", "refs/heads/main");
+      await repository.refreshRefsSnapshot();
+
+      const branches = await strategy.getBranches();
+      const main = branches.find((branch) => branch.name === "main");
+      expect(main.head).toBe(true);
+      expect(main.sha).toMatch(/^[0-9a-f]{40}$/);
+      expect(main.upstream).toEqual({
+        trackingRef: "refs/remotes/origin/main",
+        remoteName: "origin",
+        remoteRef: "refs/heads/main",
+      });
+
+      expect(await strategy.getRemotes()).toEqual([
+        { name: "origin", url: "https://example.com/repo.git" },
+      ]);
+
+      expect(await strategy.getConfig("user.name")).toBe("Git Panel Specs");
+      expect(await strategy.getConfig("does.not.exist")).toBeNull();
+    } finally {
+      strategy.destroy();
+      atom.repositories.forget(repository);
+    }
+  });
+
   it("builds the status bundle from the core status snapshot", async () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-status-bundle-")),
