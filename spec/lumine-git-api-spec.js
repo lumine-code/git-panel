@@ -138,12 +138,16 @@ describe("Lumine Git transport", () => {
       await strategy.stageFiles(["file.txt"]);
       await strategy.commit("Initial commit", {});
 
+      // Index reads resolve through the core getFileAtRevision(":path").
+      expect(await strategy.readFileFromIndex("file.txt")).toBe("base\n");
+
       await strategy.checkout("feature", { createNew: true });
       expect((await strategy.exec(["branch", "--show-current"])).trim()).toBe("feature");
 
       // Blob and conflict plumbing used by the discard history.
       const oursSha = await strategy.createBlob({ stdin: "ours\n" });
       const theirsSha = await strategy.createBlob({ stdin: "theirs\n" });
+      expect(await strategy.getBlobContents(oursSha)).toBe("ours\n");
       const expanded = path.join(workingDirectory, "expanded.txt");
       await strategy.expandBlobToFile(expanded, oursSha);
       expect(fs.readFileSync(expanded, "utf8")).toBe("ours\n");
