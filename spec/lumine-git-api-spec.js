@@ -215,6 +215,13 @@ describe("Lumine Git transport", () => {
 
       expect(await strategy.getConfig("user.name")).toBe("Git Panel Specs");
       expect(await strategy.getConfig("does.not.exist")).toBeNull();
+
+      // Niche reads now routed through typed core wrappers.
+      expect(await strategy.describeHead()).toMatch(/\S/);
+      expect(await strategy.getBranchesWithCommit(main.sha)).toContain("refs/heads/main");
+      expect(await strategy.getSubmodulePaths()).toEqual([]);
+      expect(await strategy.getFileMode("a.txt")).toBe("100644");
+      expect(await strategy.resolveDotGitDir()).toContain(".git");
     } finally {
       strategy.destroy();
       atom.repositories.forget(repository);
