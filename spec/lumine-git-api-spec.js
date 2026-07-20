@@ -32,6 +32,9 @@ describe("Lumine Git transport", () => {
       isContextLocked: () => true,
       scheduleActiveContextUpdate: () => "scheduled",
       openGitTab: () => "opened",
+      openCloneDialog: () => "clone-dialog",
+      openInitializeDialog: () => "init-dialog",
+      clone: (url) => `cloned ${url}`,
       onDidUpdate: () => "disposable",
     };
     const bridge = createGitHubBridge(pack);
@@ -48,6 +51,8 @@ describe("Lumine Git transport", () => {
     expect(bridge.getActiveRepository()).toBe("active-repo");
     expect(bridge.getActiveWorkdir()).toBe("/work");
     expect(bridge.openGitTab()).toBe("opened");
+    expect(bridge.openCloneDialog()).toBe("clone-dialog");
+    expect(bridge.clone("git://x")).toBe("cloned git://x");
   });
 
   it("stages through the panel repository model and its composite strategy proxy", async () => {
