@@ -344,6 +344,61 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("stages and unstages all changes through the panel repository model", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-stageall-")),
+    );
+    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const context = new WorkdirContext(workingDirectory);
+
+    const stagedNames = async () =>
+      Object.keys((await panelRepository.getStatusesForChangedFiles()).stagedFiles).sort();
+    const unstagedNames = async () =>
+      Object.keys((await panelRepository.getStatusesForChangedFiles()).unstagedFiles).sort();
+    let panelRepository;
+
+    try {
+      panelRepository = context.getRepository();
+      await panelRepository.getLoadPromise();
+      await waitUntil(() => context.coreRepositoryLease);
+
+      await coreRepository.getOperations().setConfig("user.name", "Git Panel Specs");
+      await coreRepository.getOperations().setConfig("user.email", "specs@lumine.invalid");
+      fs.writeFileSync(path.join(workingDirectory, "a.txt"), "1\n");
+      fs.writeFileSync(path.join(workingDirectory, "b.txt"), "1\n");
+      await panelRepository.stageFiles(["a.txt", "b.txt"]);
+      await panelRepository.commit("seed", {});
+
+      fs.writeFileSync(path.join(workingDirectory, "a.txt"), "2\n");
+      fs.writeFileSync(path.join(workingDirectory, "b.txt"), "2\n");
+      await coreRepository.refreshStatusSnapshot();
+      await waitUntil(async () => (await unstagedNames()).length === 2);
+
+      // Stage All uses the "." pathspec through the model.
+      await panelRepository.stageFiles(["."]);
+      await waitUntil(async () => (await stagedNames()).length === 2);
+      expect(await stagedNames()).toEqual(["a.txt", "b.txt"]);
+
+      // Unstage All uses the "." pathspec through the model. The model must fire
+      // onDidUpdate so ObserveModel re-fetches and the panel re-renders (the
+      // button disables and the files move back to the unstaged list).
+      let updateCount = 0;
+      const updateSub = panelRepository.onDidUpdate(() => {
+        updateCount++;
+      });
+      await panelRepository.unstageFiles(["."]);
+      await waitUntil(async () => (await stagedNames()).length === 0);
+      updateSub.dispose();
+      expect(await unstagedNames()).toEqual(["a.txt", "b.txt"]);
+      expect(updateCount).toBeGreaterThan(0);
+    } finally {
+      await context.destroy();
+      atom.repositories.forget(coreRepository);
+    }
+  });
+
   it("builds the status bundle from the core status snapshot", async () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-status-bundle-")),
