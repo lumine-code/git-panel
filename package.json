@@ -38,6 +38,13 @@
       }
     }
   },
+  "providedServices": {
+    "github-panel.git-bridge": {
+      "versions": {
+        "0.1.0": "provideGitHubBridge"
+      }
+    }
+  },
   "configSchema": {
     "viewChangesForCurrentFileDiffPaneSplitDirection": {
       "order": 2,

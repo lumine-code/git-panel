@@ -20,6 +20,36 @@ async function waitUntil(check, attempts = 500) {
 }
 
 describe("Lumine Git transport", () => {
+  it("provides a github bridge exposing the diff pipeline and active-context accessors", () => {
+    const bridgeModule = require("../lib/github-bridge");
+    const createGitHubBridge = bridgeModule.default || bridgeModule;
+    const fakePool = {};
+    const pack = {
+      getRepositoryForWorkdir: () => "repo",
+      getContextPool: () => fakePool,
+      getActiveRepository: () => "active-repo",
+      getActiveWorkdir: () => "/work",
+      isContextLocked: () => true,
+      scheduleActiveContextUpdate: () => "scheduled",
+      openGitTab: () => "opened",
+      onDidUpdate: () => "disposable",
+    };
+    const bridge = createGitHubBridge(pack);
+
+    // Diff → MultiFilePatch pipeline, parsed with git-panel's own parser.
+    expect(typeof bridge.filterDiff).toBe("function");
+    expect(typeof bridge.buildMultiFilePatch).toBe("function");
+    const parsed = bridge.parseDiff("diff --git a/a.txt b/a.txt\n@@ -1 +1 @@\n-a\n+b\n");
+    expect(parsed[0].newPath).toBe("a.txt");
+    expect(typeof bridge.MultiFilePatchController).toBe("function");
+
+    // Active-context accessors delegate to the package.
+    expect(bridge.getContextPool()).toBe(fakePool);
+    expect(bridge.getActiveRepository()).toBe("active-repo");
+    expect(bridge.getActiveWorkdir()).toBe("/work");
+    expect(bridge.openGitTab()).toBe("opened");
+  });
+
   it("stages through the panel repository model and its composite strategy proxy", async () => {
     // The model wraps strategies in the firstImplementer Proxy, so `this`
     // inside delegated operations is the proxy rather than the strategy.
