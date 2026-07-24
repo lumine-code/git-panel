@@ -1,0 +1,92 @@
+{
+  "atom-workspace": {
+    "alt-g": "git-panel:toggle-focus"
+  },
+  ".git-panel-Git": {
+    "tab": "core:focus-next",
+    "shift-tab": "core:focus-previous",
+    "escape": "tool-panel:unfocus",
+    "p": "git-panel:focus-project",
+    "u": "git-panel:focus-unstaged",
+    "s": "git-panel:focus-staged",
+    "c": "git-panel:focus-commit",
+    "r": "git-panel:focus-recent-commits",
+    "f4": "git-panel:stage-all-changes",
+    "f5": "git-panel:fetch",
+    "f6": "git-panel:pull",
+    "f7": "git-panel:push",
+    "f8": "git-panel:force-push"
+  },
+  ".git-panel-Git.is-no-repository": {
+    "down": "core:move-down",
+    "up": "core:move-up",
+    "home": "core:move-to-top",
+    "end": "core:move-to-bottom",
+    "enter": "core:confirm"
+  },
+  ".git-panel-Project select": {
+    "enter": "native!",
+    "escape": "native!"
+  },
+  ".git-panel-StagingView": {
+    "o": "git-panel:jump-to-file",
+    "left": "git-panel:focus-diff-view",
+    "shift-left": "git-panel:show-diff-view"
+  },
+  ".git-panel-StagingView.unstaged-changes-focused": {
+    "backspace": "git-panel:discard-changes-in-selected-files",
+    "cmdorctrl-enter": "git-panel:stage-all-changes"
+  },
+  ".git-panel-StagingView.staged-changes-focused": {
+    "cmdorctrl-enter": "git-panel:unstage-all-changes"
+  },
+  ".git-panel-CommitView-editor atom-text-editor:not([mini])": {
+    "tab": "core:focus-next",
+    "shift-tab": "core:focus-previous",
+    "enter": "git-panel:commit",
+    "shift-enter": "editor:newline",
+    "cmdorctrl-enter": "git-panel:amend-last-commit"
+  },
+  ".git-panel-CommitView-coAuthorEditor": {
+    "cmdorctrl-backspace": "git-panel:co-author-exclude"
+  },
+  ".git-panel-RecentCommits": {
+    "left": "git-panel:dive",
+    "backspace": "git-panel:undo-last-commit"
+  },
+  ".git-panel-FilePatchView atom-text-editor:not([mini])": {
+    "enter": "core:confirm",
+    "o": "git-panel:jump-to-file",
+    "/": "git-panel:toggle-patch-selection-mode",
+    "backspace": "git-panel:discard-selected-lines"
+  },
+  ".git-panel-FilePatchView--hunkMode atom-text-editor:not([mini])": {
+    "up": "git-panel:select-previous-hunk",
+    "down": "git-panel:select-next-hunk"
+  },
+  ".git-panel-CoAuthorForm input": {
+    "escape": "core:cancel",
+    "tab": "core:focus-next",
+    "shift-tab": "core:focus-previous",
+    "enter": "core:confirm"
+  },
+  ".git-panel-Prompt-input": {
+    "enter": "core:confirm"
+  },
+  ".git-panel-Dialog input": {
+    "enter": "core:confirm"
+  },
+  ".git-panel-TabbableWrapper": {
+    "down": "git-panel:selectbox-down",
+    "up": "git-panel:selectbox-up",
+    "enter": "git-panel:selectbox-enter",
+    "tab": "git-panel:selectbox-tab",
+    "backspace": "git-panel:selectbox-backspace",
+    "pageup": "git-panel:selectbox-pageup",
+    "pagedown": "git-panel:selectbox-pagedown",
+    "end": "git-panel:selectbox-end",
+    "home": "git-panel:selectbox-home",
+    "delete": "git-panel:selectbox-delete",
+    "escape": "git-panel:selectbox-escape"
+  }
+}
