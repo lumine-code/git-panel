@@ -15,11 +15,11 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 
 ## Installation
 
-`git-panel` is delivered as a bundled Lumine package and does not need to be installed separately.
+To install `git-panel` search for *git-panel* in the Install pane of the Lumine settings or run `lumine --install lumine-code/git-panel`.
 
 ## Commands
 
-Commands available in `.workspace`:
+Commands available in `atom-workspace`:
 
 - `git-panel:toggle-focus`: open and focus the Git tab, or return focus to editor if already focused,
 - `git-panel:toggle-git-tab`: toggle Git tab visibility,
@@ -82,13 +82,6 @@ Commands available in `.git-panel-CommitView`:
 - `git-panel:dive`: open commit preview,
 - `git-panel:co-author-exclude`: exclude co-author from list.
 
-Commands available in `.git-panel-CoAuthorForm`:
-
-- `core:cancel`: close the new co-author form,
-- `core:focus-next`: switch between name and e-mail,
-- `core:focus-previous`: switch between name and e-mail,
-- `core:confirm`: add the co-author.
-
 Commands available in `.git-panel-RecentCommits`:
 
 - `git-panel:dive`: open commit detail view,
@@ -110,7 +103,7 @@ Commands available in `.git-panel-FilePatchView` (diff view):
 Override the package custom properties in your `styles.css` to adjust its accent and diff colors:
 
 ```css
-.git-panel-Git {
+:root {
   --git-panel-color-blue: var(--text-color-info);
   --git-panel-diff-added: color-mix(in srgb, var(--syntax-color-added) 22%, transparent);
   --git-panel-diff-deleted: color-mix(in srgb, var(--syntax-color-removed) 22%, transparent);
@@ -119,6 +112,7 @@ Override the package custom properties in your `styles.css` to adjust its accent
 
 ## Services
 
+- **github-panel.git-bridge** (`0.1.0`): provided to give forge packages access to the repository model, its diffs, and its remotes.
 - **status-bar** (`^1.0.0`): consumed to display branch and synchronization controls in the status bar.
 
 ## Contributing
