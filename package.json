@@ -50,7 +50,6 @@
       "title": "Direction to open diff pane",
       "description": "Direction to split the active pane when showing diff associated with open file. If 'none', the results will be shown in the active pane.",
       "type": "string",
-      "order": 2,
       "enum": [
         "none",
         "right",
@@ -61,37 +60,31 @@
     "automaticCommitMessageWrapping": {
       "description": "Hard wrap commit message body in commit box to 72 characters. Does not apply to expanded commit editors, where message formatting is preserved.",
       "type": "boolean",
-      "order": 9,
       "default": true
     },
     "graphicalConflictResolution": {
       "description": "Resolve merge conflicts with in-editor controls",
       "type": "boolean",
-      "order": 10,
       "default": true
     },
     "showDiffIconGutter": {
       "description": "Show change regions within a file patch with icons in addition to color",
       "type": "boolean",
-      "order": 11,
       "default": false
     },
     "excludedUsers": {
       "description": "Comma-separated list of email addresses to exclude from the co-author selection list",
       "type": "string",
-      "order": 12,
       "default": ""
     },
     "reportCannotLocateWorkspaceError": {
       "description": "Log an error to the console if a git repository cannot be located for the opened file",
       "type": "boolean",
-      "order": 13,
       "default": false
     },
     "remoteFetchProtocol": {
       "description": "Transport protocol to prefer when creating a new git remote",
       "type": "string",
-      "order": 15,
       "enum": [
         "https",
         "ssh"
@@ -101,26 +94,22 @@
     "openGitTabOnStart": {
       "description": "Automatically open the Git tab when the editor starts",
       "type": "boolean",
-      "order": 17,
       "default": false
     },
     "warnLargeRepo": {
       "title": "Warn if repository is too large",
       "description": "Show a warning notification when a repository has too many changed files to display completely.",
       "type": "boolean",
-      "order": 20,
       "default": true
     },
     "filesystemEventDiagnostics": {
       "description": "Trace observed filesystem events to the console",
       "type": "boolean",
-      "order": 21,
       "default": false
     },
     "performanceMask": {
       "description": "Performance event stream patterns to capture",
       "type": "array",
-      "order": 22,
       "items": {
         "type": "string"
       },
@@ -131,31 +120,26 @@
     "performanceToConsole": {
       "description": "Log performance data to the console",
       "type": "boolean",
-      "order": 23,
       "default": false
     },
     "performanceToDirectory": {
       "description": "Log performance data to JSON files in a directory",
       "type": "string",
-      "order": 24,
       "default": ""
     },
     "performanceToProfile": {
       "description": "Capture CPU profiles",
       "type": "boolean",
-      "order": 25,
       "default": false
     },
     "gitDiagnostics": {
       "description": "Write detailed diagnostic information about git operations to the console",
       "type": "boolean",
-      "order": 26,
       "default": false
     },
     "debug": {
       "description": "Log additional debug information to the console, including caught errors and diagnostics",
       "type": "boolean",
-      "order": 27,
       "default": false
     }
   },
