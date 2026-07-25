@@ -1,6 +1,6 @@
 # git-panel
 
-A forge-agnostic Git integration panel for Lumine.
+A forge-agnostic Git integration panel.
 
 Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package, with hosting-provider features removed.
 

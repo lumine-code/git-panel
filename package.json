@@ -3,7 +3,7 @@
   "author": "lumine-code",
   "main": "./lib/index",
   "version": "1.0.0",
-  "description": "A forge-agnostic Git integration panel for Lumine.",
+  "description": "A forge-agnostic Git integration panel.",
   "repository": "https://github.com/lumine-code/git-panel",
   "bugs": {
     "url": "https://github.com/lumine-code/git-panel/issues"
