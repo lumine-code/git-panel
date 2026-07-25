@@ -1,5 +1,4 @@
 /** @babel */
-/* global describe, it, expect */
 // Converted from clone-url.test.js (node:test/node:assert → Jasmine).
 import { getRepositoryName } from "../lib/clone-url";
 

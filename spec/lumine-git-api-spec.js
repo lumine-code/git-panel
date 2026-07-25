@@ -1,5 +1,4 @@
 /** @babel */
-/* global describe, expect, it */
 
 import fs from "fs";
 import os from "os";

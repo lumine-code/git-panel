@@ -1,5 +1,4 @@
 /** @babel */
-/* global describe, it, expect */
 // Ported from pulsar-edit/github test/async-queue.test.js (chai → Jasmine). The
 // upstream `assert.async.*` polling assertions become an inline `until` helper.
 import { autobind } from "../lib/helpers";

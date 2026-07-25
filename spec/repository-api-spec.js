@@ -1,5 +1,4 @@
 /** @babel */
-/* global describe, it, expect */
 // Converted from repository-api.test.js (node:test/node:assert → Jasmine).
 import {
   getRepositoryWorkingDirectory,

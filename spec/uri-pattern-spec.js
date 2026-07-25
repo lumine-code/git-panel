@@ -1,5 +1,4 @@
 /** @babel */
-/* global describe, it, expect */
 // The comprehensive URIPattern cases were converted from uri-pattern.test.js
 // (node:test/node:assert → Jasmine) and merged here; both exercise the pure
 // uri-pattern-core module.
