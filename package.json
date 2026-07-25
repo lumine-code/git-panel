@@ -47,116 +47,116 @@
   },
   "configSchema": {
     "viewChangesForCurrentFileDiffPaneSplitDirection": {
-      "order": 2,
+      "title": "Direction to open diff pane",
+      "description": "Direction to split the active pane when showing diff associated with open file. If 'none', the results will be shown in the active pane.",
       "type": "string",
-      "default": "none",
+      "order": 2,
       "enum": [
         "none",
         "right",
         "down"
       ],
-      "title": "Direction to open diff pane",
-      "description": "Direction to split the active pane when showing diff associated with open file. If 'none', the results will be shown in the active pane."
+      "default": "none"
     },
     "automaticCommitMessageWrapping": {
-      "order": 9,
+      "description": "Hard wrap commit message body in commit box to 72 characters. Does not apply to expanded commit editors, where message formatting is preserved.",
       "type": "boolean",
-      "default": true,
-      "description": "Hard wrap commit message body in commit box to 72 characters. Does not apply to expanded commit editors, where message formatting is preserved."
+      "order": 9,
+      "default": true
     },
     "graphicalConflictResolution": {
-      "order": 10,
+      "description": "Resolve merge conflicts with in-editor controls",
       "type": "boolean",
-      "default": true,
-      "description": "Resolve merge conflicts with in-editor controls"
+      "order": 10,
+      "default": true
     },
     "showDiffIconGutter": {
-      "order": 11,
+      "description": "Show change regions within a file patch with icons in addition to color",
       "type": "boolean",
-      "default": false,
-      "description": "Show change regions within a file patch with icons in addition to color"
+      "order": 11,
+      "default": false
     },
     "excludedUsers": {
-      "order": 12,
+      "description": "Comma-separated list of email addresses to exclude from the co-author selection list",
       "type": "string",
-      "default": "",
-      "description": "Comma-separated list of email addresses to exclude from the co-author selection list"
+      "order": 12,
+      "default": ""
     },
     "reportCannotLocateWorkspaceError": {
-      "order": 13,
+      "description": "Log an error to the console if a git repository cannot be located for the opened file",
       "type": "boolean",
-      "default": false,
-      "description": "Log an error to the console if a git repository cannot be located for the opened file"
+      "order": 13,
+      "default": false
     },
     "remoteFetchProtocol": {
-      "order": 15,
+      "description": "Transport protocol to prefer when creating a new git remote",
       "type": "string",
-      "default": "https",
+      "order": 15,
       "enum": [
         "https",
         "ssh"
       ],
-      "description": "Transport protocol to prefer when creating a new git remote"
+      "default": "https"
     },
     "openGitTabOnStart": {
-      "order": 17,
+      "description": "Automatically open the Git tab when the editor starts",
       "type": "boolean",
-      "default": false,
-      "description": "Automatically open the Git tab when the editor starts"
+      "order": 17,
+      "default": false
     },
     "warnLargeRepo": {
-      "order": 20,
-      "type": "boolean",
-      "default": true,
       "title": "Warn if repository is too large",
-      "description": "Show a warning notification when a repository has too many changed files to display completely."
+      "description": "Show a warning notification when a repository has too many changed files to display completely.",
+      "type": "boolean",
+      "order": 20,
+      "default": true
     },
     "filesystemEventDiagnostics": {
-      "order": 21,
+      "description": "Trace observed filesystem events to the console",
       "type": "boolean",
-      "default": false,
-      "description": "Trace observed filesystem events to the console"
+      "order": 21,
+      "default": false
     },
     "performanceMask": {
-      "order": 22,
+      "description": "Performance event stream patterns to capture",
       "type": "array",
-      "default": [
-        ".*"
-      ],
+      "order": 22,
       "items": {
         "type": "string"
       },
-      "description": "Performance event stream patterns to capture"
+      "default": [
+        ".*"
+      ]
     },
     "performanceToConsole": {
-      "order": 23,
+      "description": "Log performance data to the console",
       "type": "boolean",
-      "default": false,
-      "description": "Log performance data to the console"
+      "order": 23,
+      "default": false
     },
     "performanceToDirectory": {
-      "order": 24,
+      "description": "Log performance data to JSON files in a directory",
       "type": "string",
-      "default": "",
-      "description": "Log performance data to JSON files in a directory"
+      "order": 24,
+      "default": ""
     },
     "performanceToProfile": {
-      "order": 25,
+      "description": "Capture CPU profiles",
       "type": "boolean",
-      "default": false,
-      "description": "Capture CPU profiles"
+      "order": 25,
+      "default": false
     },
     "gitDiagnostics": {
-      "order": 26,
+      "description": "Write detailed diagnostic information about git operations to the console",
       "type": "boolean",
-      "default": false,
-      "description": "Write detailed diagnostic information about git operations to the console"
+      "order": 26,
+      "default": false
     },
     "debug": {
-      "order": 27,
+      "description": "Log additional debug information to the console, including caught errors and diagnostics",
       "type": "boolean",
-      "default": false,
-      "description": "Log additional debug information to the console, including caught errors and diagnostics"
+      "order": 27,
+      "default": false
     }
   },
   "deserializers": {
