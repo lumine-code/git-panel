@@ -24,6 +24,13 @@ Commands available in `atom-workspace`:
 - `git-panel:toggle-focus`: open and focus the Git tab, or return focus to editor if already focused,
 - `git-panel:toggle-git-tab`: toggle Git tab visibility,
 - `git-panel:commit`: commit staged changes,
+- `git-panel:amend-last-commit`: amend the last commit,
+- `git-panel:toggle-co-authors`: toggle the co-authors editor,
+- `git-panel:toggle-expanded-commit-message-editor`: toggle expanded editor,
+- `git-panel:stage-all-changes`: stage all unstaged changes,
+- `git-panel:unstage-all-changes`: unstage all staged changes,
+- `git-panel:discard-all-changes`: discard all unstaged changes,
+- `git-panel:undo-last-discard-in-git-tab`: undo last discard,
 - `git-panel:fetch`: fetch from remote,
 - `git-panel:pull`: pull from remote,
 - `git-panel:push`: push to remote,
@@ -44,7 +51,6 @@ Commands available in `atom-text-editor` (conflict resolution):
 - `git-panel:resolve-as-theirs`: resolve conflict as theirs,
 - `git-panel:resolve-as-base`: resolve conflict as base,
 - `git-panel:resolve-as-current`: resolve as current side,
-- `git-panel:revert-current`: revert conflict marker,
 - `git-panel:resolve-as-ours-then-theirs`: resolve as ours then theirs,
 - `git-panel:resolve-as-theirs-then-ours`: resolve as theirs then ours,
 - `git-panel:revert-conflict-modifications`: revert all conflict modifications,
@@ -67,27 +73,22 @@ Commands available in `.git-panel-StagingView`:
 - `git-panel:activate-next-list`: move focus to next file list,
 - `git-panel:activate-previous-list`: move focus to previous file list,
 - `git-panel:resolve-file-as-ours`: resolve selected file as ours,
-- `git-panel:resolve-file-as-theirs`: resolve selected file as theirs,
-- `git-panel:stage-all-changes`: stage all unstaged changes,
-- `git-panel:unstage-all-changes`: unstage all staged changes,
-- `git-panel:discard-all-changes`: discard all unstaged changes,
-- `git-panel:undo-last-discard-in-git-tab`: undo last discard.
+- `git-panel:resolve-file-as-theirs`: resolve selected file as theirs.
 
-Commands available in `.git-panel-CommitView`:
+Commands available in `.git-panel-CommitView-coAuthorEditor`:
 
-- `git-panel:commit`: commit staged changes,
-- `git-panel:amend-last-commit`: amend the last commit,
-- `git-panel:toggle-co-authors`: toggle the co-authors editor,
-- `git-panel:toggle-expanded-commit-message-editor`: toggle expanded editor,
-- `git-panel:dive`: open commit preview,
 - `git-panel:co-author-exclude`: exclude co-author from list.
 
 Commands available in `.git-panel-RecentCommits`:
 
 - `git-panel:dive`: open commit detail view,
-- `git-panel:undo-last-commit`: undo the last commit,
+- `git-panel:undo-last-commit`: undo the last commit.
+
+Commands available in `.git-panel-RecentCommit`:
+
 - `git-panel:copy-commit-sha`: copy commit SHA to clipboard,
-- `git-panel:copy-commit-subject`: copy commit subject to clipboard.
+- `git-panel:copy-commit-subject`: copy commit subject to clipboard,
+- `git-panel:checkout-to-commit`: check out the commit.
 
 Commands available in `.git-panel-FilePatchView` (diff view):
 
