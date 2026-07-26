@@ -50,9 +50,9 @@
     }
   },
   "providedServices": {
-    "github-panel.git-bridge": {
+    "git-panel": {
       "versions": {
-        "1.0.0": "provideGitHubBridge"
+        "1.0.0": "provideGitPanel"
       }
     }
   },
