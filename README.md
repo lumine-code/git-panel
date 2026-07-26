@@ -112,8 +112,8 @@ Override the package custom properties in your `styles.css` to adjust its accent
 
 ## Services
 
-- **git-panel** (`1.0.0`): provided to give forge packages access to the repository model, its diffs, and its remotes.
-- **status-bar** (`^1.0.0`): consumed to display branch and synchronization controls in the status bar.
+- **[git-panel](docs/git-panel.md)** (`1.0.0`): provided to give forge packages access to the repository model, its diffs, and its remotes.
+- **[status-bar](https://lumine-code.github.io/docs.html#services/status-bar)** (`^1.0.0`): consumed to display branch and synchronization controls in the status bar.
 
 ## Contributing
 
