@@ -143,11 +143,6 @@
       "type": "boolean",
       "default": false
     },
-    "gitDiagnostics": {
-      "description": "Write detailed diagnostic information about git operations to the console",
-      "type": "boolean",
-      "default": false
-    },
     "debug": {
       "description": "Log additional debug information to the console, including caught errors and diagnostics",
       "type": "boolean",
