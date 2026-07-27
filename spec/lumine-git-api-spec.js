@@ -114,6 +114,25 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("resolves no repository once the environment has dropped its registry", async () => {
+    // A window reload destroys the environment without deactivating packages
+    // first, so panel reads can still be in flight when `atom.repositories`
+    // goes away. They have to resolve to "no repository" rather than crash.
+    const strategy = new GitShellOutStrategy(process.cwd());
+    const registry = atom.repositories;
+
+    try {
+      atom.repositories = null;
+      expect(await strategy.getCoreRepository()).toBeNull();
+      expect(await strategy.getRepositoryOperations()).toBeNull();
+      expect(await strategy.getUntrackedFiles()).toEqual([]);
+      expect(await strategy.getRefsSnapshot()).toBeNull();
+    } finally {
+      atom.repositories = registry;
+      strategy.destroy();
+    }
+  });
+
   it("delegates write operations to atom.repositories and refreshes core state", async () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-operations-")),
