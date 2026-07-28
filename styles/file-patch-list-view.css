@@ -11,7 +11,6 @@
   display: flex;
   align-items: flex-start;
   padding: calc(var(--component-padding) / 2) var(--component-padding);
-  padding-left: calc(var(--component-padding) * 3.5);
   overflow: hidden;
   -webkit-user-select: none;
   cursor: default;
@@ -30,9 +29,15 @@
   flex: 1;
   word-break: break-word;
 }
+/* A merge conflict stacks two rows: the path, then its resolution state. The
+   second row carries no icon of its own, so it indents past the icon column to
+   hang under the path above it. */
 .git-panel-FilePatchListView-resolutionItem {
   padding-top: 0;
   padding-bottom: calc(var(--component-padding) / 2);
+  padding-left: calc(
+    var(--component-padding) + var(--component-icon-size) + var(--component-padding) / 1.2
+  );
 }
 .git-panel-MergeConflictPaths .git-panel-FilePatchListView-icon:last-child {
   margin-left: calc(var(--component-padding) / 2);
