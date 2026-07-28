@@ -197,10 +197,15 @@ describe("Lumine Git transport", () => {
       await strategy.checkout("feature", { createNew: true });
       expect((await strategy.exec(["branch", "--show-current"])).trim()).toBe("feature");
 
-      // Blob and conflict plumbing used by the discard history.
-      const oursSha = await strategy.createBlob({ stdin: "ours\n" });
-      const theirsSha = await strategy.createBlob({ stdin: "theirs\n" });
+      // Blob and conflict plumbing used by the discard history. The two blob
+      // creations run concurrently through the panel queue (createBlob is not
+      // a writeOperation) and must both land intact.
+      const [oursSha, theirsSha] = await Promise.all([
+        strategy.createBlob({ stdin: "ours\n" }),
+        strategy.createBlob({ stdin: "theirs\n" }),
+      ]);
       expect(await strategy.getBlobContents(oursSha)).toBe("ours\n");
+      expect(await strategy.getBlobContents(theirsSha)).toBe("theirs\n");
       const expanded = path.join(workingDirectory, "expanded.txt");
       await strategy.expandBlobToFile(expanded, oursSha);
       expect(fs.readFileSync(expanded, "utf8")).toBe("ours\n");
