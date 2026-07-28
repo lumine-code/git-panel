@@ -9,7 +9,7 @@ atom-dock.bottom .git-panel-Git > div {
 }
 atom-dock.bottom .git-panel-StagingView-group {
   max-height: none;
-  margin-top: 0;
+  margin-bottom: 0;
 }
 atom-dock.bottom .git-panel-StagedChanges {
   border-left: 1px solid var(--base-border-color);
