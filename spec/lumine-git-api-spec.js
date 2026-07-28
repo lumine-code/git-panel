@@ -111,6 +111,43 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("lists submodule paths once across repeated discards", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-submodule-cache-")),
+    );
+    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const panelRepository = new Repository(workingDirectory);
+
+    const originalGetSubmodulePaths = coreRepository.getSubmodulePaths.bind(coreRepository);
+    let submoduleListings = 0;
+    coreRepository.getSubmodulePaths = (...args) => {
+      submoduleListings++;
+      return originalGetSubmodulePaths(...args);
+    };
+
+    // Both files exist before the initial load: a bare Repository has no
+    // filesystem watcher, so only files present at load (or writes routed
+    // through the model) are visible to its cached status.
+    fs.writeFileSync(path.join(workingDirectory, "one.txt"), "one\n");
+    fs.writeFileSync(path.join(workingDirectory, "two.txt"), "two\n");
+
+    try {
+      await panelRepository.getLoadPromise();
+      await panelRepository.discardWorkDirChangesForPaths(["one.txt"]);
+      await panelRepository.discardWorkDirChangesForPaths(["two.txt"]);
+
+      // `git submodule status` runs once; the second discard reads the cache.
+      expect(submoduleListings).toBe(1);
+      expect(fs.existsSync(path.join(workingDirectory, "one.txt"))).toBe(false);
+      expect(fs.existsSync(path.join(workingDirectory, "two.txt"))).toBe(false);
+    } finally {
+      panelRepository.destroy();
+      atom.repositories.forget(coreRepository);
+    }
+  });
+
   it("reports the unborn branch as the current branch before the first commit", async () => {
     // A freshly initialized repository is on an unborn branch: HEAD names it
     // but `git for-each-ref` lists nothing, so the branch set is empty. The
