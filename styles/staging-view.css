@@ -6,7 +6,8 @@
 .git-panel-StagingView-group {
   /* Height follows content: a zone grows from 0 toward an equal share of the
      staging area but freezes at its own max-content, handing the surplus to the
-     other zone. An empty zone is left with just its header. min-height and
+     other zone. An empty zone is left with its header and "No changes".
+     min-height and
      overflow keep the group's automatic minimum size out of the way — it is the
      full content height, and would otherwise win over max-height. */
   flex: 1 1 0;
