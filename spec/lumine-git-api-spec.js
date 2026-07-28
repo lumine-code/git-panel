@@ -264,6 +264,40 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("shares one in-flight status refresh between concurrent bundle rebuilds", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-status-refresh-share-")),
+    );
+    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const strategy = new GitShellOutStrategy(workingDirectory);
+
+    try {
+      // Consume the initial generation so both concurrent reads below fall
+      // into the awaited-refresh branch.
+      await strategy.getStatusBundle();
+
+      const originalRefresh = coreRepository.refreshStatusSnapshot.bind(coreRepository);
+      let refreshes = 0;
+      coreRepository.refreshStatusSnapshot = (...args) => {
+        refreshes++;
+        return originalRefresh(...args);
+      };
+
+      const [bundleA, bundleB] = await Promise.all([
+        strategy.getStatusBundle(),
+        strategy.getStatusBundle(),
+      ]);
+
+      expect(refreshes).toBe(1);
+      expect(bundleA).toEqual(bundleB);
+    } finally {
+      strategy.destroy();
+      atom.repositories.forget(coreRepository);
+    }
+  });
+
   it("reports the unborn branch as the current branch before the first commit", async () => {
     // A freshly initialized repository is on an unborn branch: HEAD names it
     // but `git for-each-ref` lists nothing, so the branch set is empty. The
