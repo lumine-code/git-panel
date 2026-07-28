@@ -77,6 +77,40 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("undoes the last commit and restages its files", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-undo-commit-")),
+    );
+    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const panelRepository = new Repository(workingDirectory);
+
+    try {
+      await panelRepository.getLoadPromise();
+      await panelRepository.setConfig("user.name", "Lumine Specs");
+      await panelRepository.setConfig("user.email", "specs@lumine.invalid");
+
+      fs.writeFileSync(path.join(workingDirectory, "first.txt"), "first\n");
+      await panelRepository.stageFiles(["first.txt"]);
+      await panelRepository.commit("First commit");
+      fs.writeFileSync(path.join(workingDirectory, "second.txt"), "second\n");
+      await panelRepository.stageFiles(["second.txt"]);
+      await panelRepository.commit("Second commit");
+
+      await panelRepository.undoLastCommit();
+
+      // HEAD moved back one commit and the undone commit's files are staged.
+      const lastCommit = await panelRepository.getLastCommit();
+      expect(lastCommit.getMessageSubject()).toBe("First commit");
+      const statuses = await panelRepository.getStatusesForChangedFiles();
+      expect(statuses.stagedFiles["second.txt"]).toBe("added");
+    } finally {
+      panelRepository.destroy();
+      atom.repositories.forget(coreRepository);
+    }
+  });
+
   it("reports the unborn branch as the current branch before the first commit", async () => {
     // A freshly initialized repository is on an unborn branch: HEAD names it
     // but `git for-each-ref` lists nothing, so the branch set is empty. The
