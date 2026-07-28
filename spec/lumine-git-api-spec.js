@@ -186,6 +186,54 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("only resets the commit message when the template actually changed", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-commit-template-")),
+    );
+    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const panelRepository = new Repository(workingDirectory);
+    const configEvent = [
+      { path: path.join(workingDirectory, ".git", "config"), action: "modified" },
+    ];
+
+    try {
+      await panelRepository.getLoadPromise();
+
+      // A config write with no template configured — what every discard's
+      // history save produces — must not wipe a typed message.
+      panelRepository.setCommitMessage("WIP");
+      await panelRepository.updateCommitMessageAfterFileSystemChange(configEvent);
+      expect(panelRepository.getCommitMessage()).toBe("WIP");
+
+      // A template appearing while the box is clean is adopted.
+      const templatePath = path.join(workingDirectory, "template.txt");
+      fs.writeFileSync(templatePath, "TEMPLATE\n");
+      await panelRepository.setConfig("commit.template", templatePath);
+      panelRepository.setCommitMessage("");
+      await panelRepository.updateCommitMessageAfterFileSystemChange(configEvent);
+      expect(panelRepository.getCommitMessage()).toBe("TEMPLATE\n");
+
+      // The template disappearing while the box still equals it clears the box.
+      await panelRepository.unsetConfig("commit.template");
+      await panelRepository.updateCommitMessageAfterFileSystemChange(configEvent);
+      expect(panelRepository.getCommitMessage()).toBe("");
+
+      // The template disappearing under a user-modified box preserves it.
+      await panelRepository.setConfig("commit.template", templatePath);
+      await panelRepository.updateCommitMessageAfterFileSystemChange(configEvent);
+      expect(panelRepository.getCommitMessage()).toBe("TEMPLATE\n");
+      panelRepository.setCommitMessage("TEMPLATE\nplus my notes");
+      await panelRepository.unsetConfig("commit.template");
+      await panelRepository.updateCommitMessageAfterFileSystemChange(configEvent);
+      expect(panelRepository.getCommitMessage()).toBe("TEMPLATE\nplus my notes");
+    } finally {
+      panelRepository.destroy();
+      atom.repositories.forget(coreRepository);
+    }
+  });
+
   it("reports the unborn branch as the current branch before the first commit", async () => {
     // A freshly initialized repository is on an unborn branch: HEAD names it
     // but `git for-each-ref` lists nothing, so the branch set is empty. The
