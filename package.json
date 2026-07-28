@@ -24,6 +24,9 @@
     "atom": "*",
     "node": ">=20"
   },
+  "backgroundTips": [
+    "You can stage, commit, and push without leaving the editor using {{ 'git-panel:toggle-focus' | keystroke }}"
+  ],
   "scripts": {
     "test": "lumine --test spec",
     "lint": "eslint . --max-warnings 0",
