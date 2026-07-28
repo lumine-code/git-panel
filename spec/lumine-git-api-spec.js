@@ -148,6 +148,44 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("ignores .git internals that are not watched cache signals", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-reflog-events-")),
+    );
+    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const panelRepository = new Repository(workingDirectory);
+
+    try {
+      await panelRepository.getLoadPromise();
+      await panelRepository.getStatusBundle();
+      expect(panelRepository.getCache().storage.has("status-bundle")).toBe(true);
+
+      let updates = 0;
+      const subscription = panelRepository.onDidUpdate(() => updates++);
+
+      // A reflog append (every commit, reset, pull) is not a cache signal: it
+      // must neither invalidate the status bundle nor trigger a refetch round.
+      panelRepository.observeFilesystemChange([
+        { path: path.join(workingDirectory, ".git", "logs", "HEAD"), action: "modified" },
+      ]);
+      expect(updates).toBe(0);
+      expect(panelRepository.getCache().storage.has("status-bundle")).toBe(true);
+
+      // A real ref event still invalidates and repaints.
+      panelRepository.observeFilesystemChange([
+        { path: path.join(workingDirectory, ".git", "refs", "heads", "main"), action: "modified" },
+      ]);
+      expect(updates).toBe(1);
+
+      subscription.dispose();
+    } finally {
+      panelRepository.destroy();
+      atom.repositories.forget(coreRepository);
+    }
+  });
+
   it("reports the unborn branch as the current branch before the first commit", async () => {
     // A freshly initialized repository is on an unborn branch: HEAD names it
     // but `git for-each-ref` lists nothing, so the branch set is empty. The
