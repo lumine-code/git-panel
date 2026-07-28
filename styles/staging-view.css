@@ -16,6 +16,19 @@
   display: flex;
   flex-direction: column;
 }
+/* An empty zone below a zone with content sinks to the bottom of the staging
+   area. When nothing has content at all, the zones divide the area evenly
+   instead, leaving one header at the top and the other at the centre.
+   :where() holds these at low specificity so the bottom dock, which lays the
+   zones out in a row, can neutralise them. */
+.git-panel-StagingView-group:where(:has(.git-panel-StagingView-list > *))
+  ~ .git-panel-StagingView-group:where(:not(:has(.git-panel-StagingView-list > *))) {
+  margin-top: auto;
+}
+.git-panel-StagingView:where(:not(:has(.git-panel-StagingView-list > *)))
+  .git-panel-StagingView-group {
+  max-height: none;
+}
 .git-panel-StagingView-header {
   flex: 0 0 auto;
   display: flex;
