@@ -7,6 +7,7 @@ import path from "path";
 import GitShellOutStrategy from "../lib/git-shell-out-strategy";
 import Repository from "../lib/models/repository";
 import WorkdirContext from "../lib/models/workdir-context";
+import { Keys } from "../lib/models/repository-states/cache/keys";
 
 async function waitUntil(check, attempts = 500) {
   for (let i = 0; i < attempts; i++) {
@@ -228,6 +229,35 @@ describe("Lumine Git transport", () => {
       await panelRepository.unsetConfig("commit.template");
       await panelRepository.updateCommitMessageAfterFileSystemChange(configEvent);
       expect(panelRepository.getCommitMessage()).toBe("TEMPLATE\nplus my notes");
+    } finally {
+      panelRepository.destroy();
+      atom.repositories.forget(coreRepository);
+    }
+  });
+
+  it("drops cached status and repaints through the acceptInvalidation delegate", async () => {
+    // proceedWithLastDiscardUndo restores files with plain fs calls and then
+    // invalidates the restored paths through this delegate — pin the contract.
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-accept-invalidation-")),
+    );
+    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const panelRepository = new Repository(workingDirectory);
+
+    try {
+      await panelRepository.getLoadPromise();
+      await panelRepository.getStatusBundle();
+      expect(panelRepository.getCache().storage.has("status-bundle")).toBe(true);
+
+      let updates = 0;
+      const subscription = panelRepository.onDidUpdate(() => updates++);
+      panelRepository.acceptInvalidation(() => Keys.workdirOperationKeys(["a.txt"]));
+
+      expect(updates).toBe(1);
+      expect(panelRepository.getCache().storage.has("status-bundle")).toBe(false);
+      subscription.dispose();
     } finally {
       panelRepository.destroy();
       atom.repositories.forget(coreRepository);
