@@ -115,6 +115,7 @@ Override the package custom properties in your `styles.css` to adjust its accent
 
 - **[git-panel](docs/git-panel.md)** (`1.0.0`): provided to give forge packages access to the repository model, its diffs, and its remotes.
 - **status-bar** (`^1.0.0`): consumed to display branch and synchronization controls in the status bar.
+- **busy-signal** (`^1.0.0`): consumed to report staging, discard, and undo operations on the busy indicator.
 
 ## Contributing
 
