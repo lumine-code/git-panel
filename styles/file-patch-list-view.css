@@ -1,11 +1,3 @@
-.git-panel-FilePatchListView:empty:before {
-  content: "No changes";
-  display: block;
-  padding: var(--component-padding);
-  text-align: center;
-  color: var(--text-color-subtle);
-  font-style: italic;
-}
 .git-panel-FilePatchListView-item {
   position: relative;
   display: flex;

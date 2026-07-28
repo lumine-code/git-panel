@@ -4,11 +4,20 @@
   flex-direction: column;
 }
 .git-panel-StagingView-group {
-  flex: 1;
+  /* Height follows content: a zone grows from 0 toward an equal share of the
+     staging area but freezes at its own max-content, handing the surplus to the
+     other zone. An empty zone is left with just its header. min-height and
+     overflow keep the group's automatic minimum size out of the way — it is the
+     full content height, and would otherwise win over max-height. */
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: max-content;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 .git-panel-StagingView-header {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   padding: 0 0 0 var(--component-padding);
@@ -68,8 +77,9 @@
   white-space: nowrap;
 }
 .git-panel-StagingView-list {
-  flex: 1 1 0;
-  overflow-x: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
 }
 .git-panel-StagingView-group-truncatedMsg {
   padding: calc(var(--component-padding) / 2) var(--component-padding);
