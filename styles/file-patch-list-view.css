@@ -19,6 +19,19 @@
 .git-panel-FilePatchListView > .git-panel-MergeConflictListView-item:hover {
   background-color: var(--background-color-highlight);
 }
+.git-panel-FilePatchListView
+  > .git-panel-FilePatchListView-item.is-selected:has(
+    + .git-panel-FilePatchListView-item.is-selected
+  ) {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.git-panel-FilePatchListView
+  > .git-panel-FilePatchListView-item.is-selected
+  + .git-panel-FilePatchListView-item.is-selected {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
 .git-panel-FilePatchListView-icon {
   text-align: right;
 }
