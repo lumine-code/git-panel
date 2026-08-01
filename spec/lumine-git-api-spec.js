@@ -21,6 +21,32 @@ async function waitUntil(check, attempts = 500) {
 }
 
 describe("Lumine Git transport", () => {
+  it("reads effective Git config without a repository", async () => {
+    spyOn(atom.repositories, "add").and.returnValue(Promise.resolve(null));
+    const executeGit = spyOn(atom.repositories, "executeGit").and.callFake((args) => {
+      const configured = args[args.length - 1] === "user.name";
+      return Promise.resolve({
+        stdout: configured ? "Global Author\0" : "",
+        stderr: "",
+        exitCode: configured ? 0 : 1,
+      });
+    });
+    const strategy = new GitShellOutStrategy(path.parse(process.cwd()).root);
+
+    try {
+      expect(await strategy.getConfig("user.name")).toBe("Global Author");
+      expect(executeGit.calls.mostRecent().args[0].slice(-4)).toEqual([
+        "config",
+        "-z",
+        "--get",
+        "user.name",
+      ]);
+      expect(await strategy.getConfig("identity.not-configured")).toBeNull();
+    } finally {
+      strategy.destroy();
+    }
+  });
+
   it("provides a github bridge exposing the diff pipeline and active-context accessors", () => {
     const bridgeModule = require("../lib/github-bridge");
     const createGitHubBridge = bridgeModule.default || bridgeModule;

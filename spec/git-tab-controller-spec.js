@@ -34,6 +34,18 @@ describe("GitTabController identity editor state", () => {
     expect(nextState.editingIdentity).toBe(false);
   });
 
+  it("does not open automatically for provisional loading data", () => {
+    const nextState = GitTabController.getDerivedStateFromProps(
+      propsWith({ email: "", fetchInProgress: true }),
+      {
+        editingIdentity: false,
+        manuallyEditingIdentity: false,
+      },
+    );
+
+    expect(nextState.editingIdentity).toBe(false);
+  });
+
   it("preserves an identity editor that was opened manually", () => {
     const nextState = GitTabController.getDerivedStateFromProps(propsWith(), {
       editingIdentity: true,
