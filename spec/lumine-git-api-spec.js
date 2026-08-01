@@ -5,6 +5,7 @@ import os from "os";
 import path from "path";
 
 import GitShellOutStrategy from "../lib/git-shell-out-strategy";
+import ModelObserver from "../lib/models/model-observer";
 import Repository from "../lib/models/repository";
 import WorkdirContext from "../lib/models/workdir-context";
 import { Keys } from "../lib/models/repository-states/cache/keys";
@@ -673,6 +674,55 @@ describe("Lumine Git transport", () => {
       expect(await unstagedNames()).toEqual(["a.txt", "b.txt"]);
       expect(updateCount).toBeGreaterThan(0);
     } finally {
+      await context.destroy();
+      atom.repositories.forget(coreRepository);
+    }
+  });
+
+  it("reuses the post-stage status snapshot for the panel refresh", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-stage-refresh-")),
+    );
+    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const context = new WorkdirContext(workingDirectory);
+    let observer;
+    let originalRefresh;
+
+    try {
+      const panelRepository = context.getRepository();
+      await panelRepository.getLoadPromise();
+      await waitUntil(() => context.coreRepositoryLease);
+
+      fs.writeFileSync(path.join(workingDirectory, "a.txt"), "one\n");
+      await coreRepository.refreshStatusSnapshot();
+
+      observer = new ModelObserver({
+        fetchData: async (repository) => ({
+          unstaged: await repository.getUnstagedChanges(),
+          staged: await repository.getStagedChanges(),
+        }),
+      });
+      observer.setActiveModel(panelRepository);
+      await waitUntil(() => observer.getActiveModelData()?.unstaged.length === 1);
+
+      originalRefresh = coreRepository.refreshStatusSnapshot.bind(coreRepository);
+      let refreshCount = 0;
+      coreRepository.refreshStatusSnapshot = (...args) => {
+        refreshCount++;
+        return originalRefresh(...args);
+      };
+
+      await panelRepository.stageFiles(["a.txt"]);
+      await waitUntil(() => observer.getActiveModelData()?.staged.length === 1);
+
+      expect(refreshCount).toBe(1);
+    } finally {
+      observer?.destroy();
+      if (originalRefresh) {
+        coreRepository.refreshStatusSnapshot = originalRefresh;
+      }
       await context.destroy();
       atom.repositories.forget(coreRepository);
     }

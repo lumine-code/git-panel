@@ -43,4 +43,26 @@ describe("WorkdirContextPool", () => {
     expect(pool.reconcileRepositoryAdded(workdir)).toBe(replacement);
     expect(pool.replace).toHaveBeenCalledWith(workdir, {}, false);
   });
+
+  it("materializes discovered repositories only when matching a remote on demand", async () => {
+    const otherWorkdir = "C:\\other-workdir";
+    const pool = new WorkdirContextPool({
+      getRepositoryDirectories: () => [workdir, otherWorkdir],
+    });
+    const matchingContext = {
+      getRepository: () => ({ hasGitHubRemote: () => Promise.resolve(true) }),
+    };
+    const otherContext = {
+      getRepository: () => ({ hasGitHubRemote: () => Promise.resolve(false) }),
+    };
+    spyOn(pool, "add").and.callFake((directory) => {
+      const context = directory === workdir ? matchingContext : otherContext;
+      pool.contexts.set(directory, context);
+      return context;
+    });
+
+    expect(pool.size()).toBe(0);
+    expect(await pool.getMatchingContext("github.com", "owner", "repo")).toBe(matchingContext);
+    expect(pool.add.calls.allArgs()).toEqual([[workdir], [otherWorkdir]]);
+  });
 });
