@@ -2,6 +2,3 @@
   background-color: inherit;
   border: none;
 }
-.git-panel-ChangedFilesCount.icon-git-commit::before {
-  margin-right: 0.2em;
-}
