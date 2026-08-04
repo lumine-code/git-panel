@@ -11,8 +11,16 @@
   background-color: var(--syntax-background-color);
   overflow: hidden;
 }
+/* The wrapper is the box, not the editor: it also holds the hardwrap and
+   co-author buttons, positioned against its edges. So it draws the input
+   chrome itself rather than marking the editor `[input]` — same look, none
+   of the overlay reshuffling. */
+.git-panel-CommitView-editor {
+  transition: border-color 0.15s ease;
+}
 .git-panel-CommitView-editor:focus-within {
-  border-color: var(--button-background-color-selected);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 1px var(--accent-color);
 }
 .git-panel-CommitView-editor .git-panel-CommitView-hardwrap {
   position: absolute;
@@ -38,12 +46,6 @@
   height: 100px;
   padding: calc(var(--component-padding) / 2);
   background-color: transparent;
-  border: none;
-  box-shadow: none;
-}
-.git-panel-CommitView-editor atom-text-editor.is-focused {
-  border: none;
-  box-shadow: none;
 }
 .git-panel-CommitView-editor atom-text-editor .cursor-line.cursor-line.cursor-line {
   background-color: transparent;
