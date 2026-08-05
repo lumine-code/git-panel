@@ -2,6 +2,15 @@
   "name": "git-panel",
   "author": "lumine-code",
   "main": "./lib/index",
+  "files": [
+    "docs",
+    "img",
+    "keymaps",
+    "lib",
+    "menus",
+    "spec",
+    "styles"
+  ],
   "version": "1.0.0",
   "description": "A forge-agnostic Git integration panel.",
   "keywords": [
