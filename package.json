@@ -21,7 +21,7 @@
   "homepage": "https://github.com/lumine-code/git-panel#readme",
   "license": "MIT",
   "engines": {
-    "atom": "*",
+    "lumine": "*",
     "node": ">=20"
   },
   "backgroundTips": [
