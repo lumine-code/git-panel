@@ -44,10 +44,11 @@ module.exports = [
       // methods in this port declare positional parameters they do not all use,
       // and renaming them would only obscure each signature.
       "no-unused-vars": ["error", { args: "none", varsIgnorePattern: "^_", caughtErrors: "none" }],
-      // One of the two packages that is not on etch: these sources carry a
-      // `/** @jsx React.createElement */` pragma, so a tag is a use of
-      // `React` and the rule's default has to be overridden.
-      "jsx/jsx-uses": ["error", { pragma: "React" }],
+      // These sources already carry a `/** @jsx React.createElement */`
+      // pragma; `require-pragma` keeps it that way, and `jsx-uses` reads the
+      // factory from it, so nothing here has to name React a second time.
+      "jsx/require-pragma": "error",
+      "jsx/jsx-uses": "error",
       // Only the resolution rules from eslint-plugin-n: they catch imports of
       // packages that were never declared as dependencies. The rest of the
       // preset assumes plain CommonJS and would just flag the ESM syntax.
