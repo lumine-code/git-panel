@@ -49,8 +49,8 @@
     "dayjs": "^1.11.21",
     "diff": "^9.0.0",
     "node-emoji": "2.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "react-select": "5.10.2",
     "yubikiri": "2.0.0"
   },
@@ -178,7 +178,7 @@
     "eslint": "^10.8.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-n": "^18.2.2",
-    "globals": "^17.7.0",
+    "globals": "^17.9.0",
     "prettier": "^3.9.6"
   }
 }
