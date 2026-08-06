@@ -31,7 +31,7 @@
   "license": "MIT",
   "engines": {
     "lumine": "^1.0.0",
-    "node": ">=20"
+    "node": ">=24"
   },
   "backgroundTips": [
     "You can stage, commit, and push without leaving the editor using {{ 'git-panel:toggle-focus' | keystroke }}"
