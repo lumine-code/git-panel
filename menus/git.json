@@ -18,6 +18,48 @@
             {
               "label": "Toggle Git Tab",
               "command": "git-panel:toggle-git-tab"
+            },
+            {
+              "label": "Focus Git Tab",
+              "command": "git-panel:toggle-focus"
+            },
+            {
+              "type": "separator"
+            },
+            {
+              "label": "Toggle Commit Preview",
+              "command": "git-panel:toggle-commit-preview"
+            },
+            {
+              "label": "Open Commit",
+              "command": "git-panel:open-commit"
+            },
+            {
+              "label": "View Unstaged Changes",
+              "command": "git-panel:view-unstaged-changes-for-current-file"
+            },
+            {
+              "label": "View Staged Changes",
+              "command": "git-panel:view-staged-changes-for-current-file"
+            },
+            {
+              "label": "Close All Diff Views",
+              "command": "git-panel:close-all-diff-views"
+            },
+            {
+              "label": "Close Empty Diff Views",
+              "command": "git-panel:close-empty-diff-views"
+            },
+            {
+              "type": "separator"
+            },
+            {
+              "label": "Initialize Repository",
+              "command": "git-panel:initialize"
+            },
+            {
+              "label": "Clone Repository",
+              "command": "git-panel:clone"
             }
           ]
         }
@@ -105,12 +147,6 @@
         "command": "git-panel:force-push"
       }
     ],
-    ".most-recent": [
-      {
-        "label": "Amend",
-        "command": "git-panel:amend-last-commit"
-      }
-    ],
     ".git-panel-RecentCommit": [
       {
         "label": "Checkout to Commit",
@@ -123,6 +159,12 @@
       {
         "label": "Copy Commit Subject",
         "command": "git-panel:copy-commit-subject"
+      }
+    ],
+    ".git-panel-RecentCommit.most-recent": [
+      {
+        "label": "Amend",
+        "command": "git-panel:amend-last-commit"
       }
     ]
   }
