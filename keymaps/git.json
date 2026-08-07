@@ -1,6 +1,10 @@
 {
+  // `alt-g` is the git family's chord prefix, shared with github-panel,
+  // open-repository, git-diff and git-command. It is never a complete binding
+  // on its own: an exact match alongside a chord prefix stalls every press for
+  // a second while the keymap waits for the rest of the chord.
   "atom-workspace": {
-    "alt-g": "git-panel:toggle-focus"
+    "alt-g g": "git-panel:toggle-focus"
   },
   ".git-panel-Git": {
     "tab": "core:focus-next",
@@ -68,9 +72,6 @@
     "escape": "core:cancel",
     "tab": "core:focus-next",
     "shift-tab": "core:focus-previous",
-    "enter": "core:confirm"
-  },
-  ".git-panel-Prompt-input": {
     "enter": "core:confirm"
   },
   ".git-panel-Dialog input": {
