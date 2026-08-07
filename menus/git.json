@@ -69,8 +69,14 @@
   "context-menu": {
     ".git-panel-FilePatchListView-item": [
       {
+        "type": "separator"
+      },
+      {
         "label": "Jump to File",
         "command": "git-panel:jump-to-file"
+      },
+      {
+        "type": "separator"
       }
     ],
     ".git-panel-FilePatchView--staged": [
@@ -86,6 +92,9 @@
         "label": "Unstage Selection",
         "command": "core:confirm",
         "beforeGroupContaining": ["core:undo"]
+      },
+      {
+        "type": "separator"
       }
     ],
     ".git-panel-FilePatchView--unstaged": [
@@ -105,6 +114,9 @@
       {
         "label": "Discard Selection",
         "command": "git-panel:discard-selected-lines"
+      },
+      {
+        "type": "separator"
       }
     ],
     ".git-panel-CommitView": [
@@ -114,9 +126,15 @@
       {
         "label": "Toggle Expanded Commit Message Editor",
         "command": "git-panel:toggle-expanded-commit-message-editor"
+      },
+      {
+        "type": "separator"
       }
     ],
     ".item-views > atom-text-editor": [
+      {
+        "type": "separator"
+      },
       {
         "label": "View Unstaged Changes",
         "command": "git-panel:view-unstaged-changes-for-current-file"
@@ -124,9 +142,15 @@
       {
         "label": "View Staged Changes",
         "command": "git-panel:view-staged-changes-for-current-file"
+      },
+      {
+        "type": "separator"
       }
     ],
     ".git-panel-PushPull": [
+      {
+        "type": "separator"
+      },
       {
         "label": "Fetch",
         "command": "git-panel:fetch"
@@ -145,9 +169,15 @@
       {
         "label": "Force Push",
         "command": "git-panel:force-push"
+      },
+      {
+        "type": "separator"
       }
     ],
     ".git-panel-RecentCommit": [
+      {
+        "type": "separator"
+      },
       {
         "label": "Checkout to Commit",
         "command": "git-panel:checkout-to-commit"
@@ -159,12 +189,21 @@
       {
         "label": "Copy Commit Subject",
         "command": "git-panel:copy-commit-subject"
+      },
+      {
+        "type": "separator"
       }
     ],
     ".git-panel-RecentCommit.most-recent": [
       {
+        "type": "separator"
+      },
+      {
         "label": "Amend",
         "command": "git-panel:amend-last-commit"
+      },
+      {
+        "type": "separator"
       }
     ]
   }
