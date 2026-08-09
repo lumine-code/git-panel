@@ -11,7 +11,7 @@ Gives a forge package access to the repository model, the diff pipeline, and the
 
 A deliberately wide internal seam, not a general-purpose Git API. It exists so `github-panel` can render a diff fetched from the GitHub API through **the same parser and the same view** the local Git panel uses, rather than reimplementing either and drifting.
 
-If you want to read repository state, use core's `atom.project.repositoryForPath` and the repository registry instead. Reach for this only when you are building a forge integration that must render diffs identically to the Git panel.
+If you want to read repository state, use core's `lumine.project.repositoryForPath` and the repository registry instead. Reach for this only when you are building a forge integration that must render diffs identically to the Git panel.
 
 ## Registration
 
@@ -64,7 +64,7 @@ type GitPanelBridge = {
 ## Minimal example
 
 ```js
-const { Disposable } = require("atom");
+const { Disposable } = require("lumine");
 
 module.exports = {
   consumeGitPanel(gitPanel) {

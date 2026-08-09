@@ -131,7 +131,7 @@
         "type": "separator"
       }
     ],
-    ".item-views > atom-text-editor": [
+    ".item-views > lumine-text-editor": [
       {
         "type": "separator"
       },

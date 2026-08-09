@@ -2,12 +2,12 @@
 // The comprehensive URIPattern cases were converted from uri-pattern.test.js
 // (node:test/node:assert → Jasmine) and merged here; both exercise the pure
 // uri-pattern-core module.
-import { URIPattern, nonURIMatch } from "../lib/atom/uri-pattern-core";
+import { URIPattern, nonURIMatch } from "../lib/lumine/uri-pattern-core";
 
 describe("URIPattern package adapter", () => {
   it("exposes the default matcher and named non-match export", () => {
-    const match = new URIPattern("atom-github://file/{path...}?workdir={workdir}").matches(
-      "atom-github://file/src/index.js?workdir=C%3A%5Cproject",
+    const match = new URIPattern("lumine-github://file/{path...}?workdir={workdir}").matches(
+      "lumine-github://file/src/index.js?workdir=C%3A%5Cproject",
     );
 
     expect(match.ok()).toBe(true);
@@ -21,14 +21,14 @@ describe("URIPattern package adapter", () => {
 
 describe("URIPattern", () => {
   it("matches exact URIs and optional trailing slashes", () => {
-    const pattern = new URIPattern("atom-github://exact/match");
+    const pattern = new URIPattern("lumine-github://exact/match");
 
-    expect(pattern.matches("atom-github://exact/match").ok()).toBe(true);
-    expect(pattern.matches("atom-github://exact/match/").ok()).toBe(true);
-    expect(pattern.matches("atom-github://exactbutnot").ok()).toBe(false);
-    expect(pattern.matches("atom-github://exact").ok()).toBe(false);
+    expect(pattern.matches("lumine-github://exact/match").ok()).toBe(true);
+    expect(pattern.matches("lumine-github://exact/match/").ok()).toBe(true);
+    expect(pattern.matches("lumine-github://exactbutnot").ok()).toBe(false);
+    expect(pattern.matches("lumine-github://exact").ok()).toBe(false);
     expect(pattern.matches("https://exact/match").ok()).toBe(false);
-    expect(pattern.matches("atom-github://exact/match?no=no").ok()).toBe(false);
+    expect(pattern.matches("lumine-github://exact/match?no=no").ok()).toBe(false);
     expect(pattern.matches(undefined).ok()).toBe(false);
     expect(pattern.matches(null).ok()).toBe(false);
   });
@@ -43,8 +43,8 @@ describe("URIPattern", () => {
     expect(hashed.matches("proto://host/foo#exact").ok()).toBe(true);
     expect(hashed.matches("proto://host/foo#nope").ok()).toBe(false);
     expect(
-      new URIPattern("atom-github://with-many-dashes")
-        .matches("atom-github://with-many-dashes")
+      new URIPattern("lumine-github://with-many-dashes")
+        .matches("lumine-github://with-many-dashes")
         .ok(),
     ).toBe(true);
   });
@@ -71,10 +71,10 @@ describe("URIPattern", () => {
   });
 
   it("captures path segments and splats", () => {
-    const segment = new URIPattern("atom-github://base/exact/{id}");
-    expect(segment.matches("atom-github://base/exact/0").getParams()).toEqual({ id: "0" });
-    expect(segment.matches("atom-github://base/exact/").ok()).toBe(false);
-    expect(segment.matches("atom-github://base/exact/0/more").ok()).toBe(false);
+    const segment = new URIPattern("lumine-github://base/exact/{id}");
+    expect(segment.matches("lumine-github://base/exact/0").getParams()).toEqual({ id: "0" });
+    expect(segment.matches("lumine-github://base/exact/").ok()).toBe(false);
+    expect(segment.matches("lumine-github://base/exact/0/more").ok()).toBe(false);
 
     const splat = new URIPattern("proto://host/root/{rest...}");
     expect(splat.matches("proto://host/root").getParams()).toEqual({ rest: [] });

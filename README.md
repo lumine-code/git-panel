@@ -19,7 +19,7 @@ To install `git-panel` search for _git-panel_ in the Install pane of the Lumine 
 
 ## Commands
 
-Commands available in `atom-workspace`:
+Commands available in `lumine-workspace`:
 
 - `git-panel:toggle-focus`: open and focus the Git tab, or return focus to editor if already focused,
 - `git-panel:toggle-git-tab`: toggle Git tab visibility,
@@ -45,7 +45,7 @@ Commands available in `atom-workspace`:
 - `git-panel:close-all-diff-views`: close all open diff views,
 - `git-panel:close-empty-diff-views`: close empty diff views.
 
-Commands available in `atom-text-editor` (conflict resolution):
+Commands available in `lumine-text-editor` (conflict resolution):
 
 - `git-panel:resolve-as-ours`: resolve conflict as ours,
 - `git-panel:resolve-as-theirs`: resolve conflict as theirs,

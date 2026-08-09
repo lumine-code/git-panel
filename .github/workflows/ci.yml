@@ -43,7 +43,7 @@ jobs:
 
   integration:
     # Run the whole Jasmine spec suite inside a real Lumine build. The specs use
-    # the editor runtime (atom.repositories, the Git transport, Babel), so this
+    # the editor runtime (lumine.repositories, the Git transport, Babel), so this
     # is the single place they run in CI now that `npm test` no longer does.
     name: Lumine integration specs
     runs-on: ubuntu-latest

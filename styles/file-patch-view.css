@@ -107,7 +107,7 @@
 .git-panel-FilePatchView-container .large-file-patch {
   flex-direction: column;
 }
-.git-panel-FilePatchView-container atom-text-editor {
+.git-panel-FilePatchView-container lumine-text-editor {
   width: 100%;
   height: 100%;
 }
@@ -259,7 +259,7 @@
 .git-panel-FilePatchView--inactive .highlights .highlight.selection {
   display: none;
 }
-.git-panel-FilePatchView atom-text-editor[readonly] .cursors {
+.git-panel-FilePatchView lumine-text-editor[readonly] .cursors {
   display: none;
 }
 .git-panel-FilePatchView .gutter.old .line-number.git-panel-FilePatchView-line--selected,
@@ -285,7 +285,7 @@
   .git-panel-editorCommentGutterIcon.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty {
   z-index: -1;
 }
-.git-panel-FilePatchView atom-text-editor .selection .region {
+.git-panel-FilePatchView lumine-text-editor .selection .region {
   background-color: transparent;
 }
 .git-panel-FilePatchView:focus-within
@@ -317,7 +317,7 @@
   .git-panel-editorCommentGutterIcon.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty {
   z-index: -1;
 }
-.git-panel-FilePatchView:focus-within atom-text-editor .selection .region {
+.git-panel-FilePatchView:focus-within lumine-text-editor .selection .region {
   background-color: color-mix(
     in srgb,
     var(--button-background-color-selected) 25%,
@@ -325,7 +325,7 @@
   );
 }
 .git-panel-FilePatchView.git-panel-FilePatchView--hunkMode:focus-within
-  atom-text-editor
+  lumine-text-editor
   .selection
   .region {
   background-color: color-mix(

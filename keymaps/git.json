@@ -3,7 +3,7 @@
   // open-repository, git-diff and git-command. It is never a complete binding
   // on its own: an exact match alongside a chord prefix stalls every press for
   // a second while the keymap waits for the rest of the chord.
-  "atom-workspace": {
+  "lumine-workspace": {
     "alt-g g": "git-panel:toggle-focus"
   },
   ".git-panel-Git": {
@@ -44,7 +44,7 @@
   ".git-panel-StagingView.staged-changes-focused": {
     "cmdorctrl-enter": "git-panel:unstage-all-changes"
   },
-  ".git-panel-CommitView-editor atom-text-editor:not([mini])": {
+  ".git-panel-CommitView-editor lumine-text-editor:not([mini])": {
     "tab": "core:focus-next",
     "shift-tab": "core:focus-previous",
     "enter": "git-panel:commit",
@@ -58,13 +58,13 @@
     "left": "git-panel:dive",
     "backspace": "git-panel:undo-last-commit"
   },
-  ".git-panel-FilePatchView atom-text-editor:not([mini])": {
+  ".git-panel-FilePatchView lumine-text-editor:not([mini])": {
     "enter": "core:confirm",
     "o": "git-panel:jump-to-file",
     "/": "git-panel:toggle-patch-selection-mode",
     "backspace": "git-panel:discard-selected-lines"
   },
-  ".git-panel-FilePatchView--hunkMode atom-text-editor:not([mini])": {
+  ".git-panel-FilePatchView--hunkMode lumine-text-editor:not([mini])": {
     "up": "git-panel:select-previous-hunk",
     "down": "git-panel:select-next-hunk"
   },

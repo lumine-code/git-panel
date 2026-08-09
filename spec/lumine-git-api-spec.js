@@ -22,8 +22,8 @@ async function waitUntil(check, attempts = 500) {
 
 describe("Lumine Git transport", () => {
   it("reads effective Git config without a repository", async () => {
-    spyOn(atom.repositories, "add").and.returnValue(Promise.resolve(null));
-    const executeGit = spyOn(atom.repositories, "executeGit").and.callFake((args) => {
+    spyOn(lumine.repositories, "add").and.returnValue(Promise.resolve(null));
+    const executeGit = spyOn(lumine.repositories, "executeGit").and.callFake((args) => {
       const configured = args[args.length - 1] === "user.name";
       return Promise.resolve({
         stdout: configured ? "Global Author\0" : "",
@@ -88,7 +88,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-model-stage-")),
     );
-    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const panelRepository = new Repository(workingDirectory);
@@ -101,7 +101,7 @@ describe("Lumine Git transport", () => {
       expect(statuses.stagedFiles["a.txt"]).toBe("added");
     } finally {
       panelRepository.destroy();
-      atom.repositories.forget(coreRepository);
+      lumine.repositories.forget(coreRepository);
     }
   });
 
@@ -109,7 +109,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-undo-commit-")),
     );
-    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const panelRepository = new Repository(workingDirectory);
@@ -135,7 +135,7 @@ describe("Lumine Git transport", () => {
       expect(statuses.stagedFiles["second.txt"]).toBe("added");
     } finally {
       panelRepository.destroy();
-      atom.repositories.forget(coreRepository);
+      lumine.repositories.forget(coreRepository);
     }
   });
 
@@ -143,7 +143,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-submodule-cache-")),
     );
-    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const panelRepository = new Repository(workingDirectory);
@@ -172,7 +172,7 @@ describe("Lumine Git transport", () => {
       expect(fs.existsSync(path.join(workingDirectory, "two.txt"))).toBe(false);
     } finally {
       panelRepository.destroy();
-      atom.repositories.forget(coreRepository);
+      lumine.repositories.forget(coreRepository);
     }
   });
 
@@ -180,7 +180,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-reflog-events-")),
     );
-    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const panelRepository = new Repository(workingDirectory);
@@ -210,7 +210,7 @@ describe("Lumine Git transport", () => {
       subscription.dispose();
     } finally {
       panelRepository.destroy();
-      atom.repositories.forget(coreRepository);
+      lumine.repositories.forget(coreRepository);
     }
   });
 
@@ -218,7 +218,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-commit-template-")),
     );
-    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const panelRepository = new Repository(workingDirectory);
@@ -258,7 +258,7 @@ describe("Lumine Git transport", () => {
       expect(panelRepository.getCommitMessage()).toBe("TEMPLATE\nplus my notes");
     } finally {
       panelRepository.destroy();
-      atom.repositories.forget(coreRepository);
+      lumine.repositories.forget(coreRepository);
     }
   });
 
@@ -268,7 +268,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-accept-invalidation-")),
     );
-    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const panelRepository = new Repository(workingDirectory);
@@ -287,7 +287,7 @@ describe("Lumine Git transport", () => {
       subscription.dispose();
     } finally {
       panelRepository.destroy();
-      atom.repositories.forget(coreRepository);
+      lumine.repositories.forget(coreRepository);
     }
   });
 
@@ -295,7 +295,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-status-refresh-share-")),
     );
-    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const strategy = new GitShellOutStrategy(workingDirectory);
@@ -321,7 +321,7 @@ describe("Lumine Git transport", () => {
       expect(bundleA).toEqual(bundleB);
     } finally {
       strategy.destroy();
-      atom.repositories.forget(coreRepository);
+      lumine.repositories.forget(coreRepository);
     }
   });
 
@@ -333,7 +333,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-unborn-")),
     );
-    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const panelRepository = new Repository(workingDirectory);
@@ -346,7 +346,7 @@ describe("Lumine Git transport", () => {
       expect(branch.getName()).toBe("main");
     } finally {
       panelRepository.destroy();
-      atom.repositories.forget(coreRepository);
+      lumine.repositories.forget(coreRepository);
     }
   });
 
@@ -356,7 +356,7 @@ describe("Lumine Git transport", () => {
     try {
       const output = await strategy.exec(["--version"]);
       expect(output).toMatch(/^git version /);
-      expect(atom.repositories.getGitExecutablePath()).toBeTruthy();
+      expect(lumine.repositories.getGitExecutablePath()).toBeTruthy();
     } finally {
       strategy.destroy();
     }
@@ -364,28 +364,28 @@ describe("Lumine Git transport", () => {
 
   it("resolves no repository once the environment has dropped its registry", async () => {
     // A window reload destroys the environment without deactivating packages
-    // first, so panel reads can still be in flight when `atom.repositories`
+    // first, so panel reads can still be in flight when `lumine.repositories`
     // goes away. They have to resolve to "no repository" rather than crash.
     const strategy = new GitShellOutStrategy(process.cwd());
-    const registry = atom.repositories;
+    const registry = lumine.repositories;
 
     try {
-      atom.repositories = null;
+      lumine.repositories = null;
       expect(await strategy.getCoreRepository()).toBeNull();
       expect(await strategy.getRepositoryOperations()).toBeNull();
       expect(await strategy.getUntrackedFiles()).toEqual([]);
       expect(await strategy.getRefsSnapshot()).toBeNull();
     } finally {
-      atom.repositories = registry;
+      lumine.repositories = registry;
       strategy.destroy();
     }
   });
 
-  it("delegates write operations to atom.repositories and refreshes core state", async () => {
+  it("delegates write operations to lumine.repositories and refreshes core state", async () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-operations-")),
     );
-    const repository = await atom.repositories.initialize(workingDirectory, {
+    const repository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const strategy = new GitShellOutStrategy(workingDirectory);
@@ -413,15 +413,15 @@ describe("Lumine Git transport", () => {
     } finally {
       subscription.dispose();
       strategy.destroy();
-      atom.repositories.forget(repository);
+      lumine.repositories.forget(repository);
     }
   });
 
-  it("drives staging, branches, and conflict plumbing through atom.repositories", async () => {
+  it("drives staging, branches, and conflict plumbing through lumine.repositories", async () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-plumbing-")),
     );
-    const repository = await atom.repositories.initialize(workingDirectory, {
+    const repository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const strategy = new GitShellOutStrategy(workingDirectory);
@@ -480,7 +480,7 @@ describe("Lumine Git transport", () => {
       expect(stageLines.every((line) => line.startsWith("100644"))).toBe(true);
     } finally {
       strategy.destroy();
-      atom.repositories.forget(repository);
+      lumine.repositories.forget(repository);
     }
   });
 
@@ -488,7 +488,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-reads-")),
     );
-    const repository = await atom.repositories.initialize(workingDirectory, {
+    const repository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const strategy = new GitShellOutStrategy(workingDirectory);
@@ -530,7 +530,7 @@ describe("Lumine Git transport", () => {
       expect(await strategy.resolveDotGitDir()).toContain(".git");
     } finally {
       strategy.destroy();
-      atom.repositories.forget(repository);
+      lumine.repositories.forget(repository);
     }
   });
 
@@ -538,7 +538,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-log-")),
     );
-    const repository = await atom.repositories.initialize(workingDirectory, {
+    const repository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const strategy = new GitShellOutStrategy(workingDirectory);
@@ -574,7 +574,7 @@ describe("Lumine Git transport", () => {
       expect(authors["co@example.com"]).toBe("Co Author");
     } finally {
       strategy.destroy();
-      atom.repositories.forget(repository);
+      lumine.repositories.forget(repository);
     }
   });
 
@@ -582,7 +582,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-unborn-log-")),
     );
-    const repository = await atom.repositories.initialize(workingDirectory, {
+    const repository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const strategy = new GitShellOutStrategy(workingDirectory);
@@ -593,7 +593,7 @@ describe("Lumine Git transport", () => {
       expect(await strategy.getAuthors()).toEqual({});
     } finally {
       strategy.destroy();
-      atom.repositories.forget(repository);
+      lumine.repositories.forget(repository);
     }
   });
 
@@ -601,7 +601,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-diff-")),
     );
-    const repository = await atom.repositories.initialize(workingDirectory, {
+    const repository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const strategy = new GitShellOutStrategy(workingDirectory);
@@ -646,7 +646,7 @@ describe("Lumine Git transport", () => {
       expect(statusToHead["new.txt"]).toBe("added");
     } finally {
       strategy.destroy();
-      atom.repositories.forget(repository);
+      lumine.repositories.forget(repository);
     }
   });
 
@@ -654,7 +654,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-stageall-")),
     );
-    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const context = new WorkdirContext(workingDirectory);
@@ -701,7 +701,7 @@ describe("Lumine Git transport", () => {
       expect(updateCount).toBeGreaterThan(0);
     } finally {
       await context.destroy();
-      atom.repositories.forget(coreRepository);
+      lumine.repositories.forget(coreRepository);
     }
   });
 
@@ -709,7 +709,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-stage-refresh-")),
     );
-    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const context = new WorkdirContext(workingDirectory);
@@ -750,7 +750,7 @@ describe("Lumine Git transport", () => {
         coreRepository.refreshStatusSnapshot = originalRefresh;
       }
       await context.destroy();
-      atom.repositories.forget(coreRepository);
+      lumine.repositories.forget(coreRepository);
     }
   });
 
@@ -758,7 +758,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-status-bundle-")),
     );
-    const repository = await atom.repositories.initialize(workingDirectory, {
+    const repository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const strategy = new GitShellOutStrategy(workingDirectory);
@@ -798,7 +798,7 @@ describe("Lumine Git transport", () => {
       expect(repository.getStatusSnapshot().generation).toBe(generation);
     } finally {
       strategy.destroy();
-      atom.repositories.forget(repository);
+      lumine.repositories.forget(repository);
     }
   });
 
@@ -806,7 +806,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-core-events-")),
     );
-    const coreRepository = await atom.repositories.initialize(workingDirectory, {
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
       initialBranch: "main",
     });
     const context = new WorkdirContext(workingDirectory);
@@ -829,7 +829,7 @@ describe("Lumine Git transport", () => {
       });
     } finally {
       await context.destroy();
-      atom.repositories.forget(coreRepository);
+      lumine.repositories.forget(coreRepository);
     }
   });
 
@@ -840,43 +840,43 @@ describe("Lumine Git transport", () => {
     const workdirB = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-active-b-")),
     );
-    const repoA = await atom.repositories.initialize(workdirA, { initialBranch: "main" });
-    const repoB = await atom.repositories.initialize(workdirB, { initialBranch: "main" });
+    const repoA = await lumine.repositories.initialize(workdirA, { initialBranch: "main" });
+    const repoB = await lumine.repositories.initialize(workdirB, { initialBranch: "main" });
 
     try {
       fs.writeFileSync(path.join(workdirA, "a.txt"), "a\n");
       fs.writeFileSync(path.join(workdirB, "b.txt"), "b\n");
 
-      await atom.workspace.open(path.join(workdirA, "a.txt"));
-      expect(atom.repositories.getActiveRepository()).toBe(repoA);
+      await lumine.workspace.open(path.join(workdirA, "a.txt"));
+      expect(lumine.repositories.getActiveRepository()).toBe(repoA);
 
-      await atom.workspace.open(path.join(workdirB, "b.txt"));
-      expect(atom.repositories.getActiveRepository()).toBe(repoB);
+      await lumine.workspace.open(path.join(workdirB, "b.txt"));
+      expect(lumine.repositories.getActiveRepository()).toBe(repoB);
 
       // A pinned manual selection survives item changes; clearing it follows
       // the current item again.
-      atom.repositories.setActiveRepository(repoA, { pin: true });
-      await atom.workspace.open(path.join(workdirB, "b2.txt"));
-      expect(atom.repositories.getActiveRepository()).toBe(repoA);
-      expect(atom.repositories.isActiveRepositoryPinned()).toBe(true);
+      lumine.repositories.setActiveRepository(repoA, { pin: true });
+      await lumine.workspace.open(path.join(workdirB, "b2.txt"));
+      expect(lumine.repositories.getActiveRepository()).toBe(repoA);
+      expect(lumine.repositories.isActiveRepositoryPinned()).toBe(true);
 
-      atom.repositories.setActiveRepository(null);
-      expect(atom.repositories.getActiveRepository()).toBe(repoB);
-      expect(atom.repositories.isActiveRepositoryPinned()).toBe(false);
+      lumine.repositories.setActiveRepository(null);
+      expect(lumine.repositories.getActiveRepository()).toBe(repoB);
+      expect(lumine.repositories.isActiveRepositoryPinned()).toBe(false);
     } finally {
-      atom.repositories.setActiveRepository(null);
-      atom.repositories.forget(repoA);
-      atom.repositories.forget(repoB);
+      lumine.repositories.setActiveRepository(null);
+      lumine.repositories.forget(repoA);
+      lumine.repositories.forget(repoB);
     }
   });
 
   it("loads only native CSS stylesheets", () => {
     const packagePath = path.resolve(__dirname, "..");
-    const pack = atom.packages.loadPackage(packagePath);
+    const pack = lumine.packages.loadPackage(packagePath);
 
     try {
       pack.activateStylesheets();
-      const styleElements = atom.styles
+      const styleElements = lumine.styles
         .getStyleElements()
         .filter((element) => element.sourcePath?.startsWith(path.join(packagePath, "styles")));
 
@@ -896,7 +896,7 @@ describe("Lumine Git transport", () => {
       expect(CSS.supports("color", "color-mix(in srgb, red 50%, blue)")).toBe(true);
       expect(CSS.supports("color", "hsl(from red calc(h + 80) s l)")).toBe(true);
     } finally {
-      atom.packages.unloadPackage(pack.name);
+      lumine.packages.unloadPackage(pack.name);
     }
   });
 });

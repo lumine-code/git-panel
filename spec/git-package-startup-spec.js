@@ -52,7 +52,7 @@ describe("GitPackage startup repository selection", () => {
   it("materializes contexts only for project roots and the active repository", async () => {
     const rootPath = "C:\\workspace";
     const activeWorkdir = "C:\\workspace\\active";
-    const activeAtomRepository = { getWorkingDirectory: () => activeWorkdir };
+    const activeLumineRepository = { getWorkingDirectory: () => activeWorkdir };
     const rootContext = { getRepository: () => ({ isPresent: () => false }) };
     const activeContext = { getRepository: () => ({ isPresent: () => true }) };
     const contexts = new Map([
@@ -74,10 +74,10 @@ describe("GitPackage startup repository selection", () => {
         ],
       },
       repositories: {
-        getForPath: (candidate) => (candidate === activeWorkdir ? activeAtomRepository : null),
+        getForPath: (candidate) => (candidate === activeWorkdir ? activeLumineRepository : null),
         resolveForPath: () => Promise.resolve(null),
         getActiveRepositoryContext: () => ({
-          repository: activeAtomRepository,
+          repository: activeLumineRepository,
           workingDirectory: activeWorkdir,
         }),
         getRepositories: jasmine.createSpy(),

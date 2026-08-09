@@ -28,7 +28,7 @@
 .git-panel-DialogLabel--horizontal input[type="password"] {
   width: 85%;
 }
-.git-panel-DialogLabel .git-panel-AtomTextEditor-container {
+.git-panel-DialogLabel .git-panel-LumineTextEditor-container {
   margin-top: calc(var(--component-padding) / 2);
 }
 .git-panel-DialogFooter {
@@ -95,10 +95,10 @@
   flex-direction: row;
   align-items: stretch;
 }
-.git-panel-Dialog atom-text-editor[mini].editor {
+.git-panel-Dialog lumine-text-editor[mini].editor {
   margin: 0;
 }
-.git-panel-Dialog atom-text-editor[mini].editor[readOnly] {
+.git-panel-Dialog lumine-text-editor[mini].editor[readOnly] {
   color: var(--text-color-subtle);
 }
 .git-panel-Dialog:not(:focus-within) {
@@ -157,7 +157,7 @@
   flex: 0;
   margin: 0 var(--component-padding);
 }
-.git-panel-RepositoryHome .git-panel-AtomTextEditor-container {
+.git-panel-RepositoryHome .git-panel-LumineTextEditor-container {
   flex: 1.5;
 }
 .git-panel-RemoteConfiguration-details summary {
@@ -198,7 +198,7 @@
   align-items: center;
   width: 100%;
 }
-.git-panel-RemoteConfiguration-sourceRemote label .git-panel-AtomTextEditor-container {
+.git-panel-RemoteConfiguration-sourceRemote label .git-panel-LumineTextEditor-container {
   flex: 1;
   margin-left: var(--component-padding);
 }

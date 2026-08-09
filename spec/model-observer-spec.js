@@ -1,5 +1,5 @@
 /** @babel */
-import { Emitter } from "atom";
+import { Emitter } from "lumine";
 
 import ModelObserver from "../lib/models/model-observer";
 

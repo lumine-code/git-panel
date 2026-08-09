@@ -42,12 +42,12 @@
 .git-panel-CommitView-editor.hidden {
   display: none;
 }
-.git-panel-CommitView-editor atom-text-editor {
+.git-panel-CommitView-editor lumine-text-editor {
   height: 100px;
   padding: calc(var(--component-padding) / 2);
   background-color: transparent;
 }
-.git-panel-CommitView-editor atom-text-editor .cursor-line.cursor-line.cursor-line {
+.git-panel-CommitView-editor lumine-text-editor .cursor-line.cursor-line.cursor-line {
   background-color: transparent;
 }
 .git-panel-CommitView-coAuthorToggle {
@@ -238,7 +238,7 @@
 .git-panel-CommitView-editor.is-expanded {
   background-color: transparent;
 }
-.git-panel-CommitView-editor.is-expanded atom-text-editor {
+.git-panel-CommitView-editor.is-expanded lumine-text-editor {
   display: none;
 }
 .git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton {
