@@ -268,8 +268,8 @@ describe("Lumine Git transport", () => {
   });
 
   it("drops cached status and repaints through the acceptInvalidation delegate", async () => {
-    // proceedWithLastDiscardUndo restores files with plain fs calls and then
-    // invalidates the restored paths through this delegate — pin the contract.
+    // proceedWithLastDiscardUndo restores files with plain fs calls and then marks the change
+    // and invalidates the restored paths through these delegates — pin both.
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-accept-invalidation-")),
     );
@@ -277,20 +277,37 @@ describe("Lumine Git transport", () => {
       initialBranch: "main",
     });
     const panelRepository = new Repository(workingDirectory);
+    let originalRefresh;
 
     try {
       await panelRepository.getLoadPromise();
       await panelRepository.getStatusBundle();
       expect(panelRepository.getCache().storage.has("status-bundle")).toBe(true);
 
+      originalRefresh = coreRepository.refreshStatusSnapshot.bind(coreRepository);
+      let refreshCount = 0;
+      coreRepository.refreshStatusSnapshot = (...args) => {
+        refreshCount++;
+        return originalRefresh(...args);
+      };
+
       let updates = 0;
       const subscription = panelRepository.onDidUpdate(() => updates++);
+      panelRepository.observeStatusChange();
       panelRepository.acceptInvalidation(() => Keys.workdirOperationKeys(["a.txt"]));
 
       expect(updates).toBe(1);
       expect(panelRepository.getCache().storage.has("status-bundle")).toBe(false);
       subscription.dispose();
+
+      // The restore reached disk outside lumine.repositories, so the rebuilt bundle has to come
+      // from a status of its own rather than from the snapshot that predates it.
+      await panelRepository.getStatusBundle();
+      expect(refreshCount).toBe(1);
     } finally {
+      if (originalRefresh) {
+        coreRepository.refreshStatusSnapshot = originalRefresh;
+      }
       panelRepository.destroy();
       lumine.repositories.forget(coreRepository);
     }
@@ -306,9 +323,10 @@ describe("Lumine Git transport", () => {
     const strategy = new GitShellOutStrategy(workingDirectory);
 
     try {
-      // Consume the initial generation so both concurrent reads below fall
-      // into the awaited-refresh branch.
+      // Build once so the snapshot is initialized, then observe a change so both concurrent
+      // reads below fall into the refresh branch rather than reusing that snapshot.
       await strategy.getStatusBundle();
+      strategy.observeStatusChange();
 
       const originalRefresh = coreRepository.refreshStatusSnapshot.bind(coreRepository);
       let refreshes = 0;
@@ -749,12 +767,97 @@ describe("Lumine Git transport", () => {
       await waitUntil(() => observer.getActiveModelData()?.staged.length === 1);
 
       expect(refreshCount).toBe(1);
+
+      // One stage invalidates the status bundle twice: once for the write, and once for the
+      // snapshot-change event core emits from the registry's post-operation refresh. Whether
+      // the second round lands before or after a read is a matter of timing, so drive it
+      // explicitly — the snapshot it reacts to is the one the first round already built from,
+      // and rebuilding from it must not buy another `git status`.
+      panelRepository.acceptInvalidation(() => [Keys.statusBundle]);
+      expect((await panelRepository.getStagedChanges()).length).toBe(1);
+      expect(refreshCount).toBe(1);
     } finally {
       observer?.destroy();
       if (originalRefresh) {
         coreRepository.refreshStatusSnapshot = originalRefresh;
       }
       await context.destroy();
+      lumine.repositories.forget(coreRepository);
+    }
+  });
+
+  it("refreshes the status snapshot for a change only its own observer saw", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-observed-refresh-")),
+    );
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    // Core schedules its own debounced refresh for the same write. This spec is about what the
+    // panel asks for, so hold core's scheduler still and count only the panel's requests.
+    coreRepository.scheduleStatusSnapshotRefresh = () => {};
+    const panelRepository = new Repository(workingDirectory);
+    let originalRefresh;
+
+    try {
+      await panelRepository.getLoadPromise();
+      await coreRepository.refreshStatusSnapshot();
+      expect(await panelRepository.getUnstagedChanges()).toEqual([]);
+
+      originalRefresh = coreRepository.refreshStatusSnapshot.bind(coreRepository);
+      let refreshCount = 0;
+      coreRepository.refreshStatusSnapshot = (...args) => {
+        refreshCount++;
+        return originalRefresh(...args);
+      };
+
+      // A write that reached disk without passing through lumine.repositories: core's snapshot
+      // predates it, so reusing that snapshot would report a working directory that is clean.
+      fs.writeFileSync(path.join(workingDirectory, "a.txt"), "one\n");
+      panelRepository.observeFilesystemChange([
+        { path: path.join(workingDirectory, "a.txt"), action: "created" },
+      ]);
+      expect((await panelRepository.getUnstagedChanges()).length).toBe(1);
+      expect(refreshCount).toBe(1);
+
+      // Nothing observed since that refresh, so the rounds after it reuse what it produced.
+      panelRepository.acceptInvalidation(() => [Keys.statusBundle]);
+      expect((await panelRepository.getUnstagedChanges()).length).toBe(1);
+      expect(refreshCount).toBe(1);
+    } finally {
+      if (originalRefresh) {
+        coreRepository.refreshStatusSnapshot = originalRefresh;
+      }
+      panelRepository.destroy();
+      lumine.repositories.forget(coreRepository);
+    }
+  });
+
+  it("marks a status change only for filesystem events that invalidate the bundle", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-observe-marking-")),
+    );
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const panelRepository = new Repository(workingDirectory);
+
+    try {
+      await panelRepository.getLoadPromise();
+      const observeStatusChange = spyOn(panelRepository.git, "observeStatusChange");
+
+      // A ref moving invalidates branches and the last commit, never the status bundle.
+      panelRepository.observeFilesystemChange([
+        { path: path.join(workingDirectory, ".git", "refs", "heads", "main"), action: "modified" },
+      ]);
+      expect(observeStatusChange).not.toHaveBeenCalled();
+
+      panelRepository.observeFilesystemChange([
+        { path: path.join(workingDirectory, ".git", "index"), action: "modified" },
+      ]);
+      expect(observeStatusChange).toHaveBeenCalled();
+    } finally {
+      panelRepository.destroy();
       lumine.repositories.forget(coreRepository);
     }
   });
