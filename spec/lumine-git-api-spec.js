@@ -10,7 +10,12 @@ import Repository from "../lib/models/repository";
 import WorkdirContext from "../lib/models/workdir-context";
 import { Keys } from "../lib/models/repository-states/cache/keys";
 
-async function waitUntil(check, attempts = 500) {
+// A tick budget, not a wall-clock one: the specs run with the clock frozen, so
+// setImmediate turns are all there is to wait on. The condition is usually met
+// within a handful, but a git worker round trip is real I/O — 500 turns burn
+// away in a millisecond or two and expire before the answer comes back. 10000
+// matches the other suites here and costs nothing when the wait is short.
+async function waitUntil(check, attempts = 10000) {
   for (let i = 0; i < attempts; i++) {
     if (await check()) {
       return;
