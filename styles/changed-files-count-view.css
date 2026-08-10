@@ -1,4 +1,8 @@
+/* This button is itself a tile — it carries `.status-bar-item`, so a theme
+   draws its padding and its hover from here. Only the widget's own button box
+   has to go: transparent, never `inherit`, which would take the computed
+   background and repaint the theme's translucent hover over itself. */
 .git-panel-ChangedFilesCount {
-  background-color: inherit;
+  background-color: transparent;
   border: none;
 }
