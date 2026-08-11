@@ -94,4 +94,31 @@ describe("the status bar tile group", () => {
     const control = container.querySelector(".git-panel-ChangedFilesCount");
     expect(control.tagName.toLowerCase()).toBe("status-bar-tile");
   });
+
+  it("advertises the changed-files tile's mouse action and toggle-focus key binding", async () => {
+    const tooltipManager = {
+      addComposite: jasmine
+        .createSpy("addComposite")
+        .and.returnValue({ dispose: jasmine.createSpy("dispose") }),
+    };
+    const keyBindingTarget = document.createElement("div");
+    await render(
+      <ChangedFilesCountView
+        changedFilesCount={3}
+        tooltipManager={tooltipManager}
+        keyBindingTarget={keyBindingTarget}
+      />,
+    );
+
+    const [tile, entries] = tooltipManager.addComposite.calls.mostRecent().args;
+    expect(tile).toBe(container.querySelector(".git-panel-ChangedFilesCount"));
+    expect(entries).toEqual([
+      { title: "Toggle Git panel", keyBindingExtra: "LMB" },
+      {
+        title: "Toggle focus",
+        keyBindingCommand: "git-panel:toggle-focus",
+        keyBindingTarget,
+      },
+    ]);
+  });
 });
