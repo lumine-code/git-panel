@@ -1,5 +1,7 @@
 /** @babel */
 
+import path from "path";
+
 import ResolutionProgress, { keyForPath } from "../lib/models/conflicts/resolution-progress";
 
 describe("ResolutionProgress", () => {
@@ -64,8 +66,8 @@ describe("ResolutionProgress", () => {
   });
 
   it("uses case-insensitive normalized path identity on Windows", () => {
-    const mixed = keyForPath("C:\\Repo\\folder\\..\\FILE.txt");
-    const canonical = keyForPath("C:\\Repo\\FILE.txt");
+    const mixed = keyForPath(path.join("repo", "folder", "..", "FILE.txt"));
+    const canonical = keyForPath(path.join("repo", "FILE.txt"));
     expect(mixed).toBe(canonical);
     if (process.platform === "win32") {
       expect(keyForPath("C:\\REPO\\FILE.txt")).toBe(keyForPath("c:\\repo\\file.txt"));
