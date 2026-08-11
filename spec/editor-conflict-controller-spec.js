@@ -30,13 +30,19 @@ describe("EditorConflictController", () => {
       getElement: () => element,
       getBuffer: () => buffer,
       getPath: () => "conflicted.txt",
+      isModified: () => false,
     };
-    const resolutionProgress = { reportMarkerCount: jasmine.createSpy("reportMarkerCount") };
+    const resolutionProgress = {
+      reportBufferMarkerCount: jasmine.createSpy("reportBufferMarkerCount"),
+      clearBuffer: jasmine.createSpy("clearBuffer"),
+    };
+    const refreshResolutionProgress = jasmine.createSpy("refreshResolutionProgress");
 
     const controller = new EditorConflictController({
       editor,
       isRebase: false,
       resolutionProgress,
+      refreshResolutionProgress,
     });
 
     expect(editor.addMarkerLayer).toHaveBeenCalledWith({
@@ -47,6 +53,7 @@ describe("EditorConflictController", () => {
 
     controller.componentWillUnmount();
     expect(layer.destroy).toHaveBeenCalled();
+    expect(resolutionProgress.clearBuffer).toHaveBeenCalledWith("conflicted.txt");
   });
 
   it("finds a conflict when the cursor is exactly at its starting position", () => {
@@ -78,11 +85,11 @@ describe("EditorConflictController", () => {
 
   it("keeps dismissed conflicts in the unresolved marker count", () => {
     const conflict = { isResolved: () => false };
-    const reportMarkerCount = jasmine.createSpy("reportMarkerCount");
+    const reportBufferMarkerCount = jasmine.createSpy("reportBufferMarkerCount");
     const controller = Object.create(EditorConflictController.prototype);
     controller.props = {
-      editor: { getPath: () => "conflicted.txt" },
-      resolutionProgress: { reportMarkerCount },
+      editor: { getPath: () => "conflicted.txt", isModified: () => false },
+      resolutionProgress: { reportBufferMarkerCount },
     };
     controller.state = {
       conflicts: new Set([conflict]),
@@ -96,6 +103,8 @@ describe("EditorConflictController", () => {
     controller.updateMarkerCount();
 
     expect(controller.state.dismissedConflicts.has(conflict)).toBe(true);
-    expect(reportMarkerCount).toHaveBeenCalledWith("conflicted.txt", 1);
+    expect(reportBufferMarkerCount).toHaveBeenCalledWith("conflicted.txt", 1, {
+      modified: false,
+    });
   });
 });
