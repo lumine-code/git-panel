@@ -62,6 +62,11 @@
       "versions": {
         "^1.0.0": "consumeBusySignal"
       }
+    },
+    "linter.editors": {
+      "versions": {
+        "^1.0.0": "consumeLinterEditors"
+      }
     }
   },
   "providedServices": {
