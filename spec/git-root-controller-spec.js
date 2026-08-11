@@ -47,3 +47,43 @@ describe("GitRootController repository initialization", () => {
     expect(controller.state.dialogRequest.getParams().dirPath).toBe(currentDirectory);
   });
 });
+
+describe("GitRootController conflict recounting", () => {
+  function buildRecountController() {
+    const controller = Object.create(GitRootController.prototype);
+    controller.props = {
+      resolutionProgress: {
+        reportDiskMarkerCount: jasmine.createSpy("reportDiskMarkerCount"),
+      },
+      notificationManager: { addError: jasmine.createSpy("addError") },
+    };
+    return controller;
+  }
+
+  it("settles with the persisted marker count", async () => {
+    const controller = buildRecountController();
+    const filePath = path.join(__dirname, "git-root-controller-spec.js");
+
+    const count = await controller.refreshResolutionProgress(filePath);
+
+    expect(count).toBe(0);
+    expect(controller.props.resolutionProgress.reportDiskMarkerCount).toHaveBeenCalledWith(
+      filePath,
+      0,
+    );
+  });
+
+  it("settles safely when a formerly conflicted file has disappeared", async () => {
+    const controller = buildRecountController();
+    const filePath = path.join(__dirname, "missing-conflict-file.txt");
+
+    const count = await controller.refreshResolutionProgress(filePath);
+
+    expect(count).toBe(0);
+    expect(controller.props.resolutionProgress.reportDiskMarkerCount).toHaveBeenCalledWith(
+      filePath,
+      0,
+    );
+    expect(controller.props.notificationManager.addError).not.toHaveBeenCalled();
+  });
+});
