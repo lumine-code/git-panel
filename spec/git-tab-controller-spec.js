@@ -1,5 +1,7 @@
 /** @babel */
 
+import path from "path";
+
 import GitTabController, { pathsForStageAll } from "../lib/controllers/git-tab-controller";
 
 describe("GitTabController identity editor state", () => {
@@ -79,7 +81,9 @@ describe("GitTabController conflict staging", () => {
     controller.props = {
       repository,
       notificationManager,
-      resolutionProgress: { isStagingReady: () => false },
+      resolutionProgress: {
+        getStatus: () => ({ ready: false, remaining: 1, reason: "conflicts" }),
+      },
       workingDirectoryPath: "C:\\repo",
       mergeConflicts: [{ filePath: "conflicted.txt" }],
       unstagedChanges: [],
@@ -102,7 +106,9 @@ describe("GitTabController conflict staging", () => {
     controller.props = {
       repository,
       notificationManager: { addWarning: jasmine.createSpy("addWarning") },
-      resolutionProgress: { isStagingReady: () => true },
+      resolutionProgress: {
+        getStatus: () => ({ ready: true, remaining: 0, reason: "ready" }),
+      },
       workingDirectoryPath: "C:\\repo",
       mergeConflicts: [{ filePath: "conflicted.txt" }],
       unstagedChanges: [],
@@ -112,5 +118,31 @@ describe("GitTabController conflict staging", () => {
     await controller.stageFiles(["conflicted.txt"]);
 
     expect(repository.stageFiles).toHaveBeenCalledWith(["conflicted.txt"]);
+  });
+
+  it("requires confirmation for marker-free non-text conflicts", async () => {
+    const repository = {
+      pathHasMergeMarkers: () => Promise.resolve(false),
+      stageFiles: jasmine.createSpy("stageFiles").and.returnValue(Promise.resolve()),
+    };
+    const markResolutionSelected = jasmine.createSpy("markResolutionSelected");
+    const controller = Object.create(GitTabController.prototype);
+    controller.props = {
+      repository,
+      notificationManager: { addWarning: jasmine.createSpy("addWarning") },
+      resolutionProgress: {
+        getStatus: () => ({ ready: false, remaining: 0, reason: "choice" }),
+        markResolutionSelected,
+      },
+      workingDirectoryPath: "C:\\repo",
+      mergeConflicts: [{ filePath: "binary.dat" }],
+      unstagedChanges: [],
+      confirm: jasmine.createSpy("confirm").and.returnValue(Promise.resolve(0)),
+    };
+
+    await controller.stageFiles(["binary.dat"]);
+
+    expect(markResolutionSelected).toHaveBeenCalledWith(path.join("C:\\repo", "binary.dat"));
+    expect(repository.stageFiles).toHaveBeenCalledWith(["binary.dat"]);
   });
 });

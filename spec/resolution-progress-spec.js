@@ -37,6 +37,21 @@ describe("ResolutionProgress", () => {
     expect(progress.getStatus(filePath)).toEqual({ ready: true, remaining: 0, reason: "ready" });
   });
 
+  it("requires an explicit choice for marker-free conflicts", () => {
+    const progress = new ResolutionProgress();
+    const filePath = "binary.dat";
+    progress.reportDiskMarkerCount(filePath, 0);
+
+    expect(progress.getStatus(filePath)).toEqual({
+      ready: false,
+      remaining: 0,
+      reason: "choice",
+    });
+
+    progress.markResolutionSelected(filePath);
+    expect(progress.getStatus(filePath)).toEqual({ ready: true, remaining: 0, reason: "ready" });
+  });
+
   it("prunes paths that are no longer unmerged", () => {
     const progress = new ResolutionProgress();
     progress.reportDiskMarkerCount("old.txt", 0);
