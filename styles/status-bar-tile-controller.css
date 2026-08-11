@@ -1,16 +1,7 @@
-/* The element handed to the status bar, but *not* the tile: it holds two
-   independent controls, and a tile is one control. The bar's stamp is taken
-   off this box and put on each control instead (`lib/lumine/status-bar.js`), so
-   a theme gives each its own padding and hover rectangle rather than painting
-   one across both. What is left here is the group's layout box, which spaces
-   its two tiles exactly as the panel spaces every other one — `inherit` takes
-   the panel's own computed `gap`, so a theme that butts its tiles together gets
-   these butted too. */
-.git-panel-StatusBarTileController {
-  display: flex;
-  align-items: center;
-  gap: inherit;
-}
+/* This box holds two independent controls, and a tile is one control, so it is
+   handed to the bar as a `<status-bar-tile-group>` — the bar marks the tiles
+   inside it and leaves the group unmarked, and the status-bar package supplies
+   the group's layout and spacing. Nothing is left to say here. */
 .git-panel-StatusBarTileController-tooltipMenu.tooltip {
   width: 400px;
   padding-left: var(--component-padding);

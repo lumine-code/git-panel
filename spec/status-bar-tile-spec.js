@@ -10,16 +10,25 @@ import ChangedFilesCountView from "../lib/views/changed-files-count-view";
 // padding, hover and pill from it. See `status-bar/lib/tile.js`.
 const TILE_CLASS = "status-bar-item";
 
-// Stands in for the real bar: all that matters here is that it marks the
-// element it is handed, exactly as `StatusBarView#addRightTile` does.
+// Stands in for the real bar, following the same rule it does: mark the element
+// handed over, unless it is a group — then mark the tiles inside it and leave
+// the group itself unmarked. See `status-bar/lib/tile.js`.
 function buildStatusBar() {
   const tiles = [];
+  const marked = (item) =>
+    item.tagName.toLowerCase() === "status-bar-tile-group"
+      ? Array.from(item.querySelectorAll("status-bar-tile"))
+      : [item];
   return {
     tiles,
     addRightTile({ item, priority }) {
-      item.classList.add(TILE_CLASS);
+      for (const element of marked(item)) element.classList.add(TILE_CLASS);
       tiles.push({ item, priority });
-      return { destroy: () => item.classList.remove(TILE_CLASS) };
+      return {
+        destroy: () => {
+          for (const element of marked(item)) element.classList.remove(TILE_CLASS);
+        },
+      };
     },
   };
 }
@@ -47,7 +56,7 @@ describe("the status bar tile group", () => {
     await act(async () => root.render(element));
   }
 
-  it("leaves the mark on the host when it carries a single control", async () => {
+  it("hands over a tile when it carries a single control", async () => {
     const statusBar = buildStatusBar();
     await render(
       <StatusBar statusBar={statusBar}>
@@ -55,27 +64,34 @@ describe("the status bar tile group", () => {
       </StatusBar>,
     );
 
-    expect(statusBar.tiles[0].item.classList.contains(TILE_CLASS)).toBe(true);
+    const host = statusBar.tiles[0].item;
+    expect(host.tagName.toLowerCase()).toBe("status-bar-tile");
+    expect(host.classList.contains(TILE_CLASS)).toBe(true);
   });
 
-  it("takes the mark off a host that groups several controls", async () => {
+  it("hands over a group when it carries several controls", async () => {
     const statusBar = buildStatusBar();
     await render(
       <StatusBar statusBar={statusBar} hostsTiles>
-        <span>one</span>
-        <span>two</span>
+        <status-bar-tile>one</status-bar-tile>
+        <status-bar-tile>two</status-bar-tile>
       </StatusBar>,
     );
 
-    // A tile is one control: were the group still marked, a theme would paint
+    // A tile is one control: were the group itself marked, a theme would paint
     // one padding box and one hover rectangle across every control in it.
-    expect(statusBar.tiles[0].item.classList.contains(TILE_CLASS)).toBe(false);
+    const host = statusBar.tiles[0].item;
+    expect(host.tagName.toLowerCase()).toBe("status-bar-tile-group");
+    expect(host.classList.contains(TILE_CLASS)).toBe(false);
+    for (const tile of host.querySelectorAll("status-bar-tile")) {
+      expect(tile.classList.contains(TILE_CLASS)).toBe(true);
+    }
   });
 
-  it("marks the changed-files count as a tile of its own", async () => {
+  it("renders the changed-files count as a tile of its own", async () => {
     await render(<ChangedFilesCountView changedFilesCount={3} />);
 
-    const button = container.querySelector(".git-panel-ChangedFilesCount");
-    expect(button.classList.contains(TILE_CLASS)).toBe(true);
+    const control = container.querySelector(".git-panel-ChangedFilesCount");
+    expect(control.tagName.toLowerCase()).toBe("status-bar-tile");
   });
 });
