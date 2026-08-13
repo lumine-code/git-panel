@@ -8,6 +8,9 @@
   flex: 1;
   margin-left: var(--component-padding);
   min-width: 0;
+  /* A select clips its selected text by default, so a long project name ran
+     under the dropdown arrow and ended mid-glyph. */
+  text-overflow: ellipsis;
 }
 .git-panel-Project-avatarBtn {
   height: 23px;
