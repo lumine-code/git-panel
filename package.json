@@ -128,8 +128,8 @@
       "default": false
     },
     "warnLargeRepo": {
-      "title": "Warn if repository is too large",
-      "description": "Show a warning notification when a repository has too many changed files to display completely.",
+      "title": "Notify if repository is too large",
+      "description": "Show a notification when a repository has too many changed files to display completely.",
       "type": "boolean",
       "default": true
     },
