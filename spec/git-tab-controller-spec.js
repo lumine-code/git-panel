@@ -146,3 +146,67 @@ describe("GitTabController conflict staging", () => {
     expect(repository.stageFiles).toHaveBeenCalledWith(["binary.dat"]);
   });
 });
+
+describe("GitTabController staging re-entry", () => {
+  function nextTurn() {
+    return new Promise((resolve) => setImmediate(resolve));
+  }
+
+  // attemptFileStageOperation is a bound instance field, so it exists only on a
+  // constructed controller. The constructor needs a username, an email, a
+  // config and a repository; a null repository leaves UserStore's observer
+  // inert, which is all this needs.
+  function buildController({ stageFiles, listUpdate }) {
+    const controller = new GitTabController({
+      username: "",
+      email: "",
+      repository: null,
+      config: { observe: () => ({ dispose() {} }) },
+    });
+    controller.refStagingView = { map: () => ({ getOr: () => listUpdate }) };
+    controller.stageFiles = stageFiles;
+    controller.unstageFiles = () => Promise.resolve();
+    controller.props = {
+      busySignal: null,
+      notificationManager: { addError: jasmine.createSpy("addError") },
+    };
+    return controller;
+  }
+
+  it("swallows a second attempt while the first is still running", async () => {
+    let finishStaging;
+    const stageFiles = jasmine
+      .createSpy("stageFiles")
+      .and.returnValue(new Promise((resolve) => (finishStaging = resolve)));
+    // Already resolved: this stands in for a list refresh the staging operation
+    // did not cause, which is what used to re-arm the guard early.
+    const controller = buildController({ stageFiles, listUpdate: Promise.resolve() });
+
+    const first = controller.attemptFileStageOperation(["a.txt"], "unstaged");
+    await nextTurn();
+
+    controller.attemptFileStageOperation(["a.txt"], "unstaged");
+    controller.attemptFileStageOperation(["a.txt"], "unstaged");
+    await nextTurn();
+    expect(stageFiles.calls.count()).toBe(1);
+
+    finishStaging();
+    await first.selectionUpdatePromise;
+
+    controller.attemptFileStageOperation(["a.txt"], "unstaged");
+    expect(stageFiles.calls.count()).toBe(2);
+  });
+
+  it("re-arms after a failed operation, which never updates the lists", async () => {
+    const stageFiles = jasmine
+      .createSpy("stageFiles")
+      .and.returnValue(Promise.reject(new Error("index.lock exists")));
+    const controller = buildController({ stageFiles, listUpdate: new Promise(() => {}) });
+
+    const { stageOperationPromise } = controller.attemptFileStageOperation(["a.txt"], "unstaged");
+    await stageOperationPromise;
+
+    expect(controller.props.notificationManager.addError).toHaveBeenCalled();
+    expect(controller.stagingOperationInProgress).toBe(false);
+  });
+});
