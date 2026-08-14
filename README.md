@@ -15,7 +15,7 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 
 ## Installation
 
-To install `git-panel` search for _git-panel_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/git-panel`.
+To install `git-panel` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/git-panel`.
 
 ## Commands
 
@@ -113,10 +113,10 @@ Override the package custom properties in your `styles.css` to adjust its accent
 
 ## Services
 
-- **[git-panel](docs/git-panel.md)** (`1.0.0`): provided to give forge packages access to the repository model, its diffs, and its remotes.
-- **status-bar** (`^1.0.0`): consumed to display branch and synchronization controls in the status bar.
-- **busy-signal** (`^1.0.0`): consumed to report staging, discard, and undo operations on the busy indicator.
-- **linter.editors** (`^1.0.0`): consumed to register the commit message editor for linting, so spell checking reaches it.
+- [`git-panel`](docs/git-panel.md): provided to give forge packages access to the repository model, its diffs, and its remotes.
+- `status-bar`: consumed to display branch and synchronization controls in the status bar.
+- `busy-signal`: consumed to report staging, discard, and undo operations on the busy indicator.
+- `linter.editors`: consumed to register the commit message editor for linting, so spell checking reaches it.
 
 ## Contributing
 
