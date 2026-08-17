@@ -67,6 +67,11 @@
       "versions": {
         "^1.0.0": "consumeLinterEditors"
       }
+    },
+    "autocomplete.watch-editor": {
+      "versions": {
+        "^1.0.0": "consumeAutocompleteWatchEditor"
+      }
     }
   },
   "providedServices": {
