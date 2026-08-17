@@ -1,8 +1,5 @@
 /** @babel */
-import {
-  consumeAutocompleteWatchEditor,
-  addAutocompleteEditor,
-} from "../lib/autocomplete-editors";
+import { consumeAutocompleteWatchEditor, addAutocompleteEditor } from "../lib/autocomplete-editors";
 
 // The commit box is not a pane item, so autocomplete never watches it on its
 // own; this holder hands it over through the `autocomplete.watch-editor`
