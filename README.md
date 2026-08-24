@@ -105,7 +105,7 @@ Override the package custom properties in your `styles.css` to adjust its accent
 
 ```css
 :root {
-  --git-panel-color-blue: var(--text-color-info);
+  --git-panel-color-blue: var(--accent-color);
   --git-panel-diff-added: color-mix(in srgb, var(--syntax-color-added) 22%, transparent);
   --git-panel-diff-deleted: color-mix(in srgb, var(--syntax-color-removed) 22%, transparent);
 }

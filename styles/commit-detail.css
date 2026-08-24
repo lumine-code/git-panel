@@ -73,5 +73,5 @@
   overflow: hidden;
 }
 .git-panel-CommitDetailView-sha a {
-  color: var(--text-color-info);
+  color: var(--accent-only-text-color);
 }

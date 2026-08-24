@@ -121,9 +121,9 @@
   margin-right: 0.5em;
   vertical-align: middle;
   line-height: 1.1;
-  color: color-mix(in srgb, var(--text-color-highlight) 70%, var(--text-color-info));
-  border-color: color-mix(in srgb, var(--background-color-info) 15%, transparent);
-  background-color: color-mix(in srgb, var(--background-color-info) 10%, transparent);
+  color: color-mix(in srgb, var(--text-color-highlight) 70%, var(--accent-only-text-color));
+  border-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
+  background-color: color-mix(in srgb, var(--accent-color) 10%, transparent);
 }
 .git-panel-CommitView-coAuthorEditor .Select__multi-value__remove {
   border-color: inherit;
@@ -157,8 +157,8 @@
   border-top: none;
 }
 .git-panel-CommitView-coAuthorEditor .Select__option--is-focused {
-  color: white;
-  background-color: var(--background-color-info);
+  color: var(--accent-bg-text-color);
+  background-color: var(--accent-bg-color);
 }
 .git-panel-CommitView-coAuthorEditor
   .Select__option--is-focused
