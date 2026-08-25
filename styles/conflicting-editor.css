@@ -36,15 +36,9 @@ lumine-text-editor .git-panel-ConflictOurs {
   margin-right: var(--component-padding);
   background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 15%, transparent);
 }
-lumine-text-editor .git-panel-ConflictOurs.cursor-line {
-  background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 25%, transparent) !important;
-}
 lumine-text-editor .git-panel-ConflictOursBanner {
   margin-right: var(--component-padding);
   background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 15%, transparent);
-}
-lumine-text-editor .git-panel-ConflictOursBanner.cursor-line {
-  background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 25%, transparent) !important;
 }
 lumine-text-editor .git-panel-ConflictOursBanner.git-panel-ConflictUnmodifiedBanner span {
   color: color-mix(in srgb, var(--git-panel-conflict-ours) 66%, transparent) !important;
@@ -63,15 +57,9 @@ lumine-text-editor .git-panel-ConflictTheirs {
   margin-right: var(--component-padding);
   background-color: color-mix(in srgb, var(--syntax-color-renamed) 15%, transparent);
 }
-lumine-text-editor .git-panel-ConflictTheirs.cursor-line {
-  background-color: color-mix(in srgb, var(--syntax-color-renamed) 25%, transparent) !important;
-}
 lumine-text-editor .git-panel-ConflictTheirsBanner {
   margin-right: var(--component-padding);
   background-color: color-mix(in srgb, var(--syntax-color-renamed) 15%, transparent);
-}
-lumine-text-editor .git-panel-ConflictTheirsBanner.cursor-line {
-  background-color: color-mix(in srgb, var(--syntax-color-renamed) 25%, transparent) !important;
 }
 lumine-text-editor .git-panel-ConflictTheirsBanner.git-panel-ConflictUnmodifiedBanner span {
   color: color-mix(in srgb, var(--syntax-color-renamed) 66%, transparent) !important;
@@ -90,15 +78,9 @@ lumine-text-editor .git-panel-ConflictBase {
   margin-right: var(--component-padding);
   background-color: color-mix(in srgb, var(--git-panel-conflict-base) 15%, transparent);
 }
-lumine-text-editor .git-panel-ConflictBase.cursor-line {
-  background-color: color-mix(in srgb, var(--git-panel-conflict-base) 25%, transparent) !important;
-}
 lumine-text-editor .git-panel-ConflictBaseBanner {
   margin-right: var(--component-padding);
   background-color: color-mix(in srgb, var(--git-panel-conflict-base) 15%, transparent);
-}
-lumine-text-editor .git-panel-ConflictBaseBanner.cursor-line {
-  background-color: color-mix(in srgb, var(--git-panel-conflict-base) 25%, transparent) !important;
 }
 lumine-text-editor .git-panel-ConflictBaseBanner.git-panel-ConflictUnmodifiedBanner span {
   color: color-mix(in srgb, var(--git-panel-conflict-base) 66%, transparent) !important;
@@ -117,15 +99,9 @@ lumine-text-editor .git-panel-ConflictModified {
   margin-right: var(--component-padding);
   background-color: color-mix(in srgb, var(--syntax-color-modified) 15%, transparent);
 }
-lumine-text-editor .git-panel-ConflictModified.cursor-line {
-  background-color: color-mix(in srgb, var(--syntax-color-modified) 25%, transparent) !important;
-}
 lumine-text-editor .git-panel-ConflictModifiedBanner {
   margin-right: var(--component-padding);
   background-color: color-mix(in srgb, var(--syntax-color-modified) 15%, transparent);
-}
-lumine-text-editor .git-panel-ConflictModifiedBanner.cursor-line {
-  background-color: color-mix(in srgb, var(--syntax-color-modified) 25%, transparent) !important;
 }
 lumine-text-editor .git-panel-ConflictModifiedBanner.git-panel-ConflictUnmodifiedBanner span {
   color: color-mix(in srgb, var(--syntax-color-modified) 66%, transparent) !important;
@@ -144,15 +120,9 @@ lumine-text-editor .git-panel-ConflictSeparator {
   margin-right: var(--component-padding);
   background-color: color-mix(in srgb, var(--git-panel-conflict-base) 15%, transparent);
 }
-lumine-text-editor .git-panel-ConflictSeparator.cursor-line {
-  background-color: color-mix(in srgb, var(--git-panel-conflict-base) 25%, transparent) !important;
-}
 lumine-text-editor .git-panel-ConflictSeparator span {
   color: color-mix(in srgb, var(--git-panel-conflict-base) 66%, transparent) !important;
 }
 lumine-text-editor .git-panel-ResolvedLines {
   background-color: color-mix(in srgb, var(--syntax-color-added) 15%, transparent);
-}
-lumine-text-editor .git-panel-ResolvedLines.cursor-line {
-  background-color: color-mix(in srgb, var(--syntax-color-added) 25%, transparent) !important;
 }

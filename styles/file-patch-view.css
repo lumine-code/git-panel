@@ -203,14 +203,8 @@
 .git-panel-FilePatchView-line--deleted {
   background-color: var(--git-panel-diff-deleted);
 }
-.git-panel-FilePatchView-line--deleted.line.cursor-line {
-  background-color: color-mix(in srgb, var(--syntax-color-removed) 18%, transparent);
-}
 .git-panel-FilePatchView-line--added {
   background-color: var(--git-panel-diff-added);
-}
-.git-panel-FilePatchView-line--added.line.cursor-line {
-  background-color: color-mix(in srgb, var(--syntax-color-added) 18%, transparent);
 }
 .git-panel-FilePatchView-word--deleted .region {
   background-color: var(--git-panel-diff-deleted-highlight);

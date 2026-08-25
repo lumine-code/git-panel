@@ -49,6 +49,7 @@
 }
 .git-panel-CommitView-editor lumine-text-editor .cursor-line.cursor-line.cursor-line {
   background-color: transparent;
+  box-shadow: none;
 }
 .git-panel-CommitView-coAuthorToggle {
   position: absolute;
