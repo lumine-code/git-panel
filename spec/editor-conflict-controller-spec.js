@@ -30,7 +30,7 @@ describe("EditorConflictController", () => {
       getElement: () => element,
       getBuffer: () => buffer,
       getPath: () => "conflicted.txt",
-      isModified: () => false,
+      getFileState: () => "unmodified",
     };
     const resolutionProgress = {
       reportBufferMarkerCount: jasmine.createSpy("reportBufferMarkerCount"),
@@ -88,7 +88,7 @@ describe("EditorConflictController", () => {
     const reportBufferMarkerCount = jasmine.createSpy("reportBufferMarkerCount");
     const controller = Object.create(EditorConflictController.prototype);
     controller.props = {
-      editor: { getPath: () => "conflicted.txt", isModified: () => false },
+      editor: { getPath: () => "conflicted.txt", getFileState: () => "unmodified" },
       resolutionProgress: { reportBufferMarkerCount },
     };
     controller.state = {

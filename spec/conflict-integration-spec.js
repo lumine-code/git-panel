@@ -174,9 +174,9 @@ describe("conflict resolution against a real Git repository", () => {
     await act(async () => nextTurn());
 
     expect(normalizeEol(standard.editor.getText())).toBe("main\n");
-    expect(standard.editor.isModified()).toBe(true);
+    expect(standard.editor.getFileState()).toBe("modified");
     expect(custom.editor.getText()).toContain("<<<<<<<<<<<< HEAD");
-    expect(custom.editor.isModified()).toBe(false);
+    expect(custom.editor.getFileState()).toBe("unmodified");
 
     const notifications = {
       addWarning: jasmine.createSpy("addWarning"),
