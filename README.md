@@ -37,7 +37,6 @@ Commands available in `lumine-workspace`:
 - `git-panel:force-push`: force push to remote,
 - `git-panel:clone`: open clone dialog,
 - `git-panel:initialize`: initialize a new git repository,
-- `git-panel:update-repositories`: rescan all project paths, refresh existing repositories, add newly found ones, and remove stale ones,
 - `git-panel:open-commit`: open commit by SHA dialog,
 - `git-panel:toggle-commit-preview`: toggle commit preview pane,
 - `git-panel:view-unstaged-changes-for-current-file`: show unstaged diff for current file,
