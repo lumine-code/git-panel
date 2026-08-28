@@ -45,7 +45,7 @@
   "dependencies": {
     "bintrees": "1.0.2",
     "classnames": "2.5.1",
-    "dayjs": "^1.11.21",
+    "dayjs": "^1.11.23",
     "diff": "^9.0.0",
     "node-emoji": "2.2.0",
     "react": "^19.2.8",
@@ -183,7 +183,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "eslint": "^10.8.1",
+    "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-n": "^18.3.0",
     "globals": "^17.11.0",
