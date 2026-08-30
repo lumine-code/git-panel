@@ -21,6 +21,7 @@ describe("window surfaces", () => {
   });
 
   afterEach(() => {
+    document.body.focus();
     sourceFrame.remove();
     destinationFrame.remove();
   });
