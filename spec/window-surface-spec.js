@@ -146,15 +146,15 @@ describe("window surfaces", () => {
     expect(sourceFrame.contentDocument.activeElement).toBe(view.nameInput);
   });
 
-  it("restores dock-toggle focus through the active workspace surface", async () => {
+  it("does not restore detached focus after revealing the dock", async () => {
     const invokingInput = sourceFrame.contentDocument.createElement("input");
     const revealedInput = destinationFrame.contentDocument.createElement("input");
     sourceFrame.contentDocument.body.appendChild(invokingInput);
     destinationFrame.contentDocument.body.appendChild(revealedInput);
     invokingInput.focus();
+    const restoreDetachedFocus = spyOn(invokingInput, "focus").and.callThrough();
 
     const workspace = {
-      getActiveWindowSurface: () => ({ document: sourceFrame.contentDocument }),
       paneForURI: () => null,
       getPaneContainers: () => [],
       open: async () => revealedInput.focus(),
@@ -165,9 +165,9 @@ describe("window surfaces", () => {
     });
 
     await tracker.toggle();
-    await new Promise((resolve) => process.nextTick(resolve));
 
-    expect(sourceFrame.contentDocument.activeElement).toBe(invokingInput);
+    expect(restoreDetachedFocus).not.toHaveBeenCalled();
+    expect(destinationFrame.contentDocument.activeElement).toBe(revealedInput);
   });
 
   it("redispatches staging context menus with the target Window", async () => {
