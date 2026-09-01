@@ -65,7 +65,6 @@
 }
 .git-panel-CommitView-coAuthorToggle:hover {
   opacity: 1;
-  cursor: pointer;
 }
 .git-panel-CommitView-coAuthorToggle:active {
   opacity: 0.5;
@@ -128,7 +127,7 @@
 }
 .git-panel-CommitView-coAuthorEditor .Select__multi-value__remove {
   border-color: inherit;
-  cursor: pointer;
+  cursor: default;
 }
 .git-panel-CommitView-coAuthorEditor .Select__menu {
   top: auto;

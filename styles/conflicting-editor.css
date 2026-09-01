@@ -13,7 +13,7 @@ lumine-text-editor .git-panel-ConflictBlock .git-panel-ResolutionControls button
   margin-right: var(--component-padding);
 }
 lumine-text-editor .git-panel-ConflictBlock .git-panel-ResolutionControls span {
-  cursor: pointer;
+  cursor: default;
 }
 lumine-text-editor .git-panel-SideDescription {
   font-family: var(--font-family);

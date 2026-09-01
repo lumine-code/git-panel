@@ -23,7 +23,7 @@
   border-bottom: 1px solid var(--pane-item-border-color);
 }
 .git-panel-GitTimingsView .waterfall-header .collapse-toggle {
-  cursor: pointer;
+  cursor: default;
   margin-right: 2px;
 }
 .git-panel-GitTimingsView .waterfall-header-text {
