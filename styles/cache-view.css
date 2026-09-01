@@ -15,7 +15,7 @@
 .git-panel-CacheView-Clear {
   margin-left: 1em;
 }
-.git-panel-CacheView-Order select {
+.git-panel-CacheView-Order .select-box {
   margin-left: 0.5em;
 }
 .git-panel-CacheView table {

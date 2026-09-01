@@ -8,9 +8,11 @@
   flex: 1;
   margin-left: var(--component-padding);
   min-width: 0;
-  /* A select clips its selected text by default, so a long project name ran
-     under the dropdown arrow and ended mid-glyph. */
+}
+.git-panel-Project-path .select-box-label {
+  overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .git-panel-Project-avatarBtn {
   height: 23px;
