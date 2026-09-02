@@ -641,14 +641,19 @@ describe("Lumine Git transport", () => {
       fs.writeFileSync(path.join(workingDirectory, "staged.txt"), "staged\n");
       await strategy.stageFiles(["staged.txt"]);
       await repository.refreshStatusSnapshot();
+      const getDiff = spyOn(repository, "getDiff").and.callThrough();
 
       expect(await strategy.getUntrackedFiles()).toEqual(["new.txt"]);
 
       const unstaged = await strategy.getDiffsForFilePath("tracked.txt", { staged: false });
       expect(unstaged.length).toBe(1);
       expect(unstaged[0].newPath).toBe("tracked.txt");
-      expect(unstaged[0].hunks[0].lines).toContain("-two");
-      expect(unstaged[0].hunks[0].lines).toContain("+TWO");
+      expect(unstaged[0].hunks[0].lines).toContain(
+        jasmine.objectContaining({ kind: "deleted", text: "two" }),
+      );
+      expect(unstaged[0].hunks[0].lines).toContain(
+        jasmine.objectContaining({ kind: "added", text: "TWO" }),
+      );
 
       // An untracked file is synthesized as an added patch from disk.
       const untracked = await strategy.getDiffsForFilePath("new.txt", { staged: false });
@@ -667,6 +672,9 @@ describe("Lumine Git transport", () => {
       expect(statusToHead["tracked.txt"]).toBe("modified");
       expect(statusToHead["staged.txt"]).toBe("added");
       expect(statusToHead["new.txt"]).toBe("added");
+      expect(getDiff.calls.allArgs().every(([options]) => options.format === "structured")).toBe(
+        true,
+      );
     } finally {
       strategy.destroy();
       lumine.repositories.forget(repository);
