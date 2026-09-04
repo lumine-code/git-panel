@@ -94,9 +94,9 @@ describe("native Git endpoints", () => {
     expect(await strategy.createBlob({ filePath: "gone.txt" })).toBeNull();
   });
 
-  it("does not hide unrelated native createBlob failures", async () => {
-    const failure = new Error("native backend unavailable");
-    failure.code = "ERR_GIT_NATIVE_INIT";
+  it("does not hide unrelated createBlob failures", async () => {
+    const failure = new Error("object database is read-only");
+    failure.code = "ERR_GIT_COMMAND_FAILED";
     strategy.runRepositoryOperation = () => Promise.reject(failure);
 
     await expectAsync(strategy.createBlob({ filePath: "a.txt" })).toBeRejectedWith(failure);
