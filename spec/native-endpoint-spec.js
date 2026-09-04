@@ -66,9 +66,29 @@ describe("native Git endpoints", () => {
     });
   });
 
+  it("does not label an unknown revision as an unborn branch", async () => {
+    strategy.getCoreRepository = () =>
+      Promise.resolve({
+        getCommits: () => Promise.resolve({ commits: [] }),
+        getStatusSnapshot: () => ({ initialized: true, head: { unborn: false } }),
+      });
+
+    expect(await strategy.getCommit("missing")).toBeUndefined();
+  });
+
+  it("retains the unborn sentinel when HEAD does not exist", async () => {
+    strategy.getCoreRepository = () =>
+      Promise.resolve({
+        getCommits: () => Promise.resolve({ commits: [] }),
+        getStatusSnapshot: () => ({ initialized: true, head: { unborn: true } }),
+      });
+
+    expect(await strategy.getHeadCommit()).toEqual({ sha: "", message: "", unbornRef: true });
+  });
+
   it("treats a raced createBlob source like the former Git file error", async () => {
     const missing = new Error("unable to read blob source file");
-    missing.code = "ERR_GIT_NATIVE_CREATE_BLOB";
+    missing.code = "ERR_GIT_CREATE_BLOB";
     strategy.runRepositoryOperation = () => Promise.reject(missing);
 
     expect(await strategy.createBlob({ filePath: "gone.txt" })).toBeNull();
