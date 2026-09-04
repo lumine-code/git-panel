@@ -373,13 +373,12 @@ describe("Lumine Git transport", () => {
     }
   });
 
-  it("executes with Lumine's embedded Git without a package-local Dugite", async () => {
+  it("executes with Lumine's Git service without a package-local Dugite", async () => {
     const strategy = new GitShellOutStrategy(process.cwd());
 
     try {
       const output = await strategy.exec(["--version"]);
       expect(output).toMatch(/^git version /);
-      expect(lumine.repositories.getGitExecutablePath()).toBeTruthy();
     } finally {
       strategy.destroy();
     }
