@@ -2,7 +2,7 @@
 
 import GitShellOutStrategy from "../lib/git-shell-out-strategy";
 
-describe("native Git endpoints", () => {
+describe("Git repository endpoints", () => {
   let strategy;
 
   beforeEach(() => {
