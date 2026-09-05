@@ -113,7 +113,6 @@ Override the package custom properties in your `styles.css` to adjust its accent
 ## Services
 
 - [`git-panel`](docs/git-panel.md): provided to give forge packages access to the repository model, its diffs, and its remotes.
-- `status-bar`: consumed to display branch and synchronization controls in the status bar.
 - `busy-signal`: consumed to report staging, discard, and undo operations on the busy indicator.
 - `linter.editors`: consumed to register the commit message editor for linting, so spell checking reaches it.
 - `autocomplete.watch-editor`: consumed to register the commit message editor for completions, so the suggestion overlay reaches it.

@@ -53,11 +53,6 @@
     "react-select": "5.10.2"
   },
   "consumedServices": {
-    "status-bar": {
-      "versions": {
-        "^1.0.0": "consumeStatusBar"
-      }
-    },
     "busy-signal": {
       "versions": {
         "^1.0.0": "consumeBusySignal"

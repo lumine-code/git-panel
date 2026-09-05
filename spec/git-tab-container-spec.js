@@ -7,6 +7,7 @@ describe("GitTabContainer repository data", () => {
     let loading = true;
     let finishIdentityRead;
     const identity = new Promise((resolve) => (finishIdentityRead = resolve));
+    const currentBranch = { getName: () => "main" };
     const repository = {
       showGitTabLoading: () => loading,
       getRecentCommits: () => Promise.resolve([]),
@@ -15,7 +16,11 @@ describe("GitTabContainer repository data", () => {
       isMerging: () => Promise.resolve(false),
       isRebasing: () => Promise.resolve(false),
       hasDiscardHistory: () => false,
-      getCurrentBranch: () => Promise.resolve(null),
+      getCurrentBranch: () => Promise.resolve(currentBranch),
+      getRemoteForBranch: () => Promise.resolve({}),
+      getAheadCount: () => Promise.resolve(0),
+      getBehindCount: () => Promise.resolve(0),
+      getRemotes: () => Promise.resolve({ withName: () => ({ isPresent: () => true }) }),
       getUnstagedChanges: () => Promise.resolve([]),
       getStagedChanges: () => Promise.resolve([]),
       getMergeConflicts: () => Promise.resolve([]),

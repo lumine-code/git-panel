@@ -147,7 +147,7 @@
         "type": "separator"
       }
     ],
-    ".git-panel-PushPull": [
+    ".git-panel-RemoteActionButton": [
       {
         "type": "separator"
       },

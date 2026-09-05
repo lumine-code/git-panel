@@ -1,0 +1,80 @@
+.git-panel-RemoteActionButton {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 45%;
+  margin-left: var(--component-padding);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.git-panel-RemoteActionButton-icon.icon.icon.icon {
+  margin-right: 0;
+  text-align: center;
+}
+
+.git-panel-RemoteActionButton .secondary {
+  margin-right: calc(var(--component-padding) / 2);
+  color: var(--text-color-subtle);
+}
+
+@keyframes git-panel-RemoteActionButton-fade {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.git-panel-RemoteActionButton .animate-rotate::before {
+  animation: git-panel-RemoteActionButton-rotate 1s linear infinite;
+}
+
+@keyframes git-panel-RemoteActionButton-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.git-panel-RemoteActionButton .animate-up::before {
+  animation:
+    git-panel-RemoteActionButton-up 800ms ease-out infinite,
+    git-panel-RemoteActionButton-fade 800ms ease-out infinite;
+}
+
+@keyframes git-panel-RemoteActionButton-up {
+  0% {
+    transform: translateY(40%);
+  }
+  100% {
+    transform: translateY(-20%);
+  }
+}
+
+.git-panel-RemoteActionButton .animate-down::before {
+  animation:
+    git-panel-RemoteActionButton-down 800ms ease-out infinite,
+    git-panel-RemoteActionButton-fade 800ms ease-out infinite;
+}
+
+@keyframes git-panel-RemoteActionButton-down {
+  0% {
+    transform: translateY(-20%);
+  }
+  100% {
+    transform: translateY(40%);
+  }
+}
+
+.git-panel-RemoteActionButton.git-panel-branch-detached {
+  color: var(--text-color-subtle);
+  font-style: italic;
+}
