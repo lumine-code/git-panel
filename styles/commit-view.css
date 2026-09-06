@@ -22,10 +22,16 @@
   border-color: var(--accent-color);
   box-shadow: 0 0 0 1px var(--accent-color);
 }
-.git-panel-CommitView-editor .git-panel-CommitView-hardwrap {
+.git-panel-CommitView-editorControls {
   position: absolute;
-  right: 20px;
+  right: 0;
   bottom: 0;
+  display: flex;
+  align-items: center;
+  background-color: var(--syntax-background-color);
+  z-index: 1;
+}
+.git-panel-CommitView-editor .git-panel-CommitView-hardwrap {
   padding: calc(var(--component-padding) / 5) calc(var(--component-padding) / 2);
   line-height: 1;
   border: none;
@@ -186,9 +192,6 @@
   font-style: italic;
 }
 .git-panel-CommitView-expandButton {
-  position: absolute;
-  right: 0;
-  bottom: 0;
   padding: calc(var(--component-padding) / 2);
   line-height: 1;
   border: none;
@@ -224,10 +227,17 @@
   margin-right: var(--component-padding);
 }
 .git-panel-CommitView-remaining-characters {
-  width: 1.25em;
+  min-width: 2ch;
   text-align: right;
-  margin-left: var(--component-padding);
+  padding: calc(var(--component-padding) / 5) calc(var(--component-padding) / 2);
+  margin-right: calc(var(--component-padding) / 4);
+  font-size: 0.85em;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  background-color: var(--syntax-background-color);
   color: var(--text-color-subtle);
+  pointer-events: none;
 }
 .git-panel-CommitView-remaining-characters.is-warning {
   color: var(--text-color-warning);
@@ -239,6 +249,14 @@
   background-color: transparent;
 }
 .git-panel-CommitView-editor.is-expanded lumine-text-editor {
+  display: none;
+}
+.git-panel-CommitView-editor.is-expanded .git-panel-CommitView-editorControls {
+  position: relative;
+  width: 100%;
+}
+.git-panel-CommitView-editor.is-expanded .git-panel-CommitView-hardwrap,
+.git-panel-CommitView-editor.is-expanded .git-panel-CommitView-remaining-characters {
   display: none;
 }
 .git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton {

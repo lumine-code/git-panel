@@ -8,7 +8,6 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 
 - **Staging area**: stage, unstage, and discard changes per file, hunk, or selected line.
 - **Commits and branches**: compose commits and create, switch, or manage branches.
-- **Remote synchronization**: fetch, pull, push, and force-push with Git remotes.
 - **Diff viewer**: inspect changes with hunk, line, and word-level highlighting.
 - **Conflict resolution**: resolve merge conflicts with in-editor controls.
 - **Repository management**: initialize, clone, and work with multiple repositories.
@@ -31,10 +30,6 @@ Commands available in `lumine-workspace`:
 - `git-panel:unstage-all-changes`: unstage all staged changes,
 - `git-panel:discard-all-changes`: discard all unstaged changes,
 - `git-panel:undo-last-discard-in-git-tab`: undo last discard,
-- `git-panel:fetch`: fetch from remote,
-- `git-panel:pull`: pull from remote,
-- `git-panel:push`: push to remote,
-- `git-panel:force-push`: force push to remote,
 - `git-panel:clone`: open clone dialog,
 - `git-panel:initialize`: initialize a new git repository,
 - `git-panel:open-commit`: open commit by SHA dialog,

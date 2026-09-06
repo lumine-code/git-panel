@@ -119,13 +119,29 @@
         "type": "separator"
       }
     ],
-    ".git-panel-CommitView": [
+    ".git-panel-CommitView-messageEditor": [
       {
         "type": "separator"
       },
       {
         "label": "Toggle Expanded Commit Message Editor",
         "command": "git-panel:toggle-expanded-commit-message-editor"
+      },
+      {
+        "type": "separator"
+      }
+    ],
+    ".git-panel-CommitView-commit": [
+      {
+        "type": "separator"
+      },
+      {
+        "label": "Commit",
+        "command": "git-panel:commit"
+      },
+      {
+        "label": "Amend Last Commit",
+        "command": "git-panel:amend-last-commit"
       },
       {
         "type": "separator"
@@ -142,33 +158,6 @@
       {
         "label": "View Staged Changes",
         "command": "git-panel:view-staged-changes-for-current-file"
-      },
-      {
-        "type": "separator"
-      }
-    ],
-    ".git-panel-RemoteActionButton": [
-      {
-        "type": "separator"
-      },
-      {
-        "label": "Fetch",
-        "command": "git-panel:fetch"
-      },
-      {
-        "label": "Pull",
-        "command": "git-panel:pull"
-      },
-      {
-        "type": "separator"
-      },
-      {
-        "label": "Push",
-        "command": "git-panel:push"
-      },
-      {
-        "label": "Force Push",
-        "command": "git-panel:force-push"
       },
       {
         "type": "separator"
