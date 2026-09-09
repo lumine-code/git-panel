@@ -3,6 +3,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { Disposable } from "lumine";
 
 import GitShellOutStrategy from "../lib/git-shell-out-strategy";
 import ModelObserver from "../lib/models/model-observer";
@@ -736,6 +737,18 @@ describe("Lumine Git transport", () => {
   });
 
   it("reuses the post-stage status snapshot for the panel refresh", async () => {
+    // This test counts cache reads from the post-operation snapshot. Real OS
+    // events are independent invalidations and are covered by the observer
+    // integration suite and the observer-only refresh test below.
+    spyOn(lumine.fileWatchClient, "watchDirectory").and.callFake((root) => ({
+      path: root,
+      ready: Promise.resolve(),
+      closed: Promise.resolve(),
+      onDidChange: () => new Disposable(),
+      onDidInvalidate: () => new Disposable(),
+      onDidError: () => new Disposable(),
+      dispose() {},
+    }));
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-stage-refresh-")),
     );
