@@ -4,6 +4,7 @@ import path from "path";
 import ChangedFileItem from "../lib/items/changed-file-item";
 import CommitDetailItem from "../lib/items/commit-detail-item";
 import CommitPreviewItem from "../lib/items/commit-preview-item";
+import GitTabItem from "../lib/items/git-tab-item";
 import GitCacheView from "../lib/views/git-cache-view";
 import GitTimingsView from "../lib/views/git-timings-view";
 
@@ -46,6 +47,11 @@ describe("pane view styles", () => {
 });
 
 describe("pane item locations", () => {
+  it("keeps the main Git panel in the side docks with its default first", () => {
+    expect(GitTabItem.prototype.getDefaultLocation()).toBe("right");
+    expect(GitTabItem.prototype.getAllowedLocations()).toEqual(["right", "left"]);
+  });
+
   it("keeps editor-like Git views in the workspace center", () => {
     const itemTypes = [
       ChangedFileItem,
