@@ -1,7 +1,3 @@
-.git-panel-StubItem-git-file-patch-controller {
-  background-color: var(--syntax-background-color);
-}
-
 .git-panel-FilePatchView {
   display: flex;
   flex-direction: column;

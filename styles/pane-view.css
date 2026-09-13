@@ -1,3 +1,19 @@
+.git-panel-StubItem-git-file-patch-controller,
+.git-panel-StubItem-git-commit-preview,
+.git-panel-StubItem-git-commit-detail,
+.git-panel-StubItem-git-timings-view,
+.git-panel-FilePatch-root,
+.git-panel-CommitPreview-root,
+.git-panel-CommitDetail-root,
+.git-panel-GitTimings-root,
+.git-panel-GitCache-root,
+.git-panel-FilePatchView,
+.git-panel-CommitDetailView,
+.git-panel-GitTimingsView,
+.git-panel-CacheView {
+  background-color: var(--syntax-background-color);
+}
+
 .git-panel-PaneView {
   display: flex;
   height: 100%;
