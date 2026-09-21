@@ -998,7 +998,7 @@ describe("Lumine Git transport", () => {
     }
   });
 
-  it("loads only native CSS stylesheets", () => {
+  it("loads only native CSS stylesheets", async () => {
     const packagePath = path.resolve(__dirname, "..");
     const pack = lumine.packages.loadPackage(packagePath);
 
@@ -1024,7 +1024,7 @@ describe("Lumine Git transport", () => {
       expect(CSS.supports("color", "color-mix(in srgb, red 50%, blue)")).toBe(true);
       expect(CSS.supports("color", "hsl(from red calc(h + 80) s l)")).toBe(true);
     } finally {
-      lumine.packages.unloadPackage(pack.name);
+      await lumine.packages.unloadPackage(pack.name);
     }
   });
 });

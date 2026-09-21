@@ -12,6 +12,42 @@ async function until(predicate, maxTicks = 10000) {
 }
 
 describe("GitPackage startup repository selection", () => {
+  it("registers cold global commands without waiting for the React root", async () => {
+    let commands;
+    const root = {
+      gitTabTracker: {
+        toggle: jasmine.createSpy("toggle"),
+        toggleFocus: jasmine.createSpy("toggleFocus"),
+      },
+    };
+    const packageInstance = {
+      commands: {
+        add: jasmine.createSpy("add").and.callFake((_selector, entries) => {
+          commands = entries;
+          return { dispose() {} };
+        }),
+      },
+      subscriptions: { add: jasmine.createSpy("add") },
+      ensureRootController: jasmine
+        .createSpy("ensureRootController")
+        .and.returnValue(Promise.resolve({ root })),
+      invokeGitController: jasmine
+        .createSpy("invokeGitController")
+        .and.returnValue(Promise.resolve()),
+    };
+
+    GitPackage.prototype.registerGlobalCommands.call(packageInstance);
+    await commands["git-panel:toggle-focus"]();
+    await commands["git-panel:clone"].didDispatch();
+
+    expect(packageInstance.commands.add.calls.argsFor(0)[0]).toBe("lumine-workspace");
+    expect(commands["git-panel:clone"].description).toBe(
+      "Clone a remote repository into a folder you choose.",
+    );
+    expect(root.gitTabTracker.toggleFocus).toHaveBeenCalled();
+    expect(packageInstance.invokeGitController).toHaveBeenCalledWith("openCloneDialog");
+  });
+
   it("coalesces a burst of active-context updates to the latest trailing request", async () => {
     let finishFirstUpdate;
     const firstUpdate = new Promise((resolve) => (finishFirstUpdate = resolve));
