@@ -33,14 +33,23 @@
     "lumine": "^1.0.0",
     "node": ">=24"
   },
-  "backgroundTips": [
-    "You can stage, commit, and push without leaving the editor using {{ 'git-panel:toggle-focus' | keystroke }}"
-  ],
   "scripts": {
     "test": "lumine --test spec",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
+  },
+  "providedServices": {
+    "git-panel": {
+      "versions": {
+        "1.0.0": "provideGitPanel"
+      }
+    },
+    "background-tips.provider": {
+      "versions": {
+        "1.0.0": "provideBackgroundTips"
+      }
+    }
   },
   "dependencies": {
     "bintrees": "1.0.2",
@@ -66,13 +75,6 @@
     "autocomplete.watch-editor": {
       "versions": {
         "^1.0.0": "consumeAutocompleteWatchEditor"
-      }
-    }
-  },
-  "providedServices": {
-    "git-panel": {
-      "versions": {
-        "1.0.0": "provideGitPanel"
       }
     }
   },
