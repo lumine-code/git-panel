@@ -145,6 +145,7 @@ describe("scroll behavior", () => {
         [8, Infinity],
       ];
       const nextPatch = {
+        getBuffer: () => ({ isEmpty: () => false }),
         getSelectionRangeForIndex: jasmine.createSpy().and.returnValue(nextRange),
       };
 
@@ -172,6 +173,7 @@ describe("scroll behavior", () => {
       ];
       const hunk = { getRange: () => hunkRange };
       const nextPatch = {
+        getBuffer: () => ({ isEmpty: () => false }),
         getHunkAt: jasmine.createSpy().and.returnValue(hunk),
         getSelectionRangeForIndex: jasmine.createSpy().and.returnValue(nextRange),
       };
@@ -182,6 +184,25 @@ describe("scroll behavior", () => {
       expect(editor.setSelectedBufferRanges).toHaveBeenCalledOnceWith([hunkRange], {
         autoscroll: false,
       });
+    });
+
+    it("resets the viewport when a refresh collapses all diff content", () => {
+      const { callbacks, element, view } = buildPatchView("hunk");
+      views.push(view);
+      const nextPatch = {
+        getBuffer: () => ({ isEmpty: () => true }),
+        getHunkAt: jasmine.createSpy().and.returnValue(undefined),
+        getSelectionRangeForIndex: jasmine.createSpy().and.returnValue([
+          [0, 0],
+          [0, 0],
+        ]),
+      };
+
+      callbacks.willUpdate();
+      callbacks.didUpdate(nextPatch);
+
+      expect(element.setScrollTop).toHaveBeenCalledOnceWith(0);
+      expect(element.setScrollLeft).toHaveBeenCalledOnceWith(0);
     });
 
     it("keeps an explicit centered scroll authoritative when jumping to a file", () => {
