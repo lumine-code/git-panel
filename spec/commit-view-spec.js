@@ -1,5 +1,7 @@
 /** @babel */
 /** @jsx React.createElement */
+import path from "path";
+
 import React, { act } from "react";
 import { createRoot } from "react-dom/client";
 import { Disposable, TextBuffer } from "lumine";
@@ -7,7 +9,7 @@ import { Disposable, TextBuffer } from "lumine";
 import CommitView from "../lib/views/commit-view";
 
 describe("the commit view controls", () => {
-  let container, root, messageBuffer, tooltipManager, wasActEnvironment;
+  let container, root, messageBuffer, tooltipManager, config, currentBranch, wasActEnvironment;
 
   beforeEach(() => {
     wasActEnvironment = global.IS_REACT_ACT_ENVIRONMENT;
@@ -21,6 +23,15 @@ describe("the commit view controls", () => {
       add: jasmine.createSpy("add tooltip").and.callFake(disposable),
       addComposite: jasmine.createSpy("add composite tooltip").and.callFake(disposable),
     };
+    config = {
+      get: () => false,
+      onDidChange: () => new Disposable(),
+    };
+    currentBranch = {
+      getName: () => "main",
+      isDetached: () => false,
+      isPresent: () => true,
+    };
   });
 
   afterEach(async () => {
@@ -30,17 +41,7 @@ describe("the commit view controls", () => {
     global.IS_REACT_ACT_ENVIRONMENT = wasActEnvironment;
   });
 
-  it("overlays the character count immediately before the expand button", async () => {
-    const config = {
-      get: () => false,
-      onDidChange: () => new Disposable(),
-    };
-    const currentBranch = {
-      getName: () => "main",
-      isDetached: () => false,
-      isPresent: () => true,
-    };
-
+  async function renderCommitView() {
     await act(async () => {
       root.render(
         <CommitView
@@ -67,6 +68,10 @@ describe("the commit view controls", () => {
         />,
       );
     });
+  }
+
+  it("overlays the character count immediately before the expand button", async () => {
+    await renderCommitView();
 
     const editor = container.querySelector(".git-panel-CommitView-editor");
     const controls = editor.querySelector(".git-panel-CommitView-editorControls");
@@ -79,6 +84,36 @@ describe("the commit view controls", () => {
     expect(characterCount.nextElementSibling).toBe(expandButton);
     expect(bar.querySelector(".git-panel-CommitView-remaining-characters")).toBeNull();
     expect(bar.lastElementChild).toBe(bar.querySelector(".git-panel-CommitView-commit"));
+  });
+
+  it("does not scroll an empty commit editor past the end", async () => {
+    const previousScrollPastEnd = lumine.config.get("editor.scrollPastEnd");
+    const stylesheet = lumine.themes.requireStylesheet(
+      path.join(__dirname, "..", "styles", "main.css"),
+    );
+    container.style.width = "400px";
+    container.style.setProperty("--editor-line-height", "24px");
+
+    try {
+      lumine.config.set("editor.scrollPastEnd", true);
+      await renderCommitView();
+
+      const messageEditor = container.querySelector(".git-panel-CommitView-messageEditor");
+      const editorComponent = messageEditor.getComponent();
+      const verticalScrollbar = messageEditor.querySelector(".vertical-scrollbar");
+      await globalThis.waitForFrames(() => editorComponent.hasInitialMeasurements, {
+        description: "commit editor measurements",
+      });
+
+      expect(messageEditor.getModel().getScrollPastEnd()).toBe(false);
+      expect(messageEditor.getMaxScrollTop()).toBe(0);
+      expect(editorComponent.canScrollVertically()).toBe(false);
+      expect(verticalScrollbar.style.visibility).toBe("hidden");
+    } finally {
+      lumine.config.set("editor.scrollPastEnd", previousScrollPastEnd);
+      await globalThis.flushMicrotasks();
+      stylesheet.dispose();
+    }
   });
 
   it("targets the message editor and commit button with their own context menus", () => {
