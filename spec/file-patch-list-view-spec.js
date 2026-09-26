@@ -4,7 +4,7 @@ import path from "path";
 describe("file patch list selection styles", () => {
   it("joins adjacent rounded selections within each staged or unstaged list", () => {
     const stylesheet = lumine.themes.requireStylesheet(
-      path.join(__dirname, "..", "styles", "file-patch-list-view.css"),
+      path.join(__dirname, "..", "styles", "main.css"),
     );
     const themeStyle = document.createElement("style");
     themeStyle.textContent = `

@@ -1008,7 +1008,8 @@ describe("Lumine Git transport", () => {
         .getStyleElements()
         .filter((element) => element.sourcePath?.startsWith(path.join(packagePath, "styles")));
 
-      expect(styleElements.length).toBe(21);
+      expect(styleElements.length).toBe(1);
+      expect(styleElements[0].sourcePath).toBe(path.join(packagePath, "styles", "main.css"));
       expect(styleElements.every((element) => element.sourcePath.endsWith(".css"))).toBe(true);
       expect(() => {
         for (const element of styleElements) {

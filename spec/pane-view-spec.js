@@ -12,7 +12,7 @@ import GitPackage from "../lib/git-package";
 describe("pane view styles", () => {
   it("matches text editor backgrounds for pane items and their loading hosts", () => {
     const stylesheet = lumine.themes.requireStylesheet(
-      path.join(__dirname, "..", "styles", "pane-view.css"),
+      path.join(__dirname, "..", "styles", "main.css"),
     );
     const elements = [
       "git-panel-PaneItemHost-git-file-patch-controller",
