@@ -1218,9 +1218,9 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
 }
 .git-panel-FilePatchView .gutter.old .line-number,
 .git-panel-FilePatchView .gutter.new .line-number {
-  min-width: 6ch;
+  width: calc(var(--git-panel-line-number-content-width, 5ch) + 1ch + 0.5em);
   opacity: 1;
-  padding: 0 1ch 0 0;
+  padding: 0 1ch 0 0.5em;
 }
 .git-panel-FilePatchView .gutter.icons .line-number {
   padding: 0;
