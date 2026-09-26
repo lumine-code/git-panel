@@ -205,6 +205,40 @@ describe("scroll behavior", () => {
       expect(element.setScrollLeft).toHaveBeenCalledOnceWith(0);
     });
 
+    it("waits for refreshed patch props before synchronizing selected rows", () => {
+      const { callbacks, view } = buildPatchView("line");
+      views.push(view);
+      const previousProps = view.props;
+      const nextPatch = {
+        getBuffer: () => ({ isEmpty: () => false }),
+        getSelectionRangeForIndex: jasmine.createSpy().and.returnValue([
+          [8, 0],
+          [8, Infinity],
+        ]),
+      };
+
+      callbacks.willUpdate();
+      callbacks.didUpdate(nextPatch);
+
+      expect(view.didChangeSelectedRows).not.toHaveBeenCalled();
+
+      view.componentDidUpdate(previousProps);
+      expect(view.didChangeSelectedRows).not.toHaveBeenCalled();
+      expect(view.nextSelectionMode).toBe("line");
+
+      const unrelatedProps = { ...previousProps, multiFilePatch: {} };
+      view.props = unrelatedProps;
+      view.componentDidUpdate(previousProps);
+      expect(view.didChangeSelectedRows).not.toHaveBeenCalled();
+      expect(view.nextSelectionMode).toBe("line");
+
+      view.props = { ...unrelatedProps, multiFilePatch: nextPatch };
+      view.componentDidUpdate(unrelatedProps);
+
+      expect(view.didChangeSelectedRows).toHaveBeenCalledTimes(1);
+      expect(view.nextSelectionMode).toBeNull();
+    });
+
     it("keeps an explicit centered scroll authoritative when jumping to a file", () => {
       const { editor, multiFilePatch, view } = buildPatchView("hunk");
       views.push(view);
