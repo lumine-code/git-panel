@@ -73,6 +73,65 @@ function WordDiffEditor({ multiFilePatch, refDeletionLayer, refAdditionLayer }) 
 }
 
 describe("word diff decorations", () => {
+  it("preserves each side's columns when unchanged words have different spacing", () => {
+    const patch = buildReplacement("foo    bar old", "foo bar new");
+    expect(rangesFromBufferLayer(patch.getWordDeletionLayer())).toEqual([
+      [
+        [0, 11],
+        [0, 14],
+      ],
+    ]);
+    expect(rangesFromBufferLayer(patch.getWordAdditionLayer())).toEqual([
+      [
+        [1, 8],
+        [1, 11],
+      ],
+    ]);
+  });
+
+  it("accounts for leading and trailing whitespace without highlighting pure indentation changes", () => {
+    const patch = buildReplacement("   foo old   ", " foo new ");
+    expect(rangesFromBufferLayer(patch.getWordDeletionLayer())).toEqual([
+      [
+        [0, 7],
+        [0, 13],
+      ],
+    ]);
+    expect(rangesFromBufferLayer(patch.getWordAdditionLayer())).toEqual([
+      [
+        [1, 5],
+        [1, 9],
+      ],
+    ]);
+  });
+
+  it("uses UTF-16 columns after an emoji and unequal tab or space runs", () => {
+    const patch = buildReplacement("😀\tfoo = 1;", "😀  foo = 2;");
+    expect(rangesFromBufferLayer(patch.getWordDeletionLayer())).toEqual([
+      [
+        [0, 9],
+        [0, 10],
+      ],
+    ]);
+    expect(rangesFromBufferLayer(patch.getWordAdditionLayer())).toEqual([
+      [
+        [1, 10],
+        [1, 11],
+      ],
+    ]);
+  });
+
+  it("keeps whitespace-only replacements out of the inline marker layers", () => {
+    for (const [oldText, newText] of [
+      ["  foo\tbar  ", "foo  bar"],
+      ["   ", "\t"],
+    ]) {
+      const patch = buildReplacement(oldText, newText);
+      expect(rangesFromBufferLayer(patch.getWordDeletionLayer())).toEqual([]);
+      expect(rangesFromBufferLayer(patch.getWordAdditionLayer())).toEqual([]);
+    }
+  });
+
   it("highlights only the changed digits", () => {
     const oldText = "$\\displaystyle {\\eta}=\\dfrac{{J}_{Ed}}{{f}_{yd}}=0.946$";
     const newText = "$\\displaystyle {\\eta}=\\dfrac{{J}_{Ed}}{{f}_{yd}}=0.950$";
@@ -104,9 +163,11 @@ describe("word diff decorations", () => {
     const [deletedDecoration, addedDecoration] = renderWordLayers(patch);
 
     expect(rangesFromBufferLayer(patch.getWordDeletionLayer())).toEqual([]);
+    // diffWords used to assign the appended space to the unchanged prefix.
+    // Its actual column belongs to the added suffix on this side.
     expect(rangesFromBufferLayer(patch.getWordAdditionLayer())).toEqual([
       [
-        [1, 67],
+        [1, oldText.length],
         [1, 109],
       ],
     ]);
