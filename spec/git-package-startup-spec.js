@@ -164,4 +164,79 @@ describe("GitPackage startup repository selection", () => {
     finishUpdate();
     await until(() => !packageInstance.startupContextPending);
   });
+
+  it("does not create contexts when path discovery finishes after deactivation", async () => {
+    let finishDiscovery;
+    const discovery = new Promise((resolve) => (finishDiscovery = resolve));
+    const workdir = "C:\\moving-repository";
+    const packageInstance = {
+      activationGeneration: {},
+      activationDisposed: false,
+      project: { getPaths: () => [workdir] },
+      repositories: {
+        getForPath: () => null,
+        resolveForPath: () => discovery,
+        getActiveRepositoryContext: () => ({ repository: null, workingDirectory: null }),
+      },
+      contextPool: { add: jasmine.createSpy("add") },
+    };
+    const next = GitPackage.prototype.getNextContext.call(packageInstance);
+    packageInstance.activationGeneration = null;
+    packageInstance.activationDisposed = true;
+
+    finishDiscovery({ getWorkingDirectory: () => workdir });
+
+    expect(await next).toBeNull();
+    expect(packageInstance.contextPool.add).not.toHaveBeenCalled();
+  });
+
+  it("does not install a context resolved by a previous activation", async () => {
+    let finishContext;
+    const context = new Promise((resolve) => (finishContext = resolve));
+    const packageInstance = {
+      activationGeneration: {},
+      activationDisposed: false,
+      workspace: { isDestroyed: () => false },
+      switchboard: { didBeginActiveContextUpdate: jasmine.createSpy() },
+      getNextContext: () => context,
+      setActiveContext: jasmine.createSpy("setActiveContext"),
+    };
+    const update = GitPackage.prototype.updateActiveContext.call(packageInstance, {});
+    packageInstance.activationGeneration = {};
+    finishContext({ repository: "previous activation" });
+
+    await update;
+
+    expect(packageInstance.setActiveContext).not.toHaveBeenCalled();
+  });
+
+  it("does not clear the next activation's update promise when an old update finishes", async () => {
+    let finishPrevious;
+    let finishCurrent;
+    const previous = new Promise((resolve) => (finishPrevious = resolve));
+    const current = new Promise((resolve) => (finishCurrent = resolve));
+    const packageInstance = {
+      activationGeneration: {},
+      activationDisposed: false,
+      switchboard: { didScheduleActiveContextUpdate: jasmine.createSpy() },
+      pendingActiveContextOptions: null,
+      activeContextUpdatePromise: null,
+      updateActiveContext: jasmine.createSpy().and.returnValues(previous, current),
+      runActiveContextUpdates: GitPackage.prototype.runActiveContextUpdates,
+    };
+    const previousUpdate = GitPackage.prototype.scheduleActiveContextUpdate.call(packageInstance);
+    packageInstance.activationGeneration = {};
+    packageInstance.activeContextUpdatePromise = null;
+    const currentUpdate = GitPackage.prototype.scheduleActiveContextUpdate.call(packageInstance);
+
+    finishPrevious();
+    await previousUpdate;
+
+    expect(packageInstance.activeContextUpdatePromise).toBe(currentUpdate);
+
+    finishCurrent();
+    await currentUpdate;
+
+    expect(packageInstance.activeContextUpdatePromise).toBeNull();
+  });
 });
