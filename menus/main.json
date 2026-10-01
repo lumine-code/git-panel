@@ -77,6 +77,25 @@
       },
       {
         "type": "separator"
+      },
+      {
+        "label": "Split Up",
+        "command": "git-panel:split-up"
+      },
+      {
+        "label": "Split Down",
+        "command": "git-panel:split-down"
+      },
+      {
+        "label": "Split Left",
+        "command": "git-panel:split-left"
+      },
+      {
+        "label": "Split Right",
+        "command": "git-panel:split-right"
+      },
+      {
+        "type": "separator"
       }
     ],
     ".git-panel-FilePatchView--staged": [

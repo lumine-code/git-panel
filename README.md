@@ -61,6 +61,10 @@ Commands available in `.git-panel-Git`:
 Commands available in `.git-panel-StagingView`:
 
 - `git-panel:jump-to-file`: open file in editor,
+- `git-panel:split-up`: open selected working-tree files in a new pane above,
+- `git-panel:split-down`: open selected working-tree files in a new pane below,
+- `git-panel:split-left`: open selected working-tree files in a new pane to the left,
+- `git-panel:split-right`: open selected working-tree files in a new pane to the right,
 - `git-panel:discard-changes-in-selected-files`: discard changes in selected files,
 - `git-panel:show-diff-view`: show diff for selected file,
 - `git-panel:focus-diff-view`: show and focus diff for selected file,
@@ -68,6 +72,8 @@ Commands available in `.git-panel-StagingView`:
 - `git-panel:activate-previous-list`: move focus to previous file list,
 - `git-panel:resolve-file-as-ours`: resolve selected file as ours,
 - `git-panel:resolve-file-as-theirs`: resolve selected file as theirs.
+
+The split commands open all selected files together in one new pane.
 
 Commands available in `.git-panel-CommitView-coAuthorEditor`:
 
