@@ -1832,7 +1832,6 @@ pre.git-panel-Message-description {
   color: var(--text-color-subtle);
 }
 .git-panel-RecentCommit:hover {
-  color: var(--text-color-highlight);
   background: var(--background-color-highlight);
 }
 .git-panel-RecentCommit.is-selected {
