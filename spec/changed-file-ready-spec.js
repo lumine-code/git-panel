@@ -6,14 +6,14 @@ import { flushViews } from "./helpers/etch";
 import GitRootController from "../lib/controllers/git-root-controller";
 
 describe("native changed-file readiness and navigation", () => {
-  let item, patch, emitter;
+  let item, patch, emitter, readPatch, release;
   afterEach(async () => {
     await item?.destroy();
     patch?.getBuffer().destroy();
     emitter?.dispose();
   });
 
-  function createItem({ loading = false } = {}) {
+  function createItem({ loading = false, ready = Promise.resolve() } = {}) {
     emitter = new Emitter();
     patch = buildFilePatch([
       {
@@ -34,15 +34,24 @@ describe("native changed-file readiness and navigation", () => {
         ],
       },
     ]);
+    readPatch = jasmine.createSpy("read patch").and.resolveTo(patch);
+    release = jasmine.createSpy("release observation");
     const repository = {
       isLoading: () => loading,
       onDidUpdate: (callback) => emitter.on("did-update", callback),
-      getFilePatchForPath: () => Promise.resolve(patch),
+      getFilePatchForPath: readPatch,
       isPartiallyStaged: () => false,
       hasDiscardHistory: () => false,
     };
     item = new ChangedFileItem({
-      workdirContextPool: { add: () => ({ getRepository: () => repository }) },
+      workdirContextPool: {
+        retain: () => ({
+          context: { getRepository: () => repository },
+          ready,
+          dispose: release,
+        }),
+        onDidChangePoolContexts: () => ({ dispose() {} }),
+      },
       workingDirectory: "C:\\native-changed-file-spec",
       relPath: "example.txt",
       stagingStatus: "unstaged",
@@ -77,6 +86,32 @@ describe("native changed-file readiness and navigation", () => {
     expect(await readiness).toBeNull();
     await flushViews(async () => {});
     expect(item.destroyed).toBe(true);
+  });
+
+  it("waits for fresh snapshots before reading and releases its own observation", async () => {
+    let resume;
+    createItem({ ready: new Promise((resolve) => (resume = resolve)) });
+    await flushViews(async () => {});
+    expect(readPatch).not.toHaveBeenCalled();
+    expect(item.refPatchController.isEmpty()).toBe(true);
+    resume();
+    await flushViews(async () => {});
+    expect(await item.getFilePatchLoadedPromise()).not.toBeNull();
+    expect(readPatch).toHaveBeenCalled();
+    await item.destroy();
+    await item.destroy();
+    expect(release).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not mount readers when a closed pane's resume finishes later", async () => {
+    let resume;
+    createItem({ ready: new Promise((resolve) => (resume = resolve)) });
+    await item.destroy();
+    resume();
+    await flushViews(async () => {});
+    expect(await item.getFilePatchLoadedPromise()).toBeNull();
+    expect(readPatch).not.toHaveBeenCalled();
+    expect(release).toHaveBeenCalledTimes(1);
   });
 });
 

@@ -795,6 +795,7 @@ describe("Lumine Git transport", () => {
       initialBranch: "main",
     });
     const context = new WorkdirContext(workingDirectory);
+    const observation = context.retainObservation();
 
     const stagedNames = async () =>
       Object.keys((await panelRepository.getStatusesForChangedFiles()).stagedFiles).sort();
@@ -803,6 +804,7 @@ describe("Lumine Git transport", () => {
     let panelRepository;
 
     try {
+      await observation.ready;
       panelRepository = context.getRepository();
       await panelRepository.getLoadPromise();
       await waitUntil(() => context.coreRepositoryLease);
@@ -837,6 +839,7 @@ describe("Lumine Git transport", () => {
       expect(await unstagedNames()).toEqual(["a.txt", "b.txt"]);
       expect(updateCount).toBeGreaterThan(0);
     } finally {
+      observation.dispose();
       await context.destroy();
       lumine.repositories.forget(coreRepository);
     }
@@ -862,10 +865,12 @@ describe("Lumine Git transport", () => {
       initialBranch: "main",
     });
     const context = new WorkdirContext(workingDirectory);
+    const observation = context.retainObservation();
     let observer;
     let originalRefresh;
 
     try {
+      await observation.ready;
       const panelRepository = context.getRepository();
       await panelRepository.getLoadPromise();
       await waitUntil(() => context.coreRepositoryLease);
@@ -907,6 +912,7 @@ describe("Lumine Git transport", () => {
       if (originalRefresh) {
         coreRepository.refreshStatusSnapshot = originalRefresh;
       }
+      observation.dispose();
       await context.destroy();
       lumine.repositories.forget(coreRepository);
     }
@@ -1044,8 +1050,10 @@ describe("Lumine Git transport", () => {
       initialBranch: "main",
     });
     const context = new WorkdirContext(workingDirectory);
+    const observation = context.retainObservation();
 
     try {
+      await observation.ready;
       const panelRepository = context.getRepository();
       await panelRepository.getLoadPromise();
       await waitUntil(() => context.coreRepositoryLease);
@@ -1062,6 +1070,7 @@ describe("Lumine Git transport", () => {
         return unstagedFiles["external.txt"] === "added";
       });
     } finally {
+      observation.dispose();
       await context.destroy();
       lumine.repositories.forget(coreRepository);
     }

@@ -12,6 +12,57 @@ async function until(predicate, maxTicks = 10000) {
 }
 
 describe("GitPackage startup repository selection", () => {
+  function observationSwitch() {
+    let resume;
+    const nextContext = { getWorkingDirectory: () => "next-repository" };
+    const previousContext = { getWorkingDirectory: () => "previous-repository" };
+    const previous = { context: previousContext, dispose: jasmine.createSpy("release previous") };
+    const next = {
+      context: nextContext,
+      ready: new Promise((resolve) => (resume = resolve)),
+      dispose: jasmine.createSpy("release next"),
+    };
+    const packageInstance = {
+      activationGeneration: {},
+      activationDisposed: false,
+      activeContext: previousContext,
+      activeObservation: previous,
+      pendingActiveObservations: new Set(),
+      contextPool: { retain: jasmine.createSpy("retain").and.returnValue(next) },
+      scheduleRerender: jasmine.createSpy("render"),
+      switchboard: { didFinishActiveContextUpdate: jasmine.createSpy() },
+      emitter: { emit: jasmine.createSpy("emit") },
+    };
+    return { packageInstance, previous, next, nextContext, resume };
+  }
+
+  it("keeps the selected model observed until its replacement is ready", async () => {
+    const { packageInstance, previous, next, nextContext, resume } = observationSwitch();
+    const change = GitPackage.prototype.setActiveContext.call(packageInstance, nextContext);
+    expect(packageInstance.activeContext).toBe(previous.context);
+    expect(previous.dispose).not.toHaveBeenCalled();
+    expect(packageInstance.scheduleRerender).not.toHaveBeenCalled();
+    resume();
+    await change;
+    expect(packageInstance.activeContext).toBe(nextContext);
+    expect(packageInstance.activeObservation).toBe(next);
+    expect(previous.dispose).toHaveBeenCalledTimes(1);
+    expect(packageInstance.pendingActiveObservations.size).toBe(0);
+  });
+
+  it("releases a pending selection if its activation ends during resume", async () => {
+    const { packageInstance, previous, next, nextContext, resume } = observationSwitch();
+    const change = GitPackage.prototype.setActiveContext.call(packageInstance, nextContext);
+    packageInstance.activationGeneration = null;
+    packageInstance.activationDisposed = true;
+    resume();
+    await change;
+    expect(packageInstance.activeContext).toBe(previous.context);
+    expect(packageInstance.scheduleRerender).not.toHaveBeenCalled();
+    expect(next.dispose).toHaveBeenCalledTimes(1);
+    expect(packageInstance.pendingActiveObservations.size).toBe(0);
+  });
+
   it("registers cold global commands without waiting for the view root", async () => {
     let commands;
     const root = {
@@ -82,6 +133,25 @@ describe("GitPackage startup repository selection", () => {
     expect(packageInstance.updateActiveContext.calls.argsFor(1)).toEqual([
       { usePath: "C:\\latest" },
     ]);
+    expect(packageInstance.activeContextUpdatePromise).toBeNull();
+  });
+
+  it("reports a failed refresh and preserves the rejection for awaited callers", async () => {
+    const error = new Error("metadata watch failed");
+    const packageInstance = {
+      activationGeneration: {},
+      activationDisposed: false,
+      switchboard: { didScheduleActiveContextUpdate() {} },
+      notificationManager: { addWarning: jasmine.createSpy("warning") },
+      updateActiveContext: jasmine.createSpy("update").and.rejectWith(error),
+      runActiveContextUpdates: GitPackage.prototype.runActiveContextUpdates,
+    };
+    const refresh = GitPackage.prototype.scheduleActiveContextUpdate.call(packageInstance);
+    await expectAsync(refresh).toBeRejectedWith(error);
+    expect(packageInstance.notificationManager.addWarning).toHaveBeenCalledOnceWith(
+      "Unable to refresh the active Git repository.",
+      { detail: error.message, dismissable: true },
+    );
     expect(packageInstance.activeContextUpdatePromise).toBeNull();
   });
 

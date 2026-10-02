@@ -39,8 +39,8 @@ type GitPanelBridge = {
 
   // Repository model
   getAbsentRepository(): Repository;
-  getRepositoryForWorkdir(workdir: string): Promise<Repository>;
-  getContextPool(): object;
+  getRepositoryForWorkdir(workdir: string): Repository;
+  getContextPool(): WorkdirContextPool;
 
   // Active context and panel control
   getActiveRepository(): Repository;
@@ -52,6 +52,15 @@ type GitPanelBridge = {
   openCloneDialog(): void;
   openInitializeDialog(): void;
   clone(remoteUrl: string, projectPath: string, sourceRemoteName?: string): Promise<void>;
+};
+
+type WorkdirContextPool = {
+  retain(workdir: string): {
+    readonly context: WorkdirContext;
+    readonly ready: Promise<WorkdirContext | null>;
+    dispose(): void;
+  };
+  onDidChangePoolContexts(callback: () => void): Disposable;
 };
 
 type MultiFilePatch = {
@@ -103,7 +112,11 @@ module.exports = {
 
 `isContextLocked()` tells you the user has pinned the panel to one repository. Respect it: calling `scheduleActiveContextUpdate` against a locked context fights the user's explicit choice.
 
-`onDidUpdate` fires when the panel's model changes and carries no payload — re-read what you need.
+`onDidUpdate` fires when the panel's active context changes and carries no payload — re-read the active repository and working directory. Observe the repository model's own updates for changes within that context.
+
+A repository model remains cached when its views close. Each consumer that reads or observes a working directory must call `getContextPool().retain(workdir)`, await the handle's `ready` promise before reading `handle.context.getRepository()`, and dispose the handle when its view closes. The first handle resumes observation and refreshes snapshots; the last stops watchers and core subscriptions without destroying the shared model. Merely resolving a model with `getRepositoryForWorkdir` does not keep it observed.
+
+The handle follows context replacements. Subscribe to `onDidChangePoolContexts`, await the current `ready` promise, and reacquire the repository from its current `context` before mounting readers after a replacement. The active panel and each open pane hold independent handles.
 
 `buildMultiFilePatch()` returns an owned snapshot. Its creator calls `dispose()` after replacing or closing it, including results rejected as stale before publication. Additional consumers call `retain()` and dispose the returned lease when finished. The native diff view owns an independent lease while mounted. A model remains usable until its final owner releases it; `dispose()` is idempotent and releases only the creator's ownership.
 
@@ -115,7 +128,7 @@ This is the widest service in the workspace and the most likely to move. It is v
 
 ## Teardown
 
-Return a `Disposable` that drops your reference. Repositories come from a shared context pool and are not yours to destroy, and the panel's tabs and dialogs belong to `git-panel`.
+Return a `Disposable` that drops your reference, disposes your observation handles and removes your views. Repositories come from a shared context pool and are not yours to destroy, and the panel's tabs and dialogs belong to `git-panel`.
 
 Dispose each snapshot you built and every consumer lease you acquired. Do not force-destroy a snapshot's `TextBuffer`: a mounted editor or another retained model may still own it.
 
