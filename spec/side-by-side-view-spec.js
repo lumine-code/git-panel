@@ -136,15 +136,13 @@ describe("mounted side-by-side diff view", () => {
     await Promise.all(updates);
   }
 
-  it("defaults to unified and switches through the header into two read-only native editors", async () => {
+  it("defaults to unified and switches into two read-only native editors", async () => {
     const patch = await mount();
     expect(view.state.diffView).toBe("unified");
     expect(view.element.querySelectorAll("lumine-text-editor").length).toBe(1);
     expect(view.refEditor.get().getBuffer()).toBe(patch.getBuffer());
-    const toggle = view.element.querySelector('[data-diff-view="side-by-side"]');
-    expect(toggle).not.toBeNull();
-    await flushViews(() => toggle.click());
-    await settleSelection();
+    expect(view.element.querySelector('[data-diff-view="side-by-side"]')).toBeNull();
+    await layout("side-by-side");
     expect(view.state.diffView).toBe("side-by-side");
     expect(view.element.querySelectorAll("lumine-text-editor").length).toBe(2);
     expect(editor("old").getText()).toBe("before\nold value\nafter\nold later");
@@ -406,7 +404,7 @@ describe("mounted side-by-side diff view", () => {
     expect(placeholder.getProperties().omitEmptyLastRow).toBe(false);
   });
 
-  it("synchronizes vertical scrolling from either editor", async () => {
+  it("uses one right scrollbar for both columns and synchronizes scrolling from either editor", async () => {
     const unchanged = Array.from({ length: 80 }, (_, index) => ` context ${index}`);
     await mount(diff([hunk(["-old", "+new", ...unchanged])]));
     await layout("side-by-side");
@@ -415,16 +413,143 @@ describe("mounted side-by-side diff view", () => {
     oldElement.setHeight(180);
     newElement.setHeight(180);
     await Promise.all([oldElement.getNextUpdatePromise(), newElement.getNextUpdatePromise()]);
+    await renderEditors();
     expect(oldElement.getMaxScrollTop()).toBeGreaterThan(240);
     expect(newElement.getMaxScrollTop()).toBeGreaterThan(240);
+    const oldScrollbar = oldElement.querySelector(".vertical-scrollbar");
+    const sharedScrollbar = newElement.querySelector(".vertical-scrollbar");
+    const visibleScrollbars = Array.from(
+      view.element.querySelectorAll(".vertical-scrollbar"),
+    ).filter((scrollbar) => getComputedStyle(scrollbar).visibility !== "hidden");
+    expect(getComputedStyle(oldScrollbar).visibility).toBe("hidden");
+    expect(visibleScrollbars).toEqual([sharedScrollbar]);
+    expect(sharedScrollbar.getBoundingClientRect().right).toBeCloseTo(
+      newElement.getBoundingClientRect().right,
+      0,
+    );
     oldElement.setScrollTop(120);
-    await flushViews(async () => {});
+    await renderEditors();
     expect(oldElement.getScrollTop()).toBe(120);
     expect(newElement.getScrollTop()).toBe(120);
+    expect(sharedScrollbar.scrollTop).toBe(120);
     newElement.setScrollTop(240);
-    await flushViews(async () => {});
+    await renderEditors();
     expect(newElement.getScrollTop()).toBe(240);
     expect(oldElement.getScrollTop()).toBe(240);
+    expect(sharedScrollbar.scrollTop).toBe(240);
+    sharedScrollbar.scrollTop = 360;
+    sharedScrollbar.dispatchEvent(new Event("scroll"));
+    await renderEditors();
+    expect(newElement.getScrollTop()).toBe(360);
+    expect(oldElement.getScrollTop()).toBe(360);
+    sharedScrollbar.scrollTop = sharedScrollbar.scrollHeight;
+    sharedScrollbar.dispatchEvent(new Event("scroll"));
+    await renderEditors();
+    expect(newElement.getScrollTop()).toBe(newElement.getMaxScrollTop());
+    expect(oldElement.getScrollTop()).toBe(oldElement.getMaxScrollTop());
+    container.style.height = "420px";
+    oldElement.style.height = "100%";
+    newElement.style.height = "100%";
+    await renderEditors();
+    await renderEditors();
+    expect(sharedScrollbar.scrollHeight - sharedScrollbar.clientHeight).toBe(
+      newElement.getMaxScrollTop(),
+    );
+    expect(newElement.getMaxScrollTop()).toBe(oldElement.getMaxScrollTop());
+  });
+
+  it("paints both columns in each smooth wheel frame when gestures reverse and cross the divider", async () => {
+    const unchanged = Array.from(
+      { length: 300 },
+      (_, index) => ` context ${index} ${"x".repeat(400)}`,
+    );
+    await mount(diff([hunk(["-old", "+new", ...unchanged])]));
+    await layout("side-by-side");
+    for (const side of ["old", "new"])
+      editor(side).update({ smoothScrolling: true, wheelSmoothness: 8, scrollSensitivity: 100 });
+    await renderEditors();
+    const oldComponent = editor("old").getElement().getComponent();
+    const newComponent = editor("new").getElement().getComponent();
+    for (const component of [oldComponent, newComponent]) {
+      // Jasmine defaults editors to synchronous updates; production schedules
+      // them. Use the real scheduling mode so a follower frame delay is visible.
+      component.element.setUpdatedSynchronously(false);
+      component.scrollAnimator.raf = () => 0;
+      component.scrollAnimator.caf = () => {};
+    }
+    const assertAlignedFrame = () => {
+      expect(oldComponent.getScrollTop()).toBe(newComponent.getScrollTop());
+      expect(oldComponent.getScrollLeft()).toBe(newComponent.getScrollLeft());
+      expect(oldComponent.renderedScrollTop).toBe(newComponent.renderedScrollTop);
+      expect(oldComponent.renderedScrollLeft).toBe(newComponent.renderedScrollLeft);
+      expect(oldComponent.refs.content.style.transform).toBe(
+        newComponent.refs.content.style.transform,
+      );
+    };
+    for (const [side, deltaX, deltaY] of [
+      ["old", 40, 600],
+      ["new", 40, 600],
+      ["old", -30, -900],
+      ["new", -30, -600],
+      ["old", 80, 1600],
+      ["new", -40, -700],
+      ["old", 20, 1200],
+      ["new", -40, -2000],
+    ]) {
+      const event = new WheelEvent("wheel", {
+        deltaX,
+        deltaY,
+        bubbles: true,
+        cancelable: true,
+      });
+      editor(side).getElement().getComponent().refs.scrollContainer.dispatchEvent(event);
+      expect(event.defaultPrevented).toBe(true);
+      expect(oldComponent.scrollAnimator.isAnimating()).toBe(false);
+      expect(newComponent.scrollAnimator.isAnimating()).toBe(true);
+      for (let frame = 0; frame < 3; frame++) {
+        newComponent.scrollAnimator.advance(1000 / 60);
+        assertAlignedFrame();
+      }
+    }
+    for (let frame = 0; newComponent.scrollAnimator.isAnimating() && frame < 1000; frame++) {
+      newComponent.scrollAnimator.advance(1000 / 60);
+      assertAlignedFrame();
+    }
+    expect(newComponent.scrollAnimator.isAnimating()).toBe(false);
+  });
+
+  it("shares the wheel animation with Before when its removed lines are wider than After", async () => {
+    const unchanged = Array.from({ length: 80 }, (_, index) => ` context ${index}`);
+    await mount(diff([hunk([`-${"x".repeat(2000)}`, "+short line", ...unchanged])]));
+    await layout("side-by-side");
+    for (const side of ["old", "new"])
+      editor(side).update({ smoothScrolling: true, wheelSmoothness: 8, scrollSensitivity: 100 });
+    await renderEditors();
+    const oldComponent = editor("old").getElement().getComponent();
+    const newComponent = editor("new").getElement().getComponent();
+    for (const component of [oldComponent, newComponent]) {
+      component.element.setUpdatedSynchronously(false);
+      component.scrollAnimator.raf = () => 0;
+      component.scrollAnimator.caf = () => {};
+    }
+    expect(oldComponent.getMaxScrollLeft()).toBeGreaterThan(newComponent.getMaxScrollLeft());
+    const event = new WheelEvent("wheel", {
+      deltaX: oldComponent.getMaxScrollLeft() / 1.2,
+      deltaY: 500,
+      bubbles: true,
+      cancelable: true,
+    });
+    newComponent.refs.scrollContainer.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(true);
+    expect(oldComponent.scrollAnimator.isAnimating()).toBe(true);
+    expect(newComponent.scrollAnimator.isAnimating()).toBe(false);
+    for (let frame = 0; oldComponent.scrollAnimator.isAnimating() && frame < 1000; frame++) {
+      oldComponent.scrollAnimator.advance(1000 / 60);
+      expect(oldComponent.renderedScrollTop).toBe(newComponent.renderedScrollTop);
+    }
+    expect(oldComponent.scrollAnimator.isAnimating()).toBe(false);
+    expect(oldComponent.getScrollLeft()).toBe(oldComponent.getMaxScrollLeft());
+    expect(newComponent.getScrollLeft()).toBe(newComponent.getMaxScrollLeft());
   });
 
   it("refreshes the projected editors, preserves a logical line selection, and releases the old patch", async () => {
