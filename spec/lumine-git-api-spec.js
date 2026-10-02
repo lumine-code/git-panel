@@ -220,6 +220,112 @@ describe("Lumine Git transport", () => {
     }
   });
 
+  it("rebuilds both cached unstaged patches after a file is renamed", async () => {
+    const workingDirectory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-rename-patches-")),
+    );
+    const coreRepository = await lumine.repositories.initialize(workingDirectory, {
+      initialBranch: "main",
+    });
+    const panelRepository = new Repository(workingDirectory);
+    const oldPath = path.join(workingDirectory, "old.txt");
+    const newPath = path.join(workingDirectory, "new.txt");
+
+    try {
+      await panelRepository.getLoadPromise();
+      await panelRepository.setConfig("user.name", "Git Panel Specs");
+      await panelRepository.setConfig("user.email", "specs@lumine.invalid");
+      fs.writeFileSync(oldPath, "original\n");
+      fs.writeFileSync(newPath, "destination\n");
+      await panelRepository.stageFiles(["old.txt", "new.txt"]);
+      await panelRepository.commit("Initial commit");
+      fs.writeFileSync(oldPath, "changed\n");
+
+      const oldPatch = await panelRepository.getFilePatchForPath("old.txt");
+      const newPatch = await panelRepository.getFilePatchForPath("new.txt");
+      expect(oldPatch.getFilePatches()[0].getStatus()).toBe("modified");
+
+      fs.renameSync(oldPath, newPath);
+      panelRepository.observeFilesystemChange([{ action: "renamed", path: newPath, oldPath }]);
+
+      const removedPatch = await panelRepository.getFilePatchForPath("old.txt");
+      const replacedPatch = await panelRepository.getFilePatchForPath("new.txt");
+      expect(removedPatch).not.toBe(oldPatch);
+      expect(removedPatch.getFilePatches()[0].getStatus()).toBe("deleted");
+      expect(replacedPatch).not.toBe(newPatch);
+      expect(replacedPatch.getFilePatches()[0].getStatus()).toBe("modified");
+
+      // Buffer paths can become null; the former path remains a cache signal.
+      fs.unlinkSync(newPath);
+      panelRepository.observeFilesystemChange([
+        { action: "renamed", path: null, oldPath: newPath },
+      ]);
+      const unboundPatch = await panelRepository.getFilePatchForPath("new.txt");
+      expect(unboundPatch).not.toBe(replacedPatch);
+      expect(unboundPatch.getFilePatches()[0].getStatus()).toBe("deleted");
+    } finally {
+      panelRepository.destroy();
+      lumine.repositories.forget(coreRepository);
+      await fs.promises.rm(workingDirectory, {
+        recursive: true,
+        force: true,
+        maxRetries: 10,
+        retryDelay: 50,
+      });
+    }
+  });
+
+  it("invalidates commit caches for refs inside a separately named Git directory", async () => {
+    const directory = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-separate-metadata-")),
+    );
+    const workingDirectory = path.join(directory, "worktree");
+    const gitDirectory = path.join(directory, "metadata");
+    fs.mkdirSync(workingDirectory);
+    await lumine.repositories.executeGit([
+      "-C",
+      workingDirectory,
+      "init",
+      "--initial-branch=main",
+      "--separate-git-dir",
+      gitDirectory,
+    ]);
+    const lease = await lumine.repositories.add(workingDirectory, { persist: false });
+    const coreRepository = lease.repository;
+    const panelRepository = new Repository(workingDirectory);
+
+    try {
+      await panelRepository.getLoadPromise();
+      expect(panelRepository.getGitDirectoryPath()).toBe(gitDirectory);
+      await panelRepository.setConfig("user.name", "Git Panel Specs");
+      await panelRepository.setConfig("user.email", "specs@lumine.invalid");
+      const filePath = path.join(workingDirectory, "a.txt");
+      fs.writeFileSync(filePath, "first\n");
+      await panelRepository.stageFiles(["a.txt"]);
+      await panelRepository.commit("First commit");
+      expect((await panelRepository.getLastCommit()).getMessageSubject()).toBe("First commit");
+
+      fs.writeFileSync(filePath, "second\n");
+      await coreRepository.getOperations().stageFiles(["a.txt"]);
+      await coreRepository.getOperations().commit("Second commit");
+      panelRepository.observeFilesystemChange([
+        { action: "modified", path: path.join(gitDirectory, "refs", "heads", "main") },
+      ]);
+
+      expect((await panelRepository.getLastCommit()).getMessageSubject()).toBe("Second commit");
+    } finally {
+      panelRepository.destroy();
+      lease.dispose();
+      lumine.repositories.forget(coreRepository);
+      await fs.promises.rm(directory, {
+        recursive: true,
+        force: true,
+        maxRetries: 10,
+        retryDelay: 50,
+      });
+    }
+  });
+
   it("only resets the commit message when the template actually changed", async () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-commit-template-")),
