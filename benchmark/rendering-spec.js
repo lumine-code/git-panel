@@ -1,4 +1,5 @@
 /** @babel */
+import path from "path";
 import StagingView from "../lib/views/staging-view";
 
 const percentile = (values, fraction) => {
@@ -10,6 +11,9 @@ const elapsed = (start) => Number(process.hrtime.bigint() - start) / 1e6;
 describe("Git panel rendering performance", () => {
   for (const count of [100, 1000]) {
     it(`measures mounting and selection commits for ${count} changed files`, async () => {
+      const stylesheet = lumine.themes.requireStylesheet(
+        path.join(__dirname, "..", "styles", "main.css"),
+      );
       const container = document.createElement("div");
       container.style.cssText = "width:400px;height:600px;overflow:auto";
       jasmine.attachToDOM(container);
@@ -65,6 +69,7 @@ describe("Git panel rendering performance", () => {
         );
       } finally {
         container.remove();
+        stylesheet.dispose();
       }
     }, 30000);
   }
