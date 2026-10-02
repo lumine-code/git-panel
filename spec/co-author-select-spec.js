@@ -1,4 +1,5 @@
 /** @babel */
+import path from "path";
 import CoAuthorSelect from "../lib/views/co-author-select";
 import CoAuthorForm from "../lib/views/co-author-form";
 import CommitView from "../lib/views/commit-view";
@@ -51,6 +52,31 @@ describe("the native co-author picker", () => {
     const [author] = onChange.calls.mostRecent().args[0];
     expect(author.isNew()).toBe(true);
     expect(author.getFullName()).toBe("New Person");
+  });
+
+  it("opens a scrollable author menu without resizing the commit controls", async () => {
+    const stylesheet = lumine.themes.requireStylesheet(
+      path.join(__dirname, "..", "styles", "main.css"),
+    );
+    const options = Array.from(
+      { length: 80 },
+      (_, index) => new Author(`author-${index}@example.com`, `Author ${index}`),
+    );
+    createPicker({ className: "git-panel-CommitView-coAuthorEditor", options });
+    picker.element.style.width = "300px";
+    const closedHeight = picker.element.getBoundingClientRect().height;
+    try {
+      await flushViews(() => picker.updateState({ open: true }));
+      const menu = picker.element.querySelector('[role="listbox"]');
+      expect(picker.element.getBoundingClientRect().height).toBe(closedHeight);
+      expect(menu.clientHeight).toBeGreaterThan(0);
+      expect(menu.scrollHeight).toBeGreaterThan(menu.clientHeight);
+      await flushViews(() => picker.handleKey(35));
+      expect(menu.scrollTop).toBeGreaterThan(0);
+      expect(picker.refs.input.getAttribute("aria-activedescendant")).toBe(picker.refs.focused.id);
+    } finally {
+      stylesheet.dispose();
+    }
   });
 
   it("routes the focused author to the exclusion command and releases unused keys", async () => {

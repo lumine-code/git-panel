@@ -264,6 +264,8 @@
   cursor: text;
 }
 .git-panel-CommitView-coAuthorEditor .Select__control {
+  display: flex;
+  align-items: center;
   background-color: inherit;
   border: none;
   border-radius: 0;
@@ -278,18 +280,33 @@
   color: var(--text-color-subtle);
 }
 .git-panel-CommitView-coAuthorEditor .Select__input-container {
+  display: flex;
+  flex: 1 1 4em;
   line-height: var(--component-line-height);
   padding: 0;
   margin: 0;
 }
 .git-panel-CommitView-coAuthorEditor .Select__input-container input {
+  width: 100%;
+  min-width: 4em;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
   padding: 0;
   line-height: inherit;
 }
 .git-panel-CommitView-coAuthorEditor .Select__value-container {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
   padding: 0;
 }
 .git-panel-CommitView-coAuthorEditor .Select__multi-value {
+  display: inline-flex;
+  align-items: center;
   margin: 0;
   margin-right: 0.5em;
   vertical-align: middle;
@@ -303,6 +320,9 @@
   cursor: default;
 }
 .git-panel-CommitView-coAuthorEditor .Select__menu {
+  position: absolute;
+  z-index: 20;
+  max-height: min(18rem, 50vh);
   top: auto;
   left: -1px;
   right: -1px;
@@ -312,7 +332,8 @@
   border: 1px solid var(--overlay-border-color);
   background-color: var(--overlay-background-color);
   box-shadow: 0 2px 4px hsla(0, 0%, 0%, 0.15);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .git-panel-CommitView-coAuthorEditor .Select__option {
   display: inline-block;
