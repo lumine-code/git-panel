@@ -1,4 +1,5 @@
 /** @babel */
+import { createViewModel } from "./helpers/etch";
 
 import EditorConflictController from "../lib/controllers/editor-conflict-controller";
 import { BASE } from "../lib/models/conflicts/source";
@@ -38,7 +39,7 @@ describe("EditorConflictController", () => {
     };
     const refreshResolutionProgress = jasmine.createSpy("refreshResolutionProgress");
 
-    const controller = new EditorConflictController({
+    const controller = createViewModel(EditorConflictController, {
       editor,
       isRebase: false,
       resolutionProgress,
@@ -51,7 +52,7 @@ describe("EditorConflictController", () => {
     });
     expect(controller.commandTarget).toBe(element);
 
-    controller.componentWillUnmount();
+    controller.willDestroy();
     expect(layer.destroy).toHaveBeenCalled();
     expect(resolutionProgress.clearBuffer).toHaveBeenCalledWith("conflicted.txt");
   });
@@ -95,7 +96,7 @@ describe("EditorConflictController", () => {
       conflicts: new Set([conflict]),
       dismissedConflicts: new Set(),
     };
-    controller.setState = (updater) => {
+    controller.updateState = (updater) => {
       controller.state = { ...controller.state, ...updater(controller.state) };
     };
 

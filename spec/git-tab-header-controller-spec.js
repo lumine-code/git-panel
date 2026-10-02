@@ -1,4 +1,5 @@
 /** @babel */
+import { createViewModel } from "./helpers/etch";
 
 import GitTabHeaderController from "../lib/controllers/git-tab-header-controller";
 import Author, { nullAuthor } from "../lib/models/author";
@@ -27,16 +28,18 @@ describe("GitTabHeaderController committer refresh", () => {
 
   beforeEach(() => {
     previousAuthor = new Author("previous@example.com", "Previous Author");
-    controller = new GitTabHeaderController({ getCommitter: () => Promise.resolve(null) });
+    controller = createViewModel(GitTabHeaderController, {
+      getCommitter: () => Promise.resolve(null),
+    });
     controller._isMounted = true;
     controller.state.committer = previousAuthor;
-    spyOn(controller, "setState").and.callFake((state) => {
+    spyOn(controller, "updateState").and.callFake((state) => {
       controller.state = { ...controller.state, ...state };
     });
     spyOn(console, "error");
   });
 
-  afterEach(() => controller.componentWillUnmount());
+  afterEach(() => controller.willDestroy());
 
   it("clears the avatar and handles a working directory disappearing during a refresh", async () => {
     controller.props.getCommitter = () => Promise.reject(repositoryUnavailable());
@@ -71,7 +74,7 @@ describe("GitTabHeaderController committer refresh", () => {
     await previousRefresh;
 
     expect(controller.state.committer).toBe(currentAuthor);
-    expect(controller.setState).toHaveBeenCalledTimes(1);
+    expect(controller.updateState).toHaveBeenCalledTimes(1);
   });
 
   it("does not clear a replacement avatar when the old repository read fails", async () => {
@@ -86,7 +89,7 @@ describe("GitTabHeaderController committer refresh", () => {
     await previousRefresh;
 
     expect(controller.state.committer).toBe(currentAuthor);
-    expect(controller.setState).toHaveBeenCalledTimes(1);
+    expect(controller.updateState).toHaveBeenCalledTimes(1);
     expect(console.error).not.toHaveBeenCalled();
   });
 
@@ -106,12 +109,12 @@ describe("GitTabHeaderController committer refresh", () => {
     const read = deferred();
     controller.props.getCommitter = () => read.promise;
     const refresh = controller.updateCommitter();
-    controller.componentWillUnmount();
+    controller.willDestroy();
     read.reject(new Error("Old repository failed"));
 
     await refresh;
 
-    expect(controller.setState).not.toHaveBeenCalled();
+    expect(controller.updateState).not.toHaveBeenCalled();
     expect(console.error).not.toHaveBeenCalled();
   });
 });

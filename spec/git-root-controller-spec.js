@@ -1,11 +1,12 @@
 /** @babel */
+import { createViewModel } from "./helpers/etch";
 import path from "path";
 
 import GitRootController from "../lib/controllers/git-root-controller";
 
 describe("GitRootController repository initialization", () => {
   function buildController({ activeEditorPath = null, currentDirectory = null } = {}) {
-    const controller = new GitRootController({
+    const controller = createViewModel(GitRootController, {
       workspace: {
         getActiveTextEditor: () => (activeEditorPath ? { getPath: () => activeEditorPath } : null),
       },
@@ -22,7 +23,7 @@ describe("GitRootController repository initialization", () => {
       },
     });
 
-    controller.setState = (state, callback) => {
+    controller.updateState = (state, callback) => {
       controller.state = { ...controller.state, ...state };
       callback?.();
     };

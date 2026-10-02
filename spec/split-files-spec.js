@@ -1,8 +1,7 @@
 /** @babel */
-/** @jsx React.createElement */
+/** @jsx h */
 import path from "path";
-import React, { act } from "react";
-import { createRoot } from "react-dom/client";
+import { h, flushViews, createViewHost, createViewModel } from "./helpers/etch";
 
 import GitRootController from "../lib/controllers/git-root-controller";
 import CompositeListSelection from "../lib/models/composite-list-selection";
@@ -47,13 +46,11 @@ describe("splitting selected changed files", () => {
     }
 
     it("dispatches each file-list context action through its local command registration", async () => {
-      const previousActEnvironment = global.IS_REACT_ACT_ENVIRONMENT;
-      global.IS_REACT_ACT_ENVIRONMENT = true;
       const container = document.createElement("div");
       jasmine.attachToDOM(container);
-      const root = createRoot(container);
+      const root = createViewHost(container);
       const openFiles = jasmine.createSpy("openFiles").and.resolveTo([]);
-      const view = new StagingView({
+      const view = createViewModel(StagingView, {
         commands: lumine.commands,
         workspace: lumine.workspace,
         workingDirectoryPath: __dirname,
@@ -65,8 +62,8 @@ describe("splitting selected changed files", () => {
       const menuRegistration = lumine.contextMenu.add(menu["context-menu"]);
 
       try {
-        await act(async () =>
-          root.render(
+        await flushViews(async () =>
+          root.update(
             <div className="git-panel-StagingView">
               <div className="git-panel-FilePatchListView-item" />
               {view.renderCommands()}
@@ -94,10 +91,9 @@ describe("splitting selected changed files", () => {
         expect(openFiles).toHaveBeenCalledTimes(4);
       } finally {
         menuRegistration.dispose();
-        await act(async () => root.unmount());
-        view.componentWillUnmount();
+        await flushViews(async () => root.destroy());
+        view.willDestroy();
         container.remove();
-        global.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment;
       }
     });
   });

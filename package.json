@@ -3,6 +3,7 @@
   "author": "lumine-code",
   "main": "./lib/index",
   "files": [
+    "benchmark",
     "docs",
     "img",
     "keymaps",
@@ -37,7 +38,8 @@
     "test": "lumine --test spec",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "benchmark": "lumine --test benchmark"
   },
   "providedServices": {
     "git-panel": {
@@ -52,14 +54,12 @@
     }
   },
   "dependencies": {
+    "@lumine-code/etch": "github:lumine-code/etch#a823441dcf10e786f36915f88422fd0c95d33374",
     "bintrees": "1.0.2",
     "classnames": "2.5.1",
     "dayjs": "^1.11.23",
     "diff": "^9.0.0",
-    "node-emoji": "2.2.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "react-select": "5.10.2"
+    "node-emoji": "2.2.0"
   },
   "consumedServices": {
     "busy-signal": {

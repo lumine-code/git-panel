@@ -1,4 +1,5 @@
 /** @babel */
+import { createViewModel } from "./helpers/etch";
 
 import MultiFilePatchView from "../lib/views/multi-file-patch-view";
 import StagingView from "../lib/views/staging-view";
@@ -27,7 +28,7 @@ function buildPatchView(selectionMode) {
     getBufferRowForDiffPosition: jasmine.createSpy().and.returnValue(12),
     getMaxSelectionIndex: jasmine.createSpy().and.returnValue(3),
   };
-  const view = new MultiFilePatchView({
+  const view = createViewModel(MultiFilePatchView, {
     multiFilePatch,
     onWillUpdatePatch(callback) {
       callbacks.willUpdate = callback;
@@ -71,7 +72,7 @@ describe("scroll behavior", () => {
       view.state = { selection: selectionFor("unstaged", currentItem) };
       view.listElementsByItem = new WeakMap([[currentItem, element]]);
 
-      view.componentDidUpdate(props, {
+      view.didUpdate(props, {
         selection: selectionFor("unstaged", previousItem),
       });
 
@@ -88,7 +89,7 @@ describe("scroll behavior", () => {
       view.state = { selection: selectionFor("unstaged", currentItem) };
       view.listElementsByItem = new WeakMap([[currentItem, element]]);
 
-      view.componentDidUpdate(props, {
+      view.didUpdate(props, {
         selection: selectionFor("unstaged", previousItem),
       });
 
@@ -105,7 +106,7 @@ describe("scroll behavior", () => {
       view.state = { selection: selectionFor("staged", currentItem) };
       view.listElementsByItem = new WeakMap([[currentItem, element]]);
 
-      view.componentDidUpdate(props, {
+      view.didUpdate(props, {
         selection: selectionFor("unstaged", previousItem),
       });
 
@@ -122,7 +123,7 @@ describe("scroll behavior", () => {
       view.state = { selection: selectionFor("unstaged", currentItem) };
       view.listElementsByItem = new WeakMap([[currentItem, element]]);
 
-      view.componentDidUpdate(props, {
+      view.didUpdate(props, {
         selection: selectionFor("unstaged", previousItem),
       });
 
@@ -222,18 +223,18 @@ describe("scroll behavior", () => {
 
       expect(view.didChangeSelectedRows).not.toHaveBeenCalled();
 
-      view.componentDidUpdate(previousProps);
+      view.didUpdate(previousProps);
       expect(view.didChangeSelectedRows).not.toHaveBeenCalled();
       expect(view.nextSelectionMode).toBe("line");
 
       const unrelatedProps = { ...previousProps, multiFilePatch: {} };
       view.props = unrelatedProps;
-      view.componentDidUpdate(previousProps);
+      view.didUpdate(previousProps);
       expect(view.didChangeSelectedRows).not.toHaveBeenCalled();
       expect(view.nextSelectionMode).toBe("line");
 
       view.props = { ...unrelatedProps, multiFilePatch: nextPatch };
-      view.componentDidUpdate(unrelatedProps);
+      view.didUpdate(unrelatedProps);
 
       expect(view.didChangeSelectedRows).toHaveBeenCalledTimes(1);
       expect(view.nextSelectionMode).toBeNull();

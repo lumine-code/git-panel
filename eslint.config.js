@@ -104,13 +104,13 @@ module.exports = [
     rules: {
       "no-constant-condition": ["error", { checkLoops: false }],
       "no-empty": ["error", { allowEmptyCatch: true }],
-      // Arguments are not checked: React callbacks and the many overridden
+      // Arguments are not checked: view callbacks and the many overridden
       // methods in this port declare positional parameters they do not all use,
       // and renaming them would only obscure each signature.
       "no-unused-vars": ["error", { args: "none", varsIgnorePattern: "^_", caughtErrors: "none" }],
-      // These sources already carry a `/** @jsx React.createElement */`
+      // JSX sources declare their factory in a `/** @jsx h */`
       // pragma; `require-pragma` keeps it that way, and `jsx-uses` reads the
-      // factory from it, so nothing here has to name React a second time.
+      // factory from it, keeping JSX references visible to the linter.
       "jsx/require-pragma": "error",
       "jsx/jsx-uses": "error",
       // Only the resolution rules from eslint-plugin-n: they catch imports of

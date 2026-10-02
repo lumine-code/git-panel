@@ -1,4 +1,5 @@
 /** @babel */
+import { createViewModel } from "./helpers/etch";
 
 import GitTabContainer from "../lib/containers/git-tab-container";
 
@@ -21,7 +22,7 @@ describe("GitTabContainer repository data", () => {
       getMergeConflicts: () => Promise.resolve([]),
       getWorkingDirectoryPath: () => "C:\\workdir",
     };
-    const container = new GitTabContainer({ repository });
+    const container = createViewModel(GitTabContainer, { repository });
 
     const dataPromise = container.fetchData(repository);
     loading = false;

@@ -12,7 +12,7 @@ async function until(predicate, maxTicks = 10000) {
 }
 
 describe("GitPackage startup repository selection", () => {
-  it("registers cold global commands without waiting for the React root", async () => {
+  it("registers cold global commands without waiting for the view root", async () => {
     let commands;
     const root = {
       gitTabTracker: {

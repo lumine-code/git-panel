@@ -1,43 +1,59 @@
 /** @babel */
-
-import ReactDOM from "react-dom";
-
+import { h, flushViews } from "./helpers/etch";
 import ObserveModel from "../lib/views/observe-model";
 
-describe("ObserveModel", () => {
-  it("can publish asynchronous model data synchronously", () => {
-    const data = { value: 42 };
+describe("ObserveModel publication", () => {
+  let view;
+  afterEach(() => view?.destroy());
+
+  it("publishes the prepared model and matching DOM in one synchronous update", () => {
     const order = [];
+    const data = { value: 42 };
     const prepareData = jasmine.createSpy().and.callFake(() => order.push("prepare"));
-    const view = new ObserveModel({ prepareData, synchronousUpdates: true });
-    view.mounted = true;
-    spyOn(view.modelObserver, "getActiveModelData").and.returnValue(data);
-    spyOn(view, "setState").and.callFake(() => order.push("publish"));
-    spyOn(ReactDOM, "flushSync").and.callFake((publish) => {
-      order.push("flush");
-      publish();
+    view = new ObserveModel({
+      model: null,
+      fetchData: () => null,
+      prepareData,
+      synchronousUpdates: true,
+      children: (snapshot) => {
+        if (snapshot) order.push("render");
+        return h("span", {}, snapshot ? snapshot.value : "empty");
+      },
     });
-
-    view.didUpdate();
-
+    spyOn(view.modelObserver, "getActiveModelData").and.returnValue(data);
+    view.publishModelData();
     expect(prepareData).toHaveBeenCalledOnceWith(data);
-    expect(ReactDOM.flushSync).toHaveBeenCalledTimes(1);
-    expect(view.setState).toHaveBeenCalledOnceWith({ data });
-    expect(order).toEqual(["flush", "prepare", "publish"]);
+    expect(view.element.textContent).toBe("42");
+    expect(order).toEqual(["prepare", "render"]);
   });
 
-  it("does not prepare or flush the initial empty model state", () => {
+  it("does not prepare the initial empty model state", async () => {
     const prepareData = jasmine.createSpy();
-    const view = new ObserveModel({ prepareData, synchronousUpdates: true });
-    view.mounted = true;
+    view = new ObserveModel({
+      model: null,
+      fetchData: () => null,
+      prepareData,
+      synchronousUpdates: true,
+      children: (snapshot) => h("span", {}, snapshot === null ? "empty" : "populated"),
+    });
     spyOn(view.modelObserver, "getActiveModelData").and.returnValue(null);
-    spyOn(view, "setState");
-    spyOn(ReactDOM, "flushSync");
-
-    view.didUpdate();
-
+    await flushViews(() => view.publishModelData());
     expect(prepareData).not.toHaveBeenCalled();
-    expect(ReactDOM.flushSync).not.toHaveBeenCalled();
-    expect(view.setState).toHaveBeenCalledOnceWith({ data: null });
+    expect(view.element.textContent).toBe("empty");
+  });
+
+  it("ignores model publication after destruction", () => {
+    const prepareData = jasmine.createSpy();
+    view = new ObserveModel({
+      model: null,
+      fetchData: () => null,
+      prepareData,
+      synchronousUpdates: true,
+      children: () => h("span", {}, "initial"),
+    });
+    spyOn(view.modelObserver, "getActiveModelData").and.returnValue({ value: 42 });
+    view.destroy();
+    view.publishModelData();
+    expect(prepareData).not.toHaveBeenCalled();
   });
 });

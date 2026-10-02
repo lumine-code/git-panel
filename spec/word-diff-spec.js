@@ -1,8 +1,7 @@
 /** @babel */
-/** @jsx React.createElement */
+/** @jsx h */
 
-import React, { act } from "react";
-import { createRoot } from "react-dom/client";
+import { h, flushViews, createViewHost, cloneVNode, childrenOf, View } from "./helpers/etch";
 import { buildFilePatch } from "../lib/models/patch";
 import MultiFilePatchView from "../lib/views/multi-file-patch-view";
 import LumineTextEditor from "../lib/lumine/lumine-text-editor";
@@ -39,7 +38,7 @@ function buildReplacement(oldText, newText, options) {
 function renderWordLayers(multiFilePatch) {
   const view = Object.create(MultiFilePatchView.prototype);
   view.props = { multiFilePatch };
-  return view.renderWordDiffDecorations().props.children;
+  return childrenOf(view.renderWordDiffDecorations());
 }
 
 function rangesFromBufferLayer(layer) {
@@ -57,19 +56,27 @@ function expectWordMarkerOptions(layer) {
   }
 }
 
-function WordDiffEditor({ multiFilePatch, refDeletionLayer, refAdditionLayer }) {
-  const view = Object.create(MultiFilePatchView.prototype);
-  view.props = { multiFilePatch };
-  const [deletionDecoration, additionDecoration] = view.renderWordDiffDecorations().props.children;
+class WordDiffEditor extends View {
+  constructor(props, children) {
+    super(props, children);
+    this.initialize();
+  }
 
-  return (
-    <LumineTextEditor buffer={multiFilePatch.getBuffer()} readOnly={true} softWrapped={true}>
-      {deletionDecoration &&
-        React.cloneElement(deletionDecoration, { handleLayer: refDeletionLayer.setter })}
-      {additionDecoration &&
-        React.cloneElement(additionDecoration, { handleLayer: refAdditionLayer.setter })}
-    </LumineTextEditor>
-  );
+  render() {
+    const { multiFilePatch, refDeletionLayer, refAdditionLayer } = this.props;
+    const view = Object.create(MultiFilePatchView.prototype);
+    view.props = { multiFilePatch };
+    const [deletionDecoration, additionDecoration] = childrenOf(view.renderWordDiffDecorations());
+
+    return (
+      <LumineTextEditor buffer={multiFilePatch.getBuffer()} readOnly={true} softWrapped={true}>
+        {deletionDecoration &&
+          cloneVNode(deletionDecoration, { handleLayer: refDeletionLayer.setter })}
+        {additionDecoration &&
+          cloneVNode(additionDecoration, { handleLayer: refAdditionLayer.setter })}
+      </LumineTextEditor>
+    );
+  }
 }
 
 describe("word diff decorations", () => {
@@ -252,7 +259,7 @@ describe("word diff decorations", () => {
       "$\\displaystyle {{\\alpha}}_{ult}=\\dfrac{246.7\\,\\mathrm{MPa}}{70.4\\,\\mathrm{MPa}}=3.506$",
     );
     const container = document.createElement("div");
-    const root = createRoot(container);
+    const root = createViewHost(container);
     const refDeletionLayer = new RefHolder();
     const refAdditionLayer = new RefHolder();
     const retainedBuffers = [
@@ -260,13 +267,11 @@ describe("word diff decorations", () => {
       intermediatePatch.getBuffer(),
       nextPatch.getBuffer(),
     ];
-    const wasActEnvironment = global.IS_REACT_ACT_ENVIRONMENT;
-    global.IS_REACT_ACT_ENVIRONMENT = true;
     document.body.appendChild(container);
 
     try {
-      await act(async () => {
-        root.render(
+      await flushViews(async () => {
+        root.update(
           <WordDiffEditor
             multiFilePatch={initialPatch}
             refDeletionLayer={refDeletionLayer}
@@ -282,7 +287,7 @@ describe("word diff decorations", () => {
       expect(rangesFromDisplayLayer(deletionLayer)).toEqual([]);
       expect(rangesFromDisplayLayer(additionLayer)).toEqual([]);
 
-      await act(async () => {
+      await flushViews(async () => {
         intermediatePatch.adoptBuffer(initialPatch.getPatchBuffer());
       });
 
@@ -299,7 +304,7 @@ describe("word diff decorations", () => {
         ],
       ]);
 
-      await act(async () => {
+      await flushViews(async () => {
         nextPatch.adoptBuffer(initialPatch.getPatchBuffer());
       });
 
@@ -335,10 +340,9 @@ describe("word diff decorations", () => {
         ],
       ]);
     } finally {
-      await act(async () => root.unmount());
+      await flushViews(async () => root.destroy());
       container.remove();
       retainedBuffers.forEach((buffer) => buffer.release());
-      global.IS_REACT_ACT_ENVIRONMENT = wasActEnvironment;
     }
   });
 });

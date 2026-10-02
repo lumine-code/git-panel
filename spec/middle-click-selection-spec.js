@@ -20,9 +20,10 @@ describe("middle-click list selection", () => {
             callback({ focus });
           },
         },
-        setState(update, callback) {
+        updateState(update, callback) {
           this.state = { ...this.state, ...update(this.state) };
-          callback();
+          callback?.();
+          return Promise.resolve();
         },
       };
       const event = {

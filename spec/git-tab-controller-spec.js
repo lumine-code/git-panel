@@ -1,4 +1,5 @@
 /** @babel */
+import { createViewModel } from "./helpers/etch";
 
 import path from "path";
 
@@ -19,7 +20,7 @@ describe("GitTabController identity editor state", () => {
   });
 
   it("automatically opens while a loaded identity is incomplete", () => {
-    const nextState = GitTabController.getDerivedStateFromProps(propsWith({ email: "" }), {
+    const nextState = GitTabController.deriveState(propsWith({ email: "" }), {
       editingIdentity: false,
       manuallyEditingIdentity: false,
     });
@@ -28,7 +29,7 @@ describe("GitTabController identity editor state", () => {
   });
 
   it("closes an automatic prompt when a later read finds a complete identity", () => {
-    const nextState = GitTabController.getDerivedStateFromProps(propsWith(), {
+    const nextState = GitTabController.deriveState(propsWith(), {
       editingIdentity: true,
       manuallyEditingIdentity: false,
     });
@@ -37,7 +38,7 @@ describe("GitTabController identity editor state", () => {
   });
 
   it("does not open automatically for provisional loading data", () => {
-    const nextState = GitTabController.getDerivedStateFromProps(
+    const nextState = GitTabController.deriveState(
       propsWith({ email: "", fetchInProgress: true }),
       {
         editingIdentity: false,
@@ -49,7 +50,7 @@ describe("GitTabController identity editor state", () => {
   });
 
   it("preserves an identity editor that was opened manually", () => {
-    const nextState = GitTabController.getDerivedStateFromProps(propsWith(), {
+    const nextState = GitTabController.deriveState(propsWith(), {
       editingIdentity: true,
       manuallyEditingIdentity: true,
     });
@@ -157,7 +158,7 @@ describe("GitTabController staging re-entry", () => {
   // config and a repository; a null repository leaves UserStore's observer
   // inert, which is all this needs.
   function buildController({ stageFiles, listUpdate }) {
-    const controller = new GitTabController({
+    const controller = createViewModel(GitTabController, {
       username: "",
       email: "",
       repository: null,

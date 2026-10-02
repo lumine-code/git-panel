@@ -34,6 +34,8 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: npm
+      - name: Use HTTPS for GitHub git dependencies
+        run: git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
       - name: Install dependencies
         run: npm ci
       - name: Lint
@@ -44,10 +46,17 @@ jobs:
   integration:
     # Run the whole Jasmine spec suite inside a real Lumine build. The specs use
     # the editor runtime (lumine.repositories, the Git transport, Babel), so this
-    # is the single place they run in CI now that `npm test` no longer does.
-    name: Lumine integration specs
-    runs-on: ubuntu-latest
+    # runs native rendering and lifecycle behavior on every supported desktop OS.
+    name: Lumine integration specs on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    defaults:
+      run:
+        shell: bash
     env:
       LUMINE_JASMINE_REPORTER: list
     steps:
@@ -64,12 +73,15 @@ jobs:
           cache: npm
           cache-dependency-path: lumine/package-lock.json
       - name: Install Linux build and headless-display dependencies
+        if: runner.os == 'Linux'
         run: |
           # A third-party repository on the runner image answering 403 must not
           # fail the job: the lists this actually needs still fetched, and the
           # install below stays strict, so a missing package still stops us.
           sudo apt-get update || true
           sudo apt-get install -y xvfb libx11-dev libxkbfile-dev libsecret-1-dev
+      - name: Use HTTPS for GitHub git dependencies
+        run: git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
       - name: Install package dependencies
         working-directory: git-panel
         run: npm ci
@@ -79,8 +91,6 @@ jobs:
       # @lumine-code git forks with ssh URLs, but the runner has no ssh key, so
       # rewrite them to anonymous HTTPS (the forks are public). Serialized
       # retries absorb flaky git-hosted fork downloads.
-      - name: Use HTTPS for GitHub git dependencies
-        run: git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
       - name: Install editor dependencies
         working-directory: lumine
         run: |
@@ -92,7 +102,13 @@ jobs:
       - name: Rebuild native modules for Electron
         working-directory: lumine
         run: npm run build
-      - name: Run the Jasmine spec suite
+      - name: Run the Jasmine spec suite on Linux
+        if: runner.os == 'Linux'
         working-directory: lumine
         timeout-minutes: 20
         run: xvfb-run --auto-servernum npm start -- --test ../git-panel/spec
+      - name: Run the Jasmine spec suite on Windows and macOS
+        if: runner.os != 'Linux'
+        working-directory: lumine
+        timeout-minutes: 20
+        run: npm start -- --test ../git-panel/spec

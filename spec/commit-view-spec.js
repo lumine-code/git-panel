@@ -1,22 +1,19 @@
 /** @babel */
-/** @jsx React.createElement */
+/** @jsx h */
 import path from "path";
 
-import React, { act } from "react";
-import { createRoot } from "react-dom/client";
+import { h, flushViews, createViewHost } from "./helpers/etch";
 import { Disposable, TextBuffer } from "lumine";
 
 import CommitView from "../lib/views/commit-view";
 
 describe("the commit view controls", () => {
-  let container, root, messageBuffer, tooltipManager, config, currentBranch, wasActEnvironment;
+  let container, root, messageBuffer, tooltipManager, config, currentBranch;
 
   beforeEach(() => {
-    wasActEnvironment = global.IS_REACT_ACT_ENVIRONMENT;
-    global.IS_REACT_ACT_ENVIRONMENT = true;
     container = document.createElement("div");
     document.body.appendChild(container);
-    root = createRoot(container);
+    root = createViewHost(container);
     messageBuffer = new TextBuffer();
     const disposable = () => ({ dispose() {} });
     tooltipManager = {
@@ -35,15 +32,14 @@ describe("the commit view controls", () => {
   });
 
   afterEach(async () => {
-    await act(async () => root.unmount());
+    await flushViews(async () => root.destroy());
     messageBuffer.destroy();
     container.remove();
-    global.IS_REACT_ACT_ENVIRONMENT = wasActEnvironment;
   });
 
   async function renderCommitView() {
-    await act(async () => {
-      root.render(
+    await flushViews(async () => {
+      root.update(
         <CommitView
           workspace={lumine.workspace}
           commands={lumine.commands}
@@ -83,7 +79,8 @@ describe("the commit view controls", () => {
     expect(messageEditor.classList).toContain("git-panel-CommitView-messageEditor");
     expect(characterCount.nextElementSibling).toBe(expandButton);
     expect(bar.querySelector(".git-panel-CommitView-remaining-characters")).toBeNull();
-    expect(bar.lastElementChild).toBe(bar.querySelector(".git-panel-CommitView-commit"));
+    const visibleControls = [...bar.children].filter((element) => !element.hidden);
+    expect(visibleControls.at(-1)).toBe(bar.querySelector(".git-panel-CommitView-commit"));
   });
 
   it("does not scroll an empty commit editor past the end", async () => {

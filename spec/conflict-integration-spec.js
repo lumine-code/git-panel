@@ -1,11 +1,10 @@
 /** @babel */
-/** @jsx React.createElement */
+/** @jsx h */
 
 import fs from "fs";
 import os from "os";
 import path from "path";
-import React, { act } from "react";
-import { createRoot } from "react-dom/client";
+import { h, flushViews, createViewHost } from "./helpers/etch";
 
 import EditorConflictController from "../lib/controllers/editor-conflict-controller";
 import GitTabController from "../lib/controllers/git-tab-controller";
@@ -30,11 +29,8 @@ describe("conflict resolution against a real Git repository", () => {
   let editors;
   let roots;
   let containers;
-  let previousActEnvironment;
 
   beforeEach(async () => {
-    previousActEnvironment = global.IS_REACT_ACT_ENVIRONMENT;
-    global.IS_REACT_ACT_ENVIRONMENT = true;
     editors = [];
     roots = [];
     containers = [];
@@ -54,14 +50,13 @@ describe("conflict resolution against a real Git repository", () => {
 
   afterEach(async () => {
     for (const root of roots) {
-      await act(async () => root.unmount());
+      await flushViews(async () => root.destroy());
     }
     containers.forEach((container) => container.remove());
     editors.forEach((editor) => editor.destroy());
     panelRepository?.destroy();
     strategy?.destroy();
     if (coreRepository) lumine.repositories.forget(coreRepository);
-    global.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment;
   });
 
   async function writeAndCommit(contentsByPath, message) {
@@ -113,7 +108,7 @@ describe("conflict resolution against a real Git repository", () => {
     const container = document.createElement("div");
     document.body.appendChild(container);
     containers.push(container);
-    const root = createRoot(container);
+    const root = createViewHost(container);
     roots.push(root);
 
     const refreshResolutionProgress = async (filePath) => {
@@ -124,8 +119,8 @@ describe("conflict resolution against a real Git repository", () => {
     await refreshResolutionProgress(fullPath);
 
     let controller;
-    await act(async () => {
-      root.render(
+    await flushViews(async () => {
+      root.update(
         <EditorConflictController
           ref={(instance) => (controller = instance)}
           editor={editor}
@@ -171,7 +166,7 @@ describe("conflict resolution against a real Git repository", () => {
 
     standard.editor.setCursorBufferPosition([0, 0]);
     lumine.commands.dispatch(standard.editor.getElement(), "git-panel:resolve-as-ours");
-    await act(async () => nextTurn());
+    await flushViews(async () => nextTurn());
 
     expect(normalizeEol(standard.editor.getText())).toBe("main\n");
     expect(standard.editor.getFileState()).toBe("modified");
@@ -187,7 +182,7 @@ describe("conflict resolution against a real Git repository", () => {
     expect((await strategy.exec(["ls-files", "-u", "--", "standard.txt"])).trim()).not.toBe("");
     expect(notifications.addWarning).toHaveBeenCalled();
 
-    await act(async () => {
+    await flushViews(async () => {
       await standard.editor.save();
       await standard.refreshResolutionProgress(standard.fullPath);
       await nextTurn();
@@ -198,7 +193,7 @@ describe("conflict resolution against a real Git repository", () => {
 
     custom.editor.setCursorBufferPosition([0, 0]);
     lumine.commands.dispatch(custom.editor.getElement(), "git-panel:resolve-as-ours");
-    await act(async () => {
+    await flushViews(async () => {
       await nextTurn();
       await custom.editor.save();
       await custom.refreshResolutionProgress(custom.fullPath);
@@ -244,7 +239,7 @@ describe("conflict resolution against a real Git repository", () => {
 
     rebase.editor.setCursorBufferPosition([0, 0]);
     lumine.commands.dispatch(rebase.editor.getElement(), "git-panel:resolve-as-ours");
-    await act(async () => {
+    await flushViews(async () => {
       await nextTurn();
       await rebase.editor.save();
       await rebase.refreshResolutionProgress(rebase.fullPath);

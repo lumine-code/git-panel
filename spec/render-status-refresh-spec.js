@@ -1,4 +1,5 @@
 /** @babel */
+import { createViewModel } from "./helpers/etch";
 
 import ChangedFileContainer from "../lib/containers/changed-file-container";
 import CommitPreviewContainer from "../lib/containers/commit-preview-container";
@@ -52,7 +53,7 @@ describe("render status across patch refreshes", () => {
   it("preserves an initially expanded changed-file patch", async () => {
     let options;
     const initialPatch = buildFilePatch([diff], { largeDiffThreshold: 10 });
-    const container = new ChangedFileContainer({
+    const container = createViewModel(ChangedFileContainer, {
       largeDiffThreshold: 0,
       relPath: "file.txt",
       stagingStatus: "unstaged",
@@ -90,7 +91,7 @@ describe("render status across patch refreshes", () => {
       isLoading: () => false,
       isPartiallyStaged: () => Promise.resolve(false),
     };
-    const container = new ChangedFileContainer({
+    const container = createViewModel(ChangedFileContainer, {
       relPath: "file.txt",
       repository,
       stagingStatus: "unstaged",
@@ -103,7 +104,7 @@ describe("render status across patch refreshes", () => {
     expect(container.patchBuffer).toBe(cachedBuffer);
     expect(options.patchBuffer).toBeUndefined();
     expect(cachedPatch.adoptBuffer).not.toHaveBeenCalled();
-    container.componentWillUnmount();
+    container.willDestroy();
   });
 
   it("adopts a changed-file patch only after its companion data is ready", async () => {
@@ -120,7 +121,7 @@ describe("render status across patch refreshes", () => {
       hasDiscardHistory: () => false,
       isPartiallyStaged: () => partialStage,
     };
-    const container = new ChangedFileContainer({
+    const container = createViewModel(ChangedFileContainer, {
       relPath: "file.txt",
       stagingStatus: "unstaged",
     });
@@ -155,7 +156,7 @@ describe("render status across patch refreshes", () => {
 
   it("uses the live statuses from the current commit preview on its next refresh", async () => {
     let options;
-    const container = new CommitPreviewContainer({});
+    const container = createViewModel(CommitPreviewContainer, {});
     container.state.renderStatusOverrides = { "remembered.txt": COLLAPSED };
     container.lastMultiFilePatch = multiFilePatch(
       filePatch("expanded.txt", EXPANDED),
@@ -196,7 +197,7 @@ describe("render status across patch refreshes", () => {
       },
       isLoading: () => false,
     };
-    const container = new CommitPreviewContainer({ repository });
+    const container = createViewModel(CommitPreviewContainer, { repository });
 
     const initialData = await container.fetchData(repository);
     container.prepareData(initialData);
@@ -211,6 +212,6 @@ describe("render status across patch refreshes", () => {
     container.prepareData(refreshedData);
 
     expect(refreshedPatch.adoptBuffer).toHaveBeenCalledOnceWith(cachedBuffer);
-    container.componentWillUnmount();
+    container.willDestroy();
   });
 });
