@@ -33,8 +33,8 @@ In your `package.json`:
 type GitPanelBridge = {
   // Diff pipeline
   filterDiff(patch: object, ...args: unknown[]): object;
-  parseDiff(rawDiff: string): object;
-  buildMultiFilePatch(diffs: object[]): object;
+  parseDiff(rawDiff: string): object[];
+  buildMultiFilePatch(diffs: object[], options?: object): MultiFilePatch;
   readonly MultiFilePatchController: unknown;
 
   // Repository model
@@ -52,6 +52,22 @@ type GitPanelBridge = {
   openCloneDialog(): void;
   openInitializeDialog(): void;
   clone(remoteUrl: string, projectPath: string, sourceRemoteName?: string): Promise<void>;
+};
+
+type MultiFilePatch = {
+  retain(): Disposable;
+  dispose(): void;
+  isDisposed(): boolean;
+  clone(options?: object): MultiFilePatch;
+  getBuffer(): TextBuffer;
+  getWordDiffStats(): {
+    pairedLines: number;
+    detailedPairs: number;
+    omittedPairs: number;
+    unchangedPairs: number;
+    reasons: { lineLength: number; editOrTimeLimit: number; populationBudget: number };
+    elapsedMs: number;
+  };
 };
 ```
 
@@ -74,7 +90,7 @@ module.exports = {
 
   renderRemoteDiff(rawDiff) {
     const parsed = this.gitPanel.parseDiff(rawDiff);
-    return this.gitPanel.buildMultiFilePatch([parsed]);
+    return this.gitPanel.buildMultiFilePatch(parsed);
   },
 };
 ```
@@ -89,11 +105,19 @@ module.exports = {
 
 `onDidUpdate` fires when the panel's model changes and carries no payload — re-read what you need.
 
+`buildMultiFilePatch()` returns an owned snapshot. Its creator calls `dispose()` after replacing or closing it, including results rejected as stale before publication. Additional consumers call `retain()` and dispose the returned lease when finished. The native diff view owns an independent lease while mounted. A model remains usable until its final owner releases it; `dispose()` is idempotent and releases only the creator's ownership.
+
+Repository reads return cached models owned by the repository. A consumer can retain a borrowed model, but must clone it before collapsing, expanding, or adopting a pane's reusable buffer. `clone()` creates independent backing text and marker descriptors, so changing one pane cannot alter another pane or the cache. Adoption acquires the target buffer before releasing the obsolete source. A preview slice returned by `getPreviewPatchBuffer()` is separately owned and must be disposed after its content and markers have been copied.
+
+Word highlighting is a bounded detail layer. `getWordDiffStats()` reports computed and omitted pairs and the reasons for omissions; the complete line diff and staging coordinates remain available. See [Diff performance and ownership](performance.md) for the limits.
+
 This is the widest service in the workspace and the most likely to move. It is versioned like every other, so a breaking change arrives under a new name — but treat a dependency on it as coupling to `git-panel`'s internals rather than to a stable API.
 
 ## Teardown
 
 Return a `Disposable` that drops your reference. Repositories come from a shared context pool and are not yours to destroy, and the panel's tabs and dialogs belong to `git-panel`.
+
+Dispose each snapshot you built and every consumer lease you acquired. Do not force-destroy a snapshot's `TextBuffer`: a mounted editor or another retained model may still own it.
 
 ## Versioning
 
