@@ -4,6 +4,7 @@ import { Disposable, Emitter } from "lumine";
 import MultiFilePatchView from "../lib/views/multi-file-patch-view";
 import CommitDetailItem from "../lib/items/commit-detail-item";
 import { buildMultiFilePatch } from "../lib/models/patch";
+import { COLLAPSED } from "../lib/models/patch/patch";
 import { flushViews } from "./helpers/etch";
 
 function diff(name, count = 4, mode = "100644") {
@@ -195,6 +196,52 @@ describe("shared side-by-side diff headers", () => {
     expectAligned(pair);
   });
 
+  it("leaves synthetic header anchors neutral while retaining real missing-line padding", async () => {
+    const modeOnly = diff("mode-only.sh", 0, "100755");
+    modeOnly.hunks = [];
+    const uneven = diff("uneven.txt");
+    uneven.hunks[0].lines = ["-old one", "-old two", "+new", " same"];
+    uneven.hunks[0].oldLineCount = 3;
+    uneven.hunks[0].newLineCount = 2;
+    const pair = await mount([diff("collapsed.txt"), modeOnly, uneven], {
+      renderStatusOverrides: { "collapsed.txt": COLLAPSED },
+    });
+    const neutralRows = pair.projection.rows.flatMap((entry, row) =>
+      entry.oldRow === null && entry.newRow === null ? [row] : [],
+    );
+    expect(neutralRows.length).toBe(2);
+    const paddingFor = (side, row) =>
+      pair.editors[side]
+        .get()
+        .getDecorations()
+        .filter(
+          (decoration) =>
+            decoration
+              .getProperties()
+              .class?.includes("git-panel-SideBySidePatchView-placeholder") &&
+            decoration.getMarker().getBufferRange().intersectsRow(row),
+        );
+    for (const side of ["old", "new"]) {
+      for (const row of neutralRows) expect(paddingFor(side, row).length).toBe(0);
+    }
+    const missingNewRow = pair.projection.rows.findIndex(
+      (entry) => entry.oldRow !== null && entry.newRow === null,
+    );
+    expect(missingNewRow).toBeGreaterThan(-1);
+    expect(paddingFor("new", missingNewRow).length).toBeGreaterThan(0);
+    expect(paddingFor("old", missingNewRow).length).toBe(0);
+    container.style.width = "480px";
+    await paint();
+    await paint();
+    expectAligned(pair);
+    const load = view.element.querySelector(".git-panel-FilePatchView-showDiffButton");
+    await flushViews(() => load.click());
+    await paint();
+    await paint();
+    expect(patch.getFilePatches()[0].getRenderStatus().isVisible()).toBe(true);
+    expectAligned(pair);
+  });
+
   it("shares file metadata and forwards wheel gestures over the header to both columns", async () => {
     const pair = await mount([diff("executable.sh", 100, "100755")]);
     expect(view.element.querySelectorAll(".git-panel-FilePatchView-meta").length).toBe(1);
@@ -215,6 +262,7 @@ describe("shared side-by-side diff headers", () => {
     const raw = diff("example.txt", 100);
     raw.hunks[0].lines[0] = `-${"x".repeat(1000)}`;
     const pair = await mount([raw]);
+    for (const side of ["old", "new"]) pair.editors[side].get().setSoftWrapped(false);
     const oldComponent = pair.editors.old.get().getElement().getComponent();
     const newComponent = pair.editors.new.get().getElement().getComponent();
     for (const side of ["old", "new"]) {

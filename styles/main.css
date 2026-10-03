@@ -1224,11 +1224,17 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   top: 0;
   left: 0;
   right: 0;
-  padding-left: var(--component-padding);
   pointer-events: auto;
 }
-.git-panel-SideBySidePatchView-sharedHeader--hunk .git-panel-HunkHeaderView {
+.git-panel-SideBySidePatchView-sharedHeaders
+  .git-panel-SideBySidePatchView-sharedHeader--hunk
+  .git-panel-HunkHeaderView {
   font-family: var(--editor-font-family);
+  margin-top: var(--component-padding);
+}
+.git-panel-SideBySidePatchView-sharedHeaders
+  .git-panel-SideBySidePatchView-sharedHeader--adjacent
+  .git-panel-HunkHeaderView {
   margin-top: 0;
 }
 .git-panel-SideBySidePatchView-sharedHeaders

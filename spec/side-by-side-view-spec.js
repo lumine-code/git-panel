@@ -149,7 +149,7 @@ describe("mounted side-by-side diff view", () => {
     expect(editor("new").getText()).toBe("before\nnew value\nafter\nnew later");
     for (const side of ["old", "new"]) {
       expect(editor(side).isReadOnly()).toBe(true);
-      expect(editor(side).isSoftWrapped()).toBe(false);
+      expect(editor(side).isSoftWrapped()).toBe(true);
     }
     expect(view.element.querySelectorAll(".git-panel-SideBySidePatchView-sideLabel").length).toBe(
       2,
@@ -363,6 +363,10 @@ describe("mounted side-by-side diff view", () => {
     container.style.width = "700px";
     await mount(diff([hunk([`-${oldPrefix} old`, `+${newPrefix} new`, " after"])]));
     await layout("side-by-side");
+    for (const side of ["old", "new"]) {
+      editor(side).setSoftWrapped(false);
+      editor(side).update({ maxScreenLineLength: Infinity });
+    }
     await renderEditors();
     const oldElement = editor("old").getElement();
     const newElement = editor("new").getElement();
@@ -465,6 +469,7 @@ describe("mounted side-by-side diff view", () => {
     );
     await mount(diff([hunk(["-old", "+new", ...unchanged])]));
     await layout("side-by-side");
+    for (const side of ["old", "new"]) editor(side).setSoftWrapped(false);
     for (const side of ["old", "new"])
       editor(side).update({ smoothScrolling: true, wheelSmoothness: 8, scrollSensitivity: 100 });
     await renderEditors();
@@ -522,6 +527,7 @@ describe("mounted side-by-side diff view", () => {
     const unchanged = Array.from({ length: 80 }, (_, index) => ` context ${index}`);
     await mount(diff([hunk([`-${"x".repeat(2000)}`, "+short line", ...unchanged])]));
     await layout("side-by-side");
+    for (const side of ["old", "new"]) editor(side).setSoftWrapped(false);
     for (const side of ["old", "new"])
       editor(side).update({ smoothScrolling: true, wheelSmoothness: 8, scrollSensitivity: 100 });
     await renderEditors();
