@@ -77,6 +77,27 @@ describe("Lumine Git transport", () => {
     expect(typeof bridge.buildMultiFilePatch).toBe("function");
     const parsed = bridge.parseDiff("diff --git a/a.txt b/a.txt\n@@ -1 +1 @@\n-a\n+b\n");
     expect(parsed[0].newPath).toBe("a.txt");
+    for (const raw of ["", " \t\r\n"]) {
+      expect(bridge.parseDiff(raw)).toEqual([]);
+      const empty = bridge.buildMultiFilePatch(bridge.parseDiff(raw));
+      try {
+        expect(empty.anyPresent()).toBe(false);
+      } finally {
+        empty.dispose();
+      }
+    }
+    const modeOnly = bridge.parseDiff(
+      "diff --git a/a.txt b/a.txt\nold mode 100644\nnew mode 100755\n",
+    );
+    expect(modeOnly[0]).toEqual(
+      jasmine.objectContaining({
+        oldPath: "a.txt",
+        newPath: "a.txt",
+        oldMode: "100644",
+        newMode: "100755",
+        hunks: [],
+      }),
+    );
     expect(typeof bridge.MultiFilePatchController).toBe("function");
 
     // Active-context accessors delegate to the package.
