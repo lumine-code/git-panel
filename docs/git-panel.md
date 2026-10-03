@@ -36,6 +36,8 @@ type GitPanelBridge = {
   parseDiff(rawDiff: string): object[];
   buildMultiFilePatch(diffs: object[], options?: object): MultiFilePatch;
   readonly MultiFilePatchController: unknown;
+  readonly ChangesView: unknown;
+  readonly DiffViewToggle: unknown;
 
   // Repository model
   getAbsentRepository(): Repository;
@@ -68,6 +70,7 @@ type MultiFilePatch = {
   dispose(): void;
   isDisposed(): boolean;
   clone(options?: object): MultiFilePatch;
+  createPreviewPatch(fileName: string, diffRow: number, maxRowCount: number): MultiFilePatch;
   getBuffer(): TextBuffer;
   getWordDiffStats(): {
     pairedLines: number;
@@ -119,6 +122,14 @@ A repository model remains cached when its views close. Each consumer that reads
 The handle follows context replacements. Subscribe to `onDidChangePoolContexts`, await the current `ready` promise, and reacquire the repository from its current `context` before mounting readers after a replacement. The active panel and each open pane hold independent handles.
 
 `buildMultiFilePatch()` returns an owned snapshot. Its creator calls `dispose()` after replacing or closing it, including results rejected as stale before publication. Additional consumers call `retain()` and dispose the returned lease when finished. The native diff view owns an independent lease while mounted. A model remains usable until its final owner releases it; `dispose()` is idempotent and releases only the creator's ownership.
+
+`ChangesView` renders a shared header and the Unified / Side by Side control above a `multiFilePatch`. Pass `title`, `workspace`, `commands`, `config`, `keymaps`, and `tooltips` alongside the patch. `readOnly: true` removes index and discard actions and gives the view an independent clone; replacing the supplied patch preserves the native buffer and selected layout without mutating the caller's snapshot. The view releases its clone when replaced or destroyed. `initialDiffView` selects the starting layout, `onDiffViewChange` receives successful layout changes, and `getDiffView()` / `setDiffView()` read or change the current layout. An optional `refPatchController` receives the underlying controller for source navigation.
+
+`DiffViewToggle` renders the same selected-button control for hosts that supply their own header. It accepts `diffView` and `onDiffViewChange`; the supported values are `unified` and `side-by-side`.
+
+`compact: true` keeps the layout control and line decorations while omitting file and hunk headers for small context previews whose host already identifies the file.
+
+`createPreviewPatch(fileName, diffRow, maxRowCount)` returns an owned, independent snapshot of the context window ending at the requested diff row, using the same limits as `getPreviewPatchBuffer()`. It preserves source line numbers and the existing bounded word-highlight layers rather than recalculating them. Dispose the returned preview when its consumer no longer needs it; the source may be released independently.
 
 Repository reads return cached models owned by the repository. A consumer can retain a borrowed model, but must clone it before collapsing, expanding, or adopting a pane's reusable buffer. `clone()` creates independent backing text and marker descriptors, so changing one pane cannot alter another pane or the cache. Adoption acquires the target buffer before releasing the obsolete source. A preview slice returned by `getPreviewPatchBuffer()` is separately owned and must be disposed after its content and markers have been copied.
 
