@@ -39,9 +39,9 @@ describe("shared side-by-side header margins", () => {
     await globalThis.flushMicrotasks();
   }
 
-  async function mount(longLines = false) {
+  async function mount(longLines = false, diffs) {
     patch = buildMultiFilePatch(
-      [
+      diffs || [
         {
           oldPath: "example.txt",
           newPath: "example.txt",
@@ -97,6 +97,108 @@ describe("shared side-by-side header margins", () => {
     const style = getComputedStyle(element);
     return [style.marginTop, style.marginRight, style.marginBottom, style.marginLeft];
   }
+
+  function file(name, lines, status = "modified") {
+    return {
+      oldPath: status === "added" ? null : name,
+      newPath: status === "deleted" ? null : name,
+      oldMode: status === "added" ? null : "100644",
+      newMode: status === "deleted" ? null : "100644",
+      status,
+      hunks: [
+        {
+          oldStartLine: status === "added" ? 0 : 1,
+          newStartLine: status === "deleted" ? 0 : 1,
+          oldLineCount: lines.filter((line) => line[0] !== "+").length,
+          newLineCount: lines.filter((line) => line[0] !== "-").length,
+          heading: "",
+          lines,
+        },
+      ],
+    };
+  }
+
+  function expectGuttersAligned() {
+    const pair = view.refSideBySide.get();
+    for (const side of ["old", "new"]) {
+      const element = pair.editors[side].get().getElement();
+      const lineHeight = element.getComponent().getLineHeight();
+      for (let row = 0; row < pair.projection.rows.length; row++) {
+        const line = element
+          .getComponent()
+          .refs.lineTiles.querySelector(`.line[data-screen-row="${row}"]`);
+        const gutter = element.querySelector(
+          `.gutter.${side} .line-number[data-screen-row="${row}"]`,
+        );
+        const entry = pair.projection.rows[row];
+        expect(gutter.textContent.trim()).toBe(String(entry[`${side}LineNumber`] ?? ""));
+        expect(gutter.getBoundingClientRect().height)
+          .withContext(`${side} gutter row ${row} height`)
+          .toBeCloseTo(lineHeight, 0);
+        expect(gutter.getBoundingClientRect().top)
+          .withContext(`${side} gutter row ${row} top`)
+          .toBeCloseTo(line.getBoundingClientRect().top, 0);
+        if (side === "old") {
+          const afterLine = pair.editors.new
+            .get()
+            .getElement()
+            .getComponent()
+            .refs.lineTiles.querySelector(`.line[data-screen-row="${row}"]`);
+          expect(line.getBoundingClientRect().top)
+            .withContext(`aligned display row ${row}`)
+            .toBeCloseTo(afterLine.getBoundingClientRect().top, 0);
+        }
+        const icon = element.querySelector(`.gutter.icons .line-number[data-screen-row="${row}"]`);
+        if (icon) {
+          expect(icon.getBoundingClientRect().height)
+            .withContext(`${side} icon row ${row} height`)
+            .toBeCloseTo(lineHeight, 0);
+          expect(icon.getBoundingClientRect().top)
+            .withContext(`${side} icon row ${row} top`)
+            .toBeCloseTo(line.getBoundingClientRect().top, 0);
+        }
+      }
+    }
+  }
+
+  for (const [status, count] of [
+    ["added", 2],
+    ["added", 37],
+    ["deleted", 1],
+  ]) {
+    it(`aligns the first source line and gutter of a ${count}-line ${status} file`, async () => {
+      const sign = status === "added" ? "+" : "-";
+      await mount(false, [
+        file(
+          "sofistik.def",
+          Array.from({ length: count }, (_, row) => `${sign}line ${row + 1}`),
+          status,
+        ),
+      ]);
+      await flushViews(() => view.didChangeDiffView("side-by-side"));
+      await paint();
+      await paint();
+      expectGuttersAligned();
+    });
+  }
+
+  it("aligns rendered gutter rows with added, deleted, and blank text below shared headers", async () => {
+    const icons = lumine.config.get("git-panel.showDiffIconGutter");
+    lumine.config.set("git-panel.showDiffIconGutter", true);
+    try {
+      await mount(false, [
+        file("new.def", ["+SOF_VERSION=2026", "+SOFISTIK_A=1,1,-1"], "added"),
+        file("old.def", ["-SOF_VERSION=2025"], "deleted"),
+        file("main.py", [" before", " ", "-old", "+new", "+extra", " ", " after"]),
+      ]);
+      await flushViews(() => view.didChangeDiffView("side-by-side"));
+      await paint();
+      await paint();
+      expectGuttersAligned();
+    } finally {
+      lumine.config.set("git-panel.showDiffIconGutter", icons);
+    }
+  });
 
   function expectViewportEdges(pair) {
     const before = pair.editors.old.get().getElement();
