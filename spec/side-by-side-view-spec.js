@@ -151,9 +151,7 @@ describe("mounted side-by-side diff view", () => {
       expect(editor(side).isReadOnly()).toBe(true);
       expect(editor(side).isSoftWrapped()).toBe(true);
     }
-    expect(view.element.querySelectorAll(".git-panel-SideBySidePatchView-sideLabel").length).toBe(
-      2,
-    );
+    expect(view.element.querySelector(".git-panel-SideBySidePatchView-toolbar")).toBeNull();
   });
 
   for (const [side, canonicalRow, included, excluded] of [

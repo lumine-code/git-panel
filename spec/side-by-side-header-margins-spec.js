@@ -203,14 +203,17 @@ describe("shared side-by-side header margins", () => {
   function expectViewportEdges(pair) {
     const before = pair.editors.old.get().getElement();
     const after = pair.editors.new.get().getElement();
-    const viewportLeft = before.getComponent().refs.scrollContainer.getBoundingClientRect().left;
+    const viewportLeft = before.getBoundingClientRect().left;
     const viewportRight = after.getBoundingClientRect().right - after.getVerticalScrollbarWidth();
     for (const record of pair.sharedHeaders) {
       const header = record.element.querySelector(
         record.kind === "file" ? ".git-panel-FilePatchView-header" : ".git-panel-HunkHeaderView",
       );
       const headerRect = header.getBoundingClientRect();
-      expect(headerRect.left).toBeCloseTo(viewportLeft, 0);
+      expect(headerRect.left - parseFloat(getComputedStyle(header).marginLeft)).toBeCloseTo(
+        viewportLeft,
+        0,
+      );
       expect(headerRect.right + parseFloat(getComputedStyle(header).marginRight)).toBeCloseTo(
         viewportRight,
         0,

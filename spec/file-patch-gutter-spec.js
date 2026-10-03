@@ -15,7 +15,9 @@ function renderPatchRoot(maxLineNumberWidth) {
     selectionMode: "line",
   };
   view.mounted = false;
+  view.state = { diffView: "unified" };
   view.refRoot = { setter() {} };
+  view.refFullWidthHeaders = { setter() {} };
   view.renderCommands = () => null;
   view.renderEmptyPatch = () => null;
 

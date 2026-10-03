@@ -1086,23 +1086,22 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
 .git-panel-FilePatchView-controlBlock {
   background-color: var(--syntax-background-color);
   display: flow-root;
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: normal;
 }
 .git-panel-FilePatchView-controlBlock .git-panel-FilePatchView-header {
-  margin: calc(var(--component-padding) * 4) var(--component-padding) var(--component-padding) 0;
+  margin: calc(var(--component-padding) * 4) var(--component-padding) var(--component-padding);
 }
 .git-panel-FilePatchView-controlBlock .git-panel-HunkHeaderView {
-  margin: var(--component-padding) var(--component-padding) var(--component-padding) 0;
+  margin: var(--component-padding);
 }
-.git-panel-FilePatchView-controlBlock
-  + .git-panel-FilePatchView-controlBlock
-  .git-panel-FilePatchView-header,
-.git-panel-FilePatchView-controlBlock
-  + .git-panel-FilePatchView-controlBlock
-  .git-panel-HunkHeaderView {
+.git-panel-FilePatchView-controlBlock--adjacent .git-panel-HunkHeaderView {
   margin-top: 0;
 }
 .git-panel-FilePatchView-header {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   border: 1px solid var(--base-border-color);
   border-radius: var(--component-border-radius);
@@ -1121,6 +1120,9 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
 }
 .git-panel-FilePatchView-header .btn-group {
   margin: calc(var(--component-padding) / 2);
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 .git-panel-FilePatchView-title {
   flex: 1;
@@ -1157,10 +1159,26 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   vertical-align: -2px;
 }
 .git-panel-FilePatchView-container {
+  position: relative;
   flex: 1;
   display: flex;
   height: 100%;
   flex-direction: column;
+}
+.git-panel-FullWidthBlockOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+.git-panel-FullWidthBlock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: auto;
 }
 .git-panel-FilePatchView-container .large-file-patch {
   flex: 1;
@@ -1187,19 +1205,6 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   min-height: 0;
   overflow: hidden;
 }
-.git-panel-SideBySidePatchView-toolbar {
-  flex: 0 0 auto;
-  display: flex;
-  border-bottom: 1px solid var(--base-border-color);
-  font-family: var(--font-family);
-  font-size: var(--font-size);
-  color: var(--text-color-subtle);
-}
-.git-panel-SideBySidePatchView-sideLabel {
-  flex: 1 1 0;
-  min-width: 0;
-  padding: calc(var(--component-padding) / 2) var(--component-padding);
-}
 .git-panel-SideBySidePatchView-editors {
   position: relative;
   flex: 1;
@@ -1215,7 +1220,6 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   min-height: 0;
   overflow: hidden;
 }
-.git-panel-SideBySidePatchView-sideLabel + .git-panel-SideBySidePatchView-sideLabel,
 .git-panel-SideBySidePatchView-column + .git-panel-SideBySidePatchView-column {
   box-shadow: inset 1px 0 var(--base-border-color);
 }
@@ -1233,18 +1237,6 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
      both editors' scrollbar measurements equal without drawing a second one. */
   visibility: hidden !important;
 }
-.git-panel-SideBySidePatchView .git-panel-FilePatchView-header {
-  min-height: calc(var(--component-padding) + var(--font-size) * 2.6 + 2px);
-  flex-wrap: nowrap;
-}
-.git-panel-SideBySidePatchView .git-panel-FilePatchView-header .btn-group,
-.git-panel-SideBySidePatchView .git-panel-HunkHeaderView {
-  flex-wrap: nowrap;
-  white-space: nowrap;
-}
-.git-panel-SideBySidePatchView .git-panel-FilePatchView-header .btn-group {
-  flex-shrink: 0;
-}
 .git-panel-SideBySidePatchView-sharedHeaders {
   position: absolute;
   top: 0;
@@ -1260,24 +1252,25 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   right: 0;
   pointer-events: auto;
 }
-.git-panel-SideBySidePatchView-sharedHeaders
-  .git-panel-SideBySidePatchView-sharedHeader--hunk
-  .git-panel-HunkHeaderView {
-  font-family: var(--editor-font-family);
-  margin-top: var(--component-padding);
-}
-.git-panel-SideBySidePatchView-sharedHeaders
-  .git-panel-SideBySidePatchView-sharedHeader--adjacent
-  .git-panel-HunkHeaderView {
-  margin-top: 0;
-}
-.git-panel-SideBySidePatchView-sharedHeaders
-  .git-panel-SideBySidePatchView-sharedHeader--file
-  .git-panel-FilePatchView-header {
-  margin-top: calc(var(--component-padding) * 4);
-}
 .git-panel-SideBySidePatchView-headerSpacer {
   pointer-events: none;
+}
+.git-panel-SideBySidePatchView .gutter[gutter-name$="-wrap-padding"] {
+  contain: style;
+  overflow: visible;
+  min-width: 0;
+  width: 0;
+  flex: 0 0 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.git-panel-SideBySidePatchView-gutterPaddingItem {
+  position: relative;
+}
+.git-panel-SideBySidePatchView-gutterPadding {
+  position: absolute;
+  left: 0;
+  bottom: 0;
 }
 .git-panel-SideBySidePatchView-placeholder {
   background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
@@ -1589,8 +1582,11 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
 /* hunk-header-view.css */
 .git-panel-HunkHeaderView {
   display: flex;
+  flex-wrap: nowrap;
   align-items: stretch;
+  font-family: var(--editor-font-family);
   font-size: var(--font-size);
+  white-space: nowrap;
   border: 1px solid var(--base-border-color);
   border-radius: var(--component-border-radius);
   background-color: color-mix(in srgb, var(--syntax-text-color) 0%, var(--syntax-background-color));

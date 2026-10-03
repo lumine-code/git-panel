@@ -194,12 +194,31 @@ describe("side-by-side soft wrapping", () => {
         next.getBoundingClientRect().top,
         0,
       );
+      const fill = block.gutterFill;
+      const gutters = element.getComponent().refs.gutterContainer.element.getBoundingClientRect();
+      expect(fill.isConnected).toBe(true);
+      expect(fill.getBoundingClientRect().top).toBeCloseTo(
+        block.element.getBoundingClientRect().top,
+        0,
+      );
+      expect(fill.getBoundingClientRect().bottom).toBeCloseTo(
+        block.element.getBoundingClientRect().bottom,
+        0,
+      );
+      expect(fill.getBoundingClientRect().left).toBeCloseTo(gutters.left, 0);
+      expect(fill.getBoundingClientRect().right).toBeCloseTo(gutters.right, 0);
+      expect(getComputedStyle(fill).backgroundColor).toBe(
+        getComputedStyle(block.element).backgroundColor,
+      );
       assertAlignedRows();
     });
   }
 
   it("extends the changed row background through padding on the shorter wrapped side", async () => {
     await mount();
+    for (const side of ["old", "new"])
+      editor(side).setCursorBufferPosition([0, 0], { autoscroll: false });
+    await render();
     for (const [side, index, row, type] of [
       ["new", 1, 0, "added"],
       ["old", 0, 2, "deleted"],
@@ -211,6 +230,10 @@ describe("side-by-side soft wrapping", () => {
       const screenRow = editor(side).screenRowForBufferRow(row);
       const line = element.querySelector(`.line[data-screen-row="${screenRow}"]`);
       expect(block.element.isConnected).toBe(true);
+      expect(block.gutterFill.isConnected).toBe(true);
+      expect(getComputedStyle(block.gutterFill).backgroundColor).toBe(
+        getComputedStyle(block.element).backgroundColor,
+      );
       expect(block.element.classList.contains(`git-panel-FilePatchView-line--${type}`)).toBe(true);
       expect(getComputedStyle(block.element).backgroundColor).toBe(
         getComputedStyle(line).backgroundColor,
@@ -218,6 +241,30 @@ describe("side-by-side soft wrapping", () => {
       expect(getComputedStyle(block.element).backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
       assertAlignedRows();
     }
+  });
+
+  it("restores gutter padding colors after native selection tint is cleared", async () => {
+    await mount();
+    const current = editor("new");
+    const block = pair().wrapAlignment.padding[1].get(0);
+    current.setSelectedBufferRange(
+      [
+        [0, 0],
+        [current.getLastBufferRow(), Infinity],
+      ],
+      { autoscroll: false },
+    );
+    await render();
+    expect(block.element.hasAttribute("data-block-decoration-selected")).toBe(true);
+    expect(getComputedStyle(block.gutterFill).backgroundColor).toBe(
+      getComputedStyle(block.element).backgroundColor,
+    );
+    current.setCursorBufferPosition([0, 0], { autoscroll: false });
+    await render();
+    expect(block.element.hasAttribute("data-block-decoration-selected")).toBe(false);
+    expect(getComputedStyle(block.gutterFill).backgroundColor).toBe(
+      getComputedStyle(block.element).backgroundColor,
+    );
   });
 
   it("reconciles wrapped row padding after a width change while retaining existing blocks", async () => {
