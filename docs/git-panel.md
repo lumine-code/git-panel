@@ -127,6 +127,8 @@ The handle follows context replacements. Subscribe to `onDidChangePoolContexts`,
 
 `DiffViewToggle` renders the same selected-button control for hosts that supply their own header. It accepts `diffView` and `onDiffViewChange`; the supported values are `unified` and `side-by-side`.
 
+Opening directly in Side by Side leaves the diff unselected. Refreshing that snapshot preserves the empty selection, while explicit navigation selects a hunk and layout switching retains the user's selection.
+
 `compact: true` keeps the layout control and line decorations while omitting file and hunk headers for small context previews whose host already identifies the file.
 
 `createPreviewPatch(fileName, diffRow, maxRowCount)` returns an owned, independent snapshot of the context window ending at the requested diff row, using the same limits as `getPreviewPatchBuffer()`. It preserves source line numbers and the existing bounded word-highlight layers rather than recalculating them. Dispose the returned preview when its consumer no longer needs it; the source may be released independently.

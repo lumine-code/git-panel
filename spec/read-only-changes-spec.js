@@ -98,11 +98,22 @@ describe("shared read-only diff views", () => {
     expect(ownBuffer.isDestroyed()).toBe(true);
   });
 
-  it("starts directly in Side by Side with canonical hunk selection and no mutation controls", async () => {
+  it("opens Side by Side without activating the first hunk and keeps mutation controls disabled", async () => {
     await mount(patch(), "side-by-side");
     expect(view.getDiffView()).toBe("side-by-side");
     expect(view.element.querySelectorAll("lumine-text-editor").length).toBe(2);
-    expect(Array.from(controller().state.selectedRows)).toEqual([1, 2]);
+    expect(Array.from(controller().state.selectedRows)).toEqual([]);
+    expect(controller().refView.get().getCanonicalSelectionRanges()).toEqual([]);
+    expect(view.element.querySelector(".git-panel-HunkHeaderView--isSelected")).toBeNull();
+    for (const node of view.element.querySelectorAll("lumine-text-editor")) {
+      expect(
+        node
+          .getModel()
+          .getSelectedBufferRanges()
+          .every((range) => range.isEmpty()),
+      ).toBe(true);
+      expect(node.getScrollTop()).toBe(0);
+    }
     expect(view.element.querySelector(".git-panel-HunkHeaderView-stageButton")).toBeNull();
     expect(view.element.querySelector(".git-panel-FilePatchView-metaButton")).toBeNull();
     expect(view.element.querySelector('button[title="Unstage File"]')).toBeNull();
@@ -117,6 +128,16 @@ describe("shared read-only diff views", () => {
       expect(callback).not.toHaveBeenCalled();
     expect(view.props.discardLines).not.toHaveBeenCalled();
     expect(view.props.undoLastDiscard).not.toHaveBeenCalled();
+  });
+
+  it("keeps a fresh Side by Side view unselected after a snapshot refresh", async () => {
+    await mount(patch(), "side-by-side");
+    await flushViews(() => view.update({ ...view.props, multiFilePatch: patch("refreshed") }));
+    expect(Array.from(controller().state.selectedRows)).toEqual([]);
+    expect(controller().refView.get().getCanonicalSelectionRanges()).toEqual([]);
+    expect(view.element.querySelector(".git-panel-HunkHeaderView--isSelected")).toBeNull();
+    await flushViews(() => controller().refView.get().selectNextHunk());
+    expect(Array.from(controller().state.selectedRows)).toEqual([1, 2]);
   });
 
   it("adopts refreshed snapshots inside the view while preserving layout and source ownership", async () => {
