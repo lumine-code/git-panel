@@ -127,7 +127,7 @@ The handle follows context replacements. Subscribe to `onDidChangePoolContexts`,
 
 `DiffViewToggle` renders the same selected-button control for hosts that supply their own header. It accepts `diffView` and `onDiffViewChange`; the supported values are `unified` and `side-by-side`.
 
-Opening directly in Side by Side leaves the diff unselected. Refreshing that snapshot preserves the empty selection, while explicit navigation selects a hunk and layout switching retains the user's selection.
+Opening directly in Side by Side leaves the diff unselected. Refreshing that snapshot preserves the empty selection, while explicit navigation selects a hunk and layout switching retains the user's selection. Side by Side suppresses the hidden caret's current-line overlay in both columns, including the empty anchors below collapsed files.
 
 `compact: true` keeps the layout control and line decorations while omitting file and hunk headers for small context previews whose host already identifies the file.
 

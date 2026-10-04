@@ -1231,6 +1231,11 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   min-width: 0;
   min-height: 0;
 }
+.git-panel-SideBySidePatchView lumine-text-editor .line.cursor-line {
+  /* The hidden caret must not paint a current-line overlay in either diff
+     column. Keep change and explicit-selection backgrounds intact. */
+  box-shadow: none;
+}
 .git-panel-SideBySidePatchView-column[data-diff-side="old"] .vertical-scrollbar,
 .git-panel-SideBySidePatchView-column[data-diff-side="old"] .scrollbar-corner {
   /* The right editor's native scrollbar controls both aligned columns. Keep

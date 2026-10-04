@@ -36,11 +36,19 @@ describe("shared side-by-side diff headers", () => {
   let patch;
   let container;
   let stylesheet;
+  let cursorLineStyle;
   let publication;
 
   beforeEach(() => {
     publication = new Emitter();
     stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    cursorLineStyle = document.createElement("style");
+    cursorLineStyle.textContent = `
+      lumine-text-editor .line.cursor-line {
+        box-shadow: inset 0 0 0 100vmax rgba(0, 0, 0, 0.1);
+      }
+    `;
+    document.head.appendChild(cursorLineStyle);
     container = document.createElement("div");
     container.style.cssText = "display: flex; width: 700px; height: 400px;";
     jasmine.attachToDOM(container);
@@ -52,6 +60,7 @@ describe("shared side-by-side diff headers", () => {
     publication.dispose();
     container.remove();
     stylesheet.dispose();
+    cursorLineStyle.remove();
   });
 
   async function paint() {
@@ -194,6 +203,56 @@ describe("shared side-by-side diff headers", () => {
     expect(first.getRenderStatus().isVisible()).toBe(true);
     expect(view.element.querySelectorAll(".git-panel-HunkHeaderView").length).toBe(2);
     expectAligned(pair);
+  });
+
+  it("does not paint a cursor line below collapsed files after switching layouts", async () => {
+    const pair = await mount([diff("first.txt"), diff("second.txt")], {
+      renderStatusOverrides: { "first.txt": COLLAPSED, "second.txt": COLLAPSED },
+    });
+    expect(view.element.querySelectorAll(".git-panel-FilePatchView-showDiffButton").length).toBe(2);
+    for (const side of ["old", "new"]) {
+      const editor = pair.editors[side].get();
+      // Multiple synthetic anchor rows produce a nonempty buffer, so hiding
+      // only an empty editor cannot remove the native cursor-line overlay.
+      expect(editor.isEmpty()).toBe(false);
+      for (const row of [0, 1]) {
+        editor.setCursorBufferPosition([row, 0], { autoscroll: false });
+        await paint();
+        const line = editor
+          .getElement()
+          .querySelector(`.line.cursor-line[data-screen-row="${row}"]`);
+        expect(line).not.toBeNull();
+        expect(getComputedStyle(line).boxShadow).toBe("none");
+      }
+    }
+    expectAligned(pair);
+  });
+
+  it("does not tint the cursor row while retaining change colors and explicit selection", async () => {
+    const pair = await mount([diff("first.txt")]);
+    for (const side of ["old", "new"]) {
+      const editor = pair.editors[side].get();
+      for (const row of [0, 1]) {
+        editor.setCursorBufferPosition([row, 0], { autoscroll: false });
+        await paint();
+        const line = editor
+          .getElement()
+          .querySelector(`.line.cursor-line[data-screen-row="${row}"]`);
+        expect(line).not.toBeNull();
+        expect(getComputedStyle(line).boxShadow).toBe("none");
+        if (row === 0) expect(getComputedStyle(line).backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+      }
+      editor.setSelectedBufferRange(
+        [
+          [0, 0],
+          [0, Infinity],
+        ],
+        { autoscroll: false },
+      );
+      await paint();
+      expect(editor.getSelectedBufferRange().isEmpty()).toBe(false);
+      expect(pair.getCanonicalSelectionRanges().some((range) => !range.isEmpty())).toBe(true);
+    }
   });
 
   it("leaves synthetic header anchors neutral while retaining real missing-line padding", async () => {
