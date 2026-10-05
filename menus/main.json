@@ -166,22 +166,6 @@
         "type": "separator"
       }
     ],
-    ".item-views > lumine-text-editor": [
-      {
-        "type": "separator"
-      },
-      {
-        "label": "View Unstaged Changes",
-        "command": "git-panel:view-unstaged-changes-for-current-file"
-      },
-      {
-        "label": "View Staged Changes",
-        "command": "git-panel:view-staged-changes-for-current-file"
-      },
-      {
-        "type": "separator"
-      }
-    ],
     ".git-panel-RecentCommit": [
       {
         "type": "separator"
