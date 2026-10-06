@@ -42,17 +42,21 @@ function buildPatchView(selectionMode) {
     selectionMode,
   });
   const element = {
+    getComponent: () => component,
     getScrollLeft: jasmine.createSpy().and.returnValue(25),
     getScrollTop: jasmine.createSpy().and.returnValue(125),
     setScrollLeft: jasmine.createSpy(),
     setScrollTop: jasmine.createSpy(),
   };
+  const component = { setScrollAnchor: jasmine.createSpy() };
   const editor = {
     getElement: () => element,
     scrollToBufferPosition: jasmine.createSpy(),
     setCursorBufferPosition: jasmine.createSpy(),
     setSelectedBufferRange: jasmine.createSpy(),
     setSelectedBufferRanges: jasmine.createSpy(),
+    isSoftWrapped: () => true,
+    isDestroyed: () => false,
   };
   view.refEditor.setter(editor);
   spyOn(view, "didChangeSelectedRows");
@@ -135,7 +139,11 @@ describe("scroll behavior", () => {
     const views = [];
 
     afterEach(() => {
-      while (views.length > 0) views.pop().subs.dispose();
+      while (views.length > 0) {
+        const view = views.pop();
+        view.fullWidthHeaders.dispose();
+        view.subs.dispose();
+      }
     });
 
     it("restores a line selection without overriding the saved viewport", () => {
@@ -238,6 +246,7 @@ describe("scroll behavior", () => {
 
       expect(view.didChangeSelectedRows).toHaveBeenCalledTimes(1);
       expect(view.nextSelectionMode).toBeNull();
+      expect(view.pendingViewport).toBeNull();
     });
 
     it("keeps an explicit centered scroll authoritative when jumping to a file", () => {

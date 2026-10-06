@@ -122,6 +122,115 @@ describe("native patch ownership", () => {
     }
   });
 
+  it("updates only changed text while preserving markers on untouched rows", () => {
+    const originalDiff = diff();
+    originalDiff.hunks[0].lines = [" prefix line", "-before token", "+after token", " suffix line"];
+    originalDiff.hunks[0].oldLineCount = originalDiff.hunks[0].newLineCount = 3;
+    const nextDiff = {
+      ...originalDiff,
+      hunks: [{ ...originalDiff.hunks[0], lines: [...originalDiff.hunks[0].lines] }],
+    };
+    nextDiff.hunks[0].lines[2] = "+latest token";
+    const original = own(buildMultiFilePatch([originalDiff]));
+    const next = own(buildMultiFilePatch([nextDiff]));
+    const buffer = original.getBuffer();
+    const prefix = buffer.markRange(
+      [
+        [0, 0],
+        [0, 6],
+      ],
+      { invalidate: "never" },
+    );
+    const suffix = buffer.markRange(
+      [
+        [3, 0],
+        [3, 6],
+      ],
+      { invalidate: "never" },
+    );
+    const changes = [];
+    const subscription = buffer.onDidChangeText((event) => changes.push(...event.changes));
+    try {
+      next.adoptBuffer(original.getPatchBuffer());
+      expect(next.getBuffer()).toBe(buffer);
+      expect(buffer.getText()).toBe("prefix line\nbefore token\nlatest token\nsuffix line");
+      expect(prefix.getRange().serialize()).toEqual([
+        [0, 0],
+        [0, 6],
+      ]);
+      expect(suffix.getRange().serialize()).toEqual([
+        [3, 0],
+        [3, 6],
+      ]);
+      expect(changes.length).toBeGreaterThan(0);
+      expect(changes.every((change) => change.oldRange.start.row === 2)).toBe(true);
+      expect(changes.every((change) => change.oldRange.end.row === 2)).toBe(true);
+    } finally {
+      subscription.dispose();
+      prefix.destroy();
+      suffix.destroy();
+    }
+  });
+
+  it("does not change the live text buffer when an identical snapshot is adopted", () => {
+    const original = own(buildMultiFilePatch([diff()]));
+    const next = own(buildMultiFilePatch([diff()]));
+    const didChange = jasmine.createSpy("live text changed");
+    const subscription = original.getBuffer().onDidChangeText(didChange);
+    try {
+      next.adoptBuffer(original.getPatchBuffer());
+      expect(next.getBuffer()).toBe(original.getBuffer());
+      expect(didChange).not.toHaveBeenCalled();
+      expect(next.toString()).toContain("after token");
+    } finally {
+      subscription.dispose();
+    }
+  });
+
+  it("preserves untouched rows when removing a hunk exceeds the native diff bound", () => {
+    const makeHunk = (start, lines) => ({
+      oldStartLine: start,
+      newStartLine: start,
+      oldLineCount: lines.filter((line) => !line.startsWith("+")).length,
+      newLineCount: lines.filter((line) => !line.startsWith("-")).length,
+      heading: "",
+      lines,
+    });
+    const prefix = makeHunk(1, ["-prefix before", "+prefix after"]);
+    const removed = makeHunk(
+      20,
+      Array.from({ length: 100 }, (_, index) => `+${index} ${"deleted content ".repeat(8)}`),
+    );
+    const suffix = makeHunk(200, ["-suffix before", "+suffix after"]);
+    const original = own(buildMultiFilePatch([{ ...diff(), hunks: [prefix, removed, suffix] }]));
+    const next = own(buildMultiFilePatch([{ ...diff(), hunks: [prefix, suffix] }]));
+    const buffer = original.getBuffer();
+    const expectedText = next.getBuffer().getText();
+    const suffixMarker = buffer.markRange(
+      [
+        [102, 0],
+        [102, 6],
+      ],
+      { invalidate: "never" },
+    );
+    const changes = [];
+    const subscription = buffer.onDidChangeText((event) => changes.push(...event.changes));
+    try {
+      next.adoptBuffer(original.getPatchBuffer());
+      expect(buffer.getText()).toBe(expectedText);
+      expect(suffixMarker.getRange().serialize()).toEqual([
+        [2, 0],
+        [2, 6],
+      ]);
+      expect(changes.length).toBeGreaterThan(0);
+      expect(changes.every((change) => change.oldRange.start.row >= 2)).toBe(true);
+      expect(changes.every((change) => change.oldRange.end.row <= 102)).toBe(true);
+    } finally {
+      subscription.dispose();
+      suffixMarker.destroy();
+    }
+  });
+
   it("forks clone buffers and markers so subset highlighting and adoption cannot change the source", () => {
     const source = own(buildMultiFilePatch([diff("a.txt"), diff("b.txt", "old red", "new green")]));
     const oldWordRanges = ranges(source.getWordAdditionLayer());
