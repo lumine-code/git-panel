@@ -76,6 +76,120 @@ describe("ModelObserver", () => {
     observer.destroy();
   });
 
+  for (const error of [
+    Object.assign(new Error("Git cache read was superseded"), { code: "ABORT_ERR" }),
+    Object.assign(new Error("Git patch was superseded"), { name: "AbortError" }),
+  ]) {
+    it(`keeps the accepted snapshot while a pending refresh supersedes ${error.code || error.name}`, async () => {
+      const superseded = deferred();
+      const latest = deferred();
+      const fetchData = jasmine
+        .createSpy()
+        .and.returnValues(Promise.resolve("accepted"), superseded.promise, latest.promise);
+      const didUpdate = jasmine.createSpy();
+      const observer = new ModelObserver({ fetchData, didUpdate });
+      spyOn(console, "error");
+      await observer.setActiveModel(model);
+      didUpdate.calls.reset();
+
+      emitter.emit("did-update");
+      emitter.emit("did-update");
+      superseded.reject(error);
+      await until(() => fetchData.calls.count() === 3);
+
+      expect(observer.getActiveModelData()).toBe("accepted");
+      expect(didUpdate).not.toHaveBeenCalled();
+      expect(console.error).not.toHaveBeenCalled();
+      latest.resolve("latest");
+      await observer.getLastModelDataRefreshPromise();
+      expect(observer.getActiveModelData()).toBe("latest");
+      expect(didUpdate).toHaveBeenCalledOnceWith(model);
+      observer.destroy();
+    });
+  }
+
+  it("keeps accepted data for a live aborted read without starting a retry loop", async () => {
+    const aborted = Object.assign(new Error("Read canceled"), { name: "AbortError" });
+    const fetchData = jasmine
+      .createSpy()
+      .and.callFake(() =>
+        fetchData.calls.count() === 1 ? Promise.resolve("accepted") : Promise.reject(aborted),
+      );
+    const didUpdate = jasmine.createSpy();
+    const observer = new ModelObserver({ fetchData, didUpdate });
+    spyOn(console, "error");
+    await observer.setActiveModel(model);
+    didUpdate.calls.reset();
+
+    await observer.refreshModelData();
+
+    expect(observer.getActiveModelData()).toBe("accepted");
+    expect(didUpdate).not.toHaveBeenCalled();
+    expect(fetchData).toHaveBeenCalledTimes(2);
+    expect(console.error).not.toHaveBeenCalled();
+    observer.destroy();
+  });
+
+  it("restores accepted data when preparation rejects a fetched snapshot before publication", async () => {
+    const latest = deferred();
+    const fetchData = jasmine
+      .createSpy()
+      .and.returnValues(Promise.resolve("accepted"), Promise.resolve("superseded"), latest.promise);
+    const published = [];
+    const didUpdate = jasmine.createSpy().and.callFake(() => {
+      const data = observer.getActiveModelData();
+      if (data === "superseded") {
+        emitter.emit("did-update");
+        throw Object.assign(new Error("Git patch was superseded"), { name: "AbortError" });
+      }
+      published.push(data);
+    });
+    const observer = new ModelObserver({ fetchData, didUpdate });
+    await observer.setActiveModel(model);
+    published.length = 0;
+    didUpdate.calls.reset();
+
+    emitter.emit("did-update");
+    await until(() => fetchData.calls.count() === 3);
+
+    expect(observer.getActiveModelData()).toBe("accepted");
+    expect(published).toEqual([]);
+    expect(didUpdate).toHaveBeenCalledTimes(1);
+    latest.resolve("latest");
+    await observer.getLastModelDataRefreshPromise();
+    expect(published).toEqual(["latest"]);
+    observer.destroy();
+  });
+
+  it("clears obsolete data for a terminal failure even when a newer update is pending", async () => {
+    const unavailable = deferred();
+    const latest = deferred();
+    const fetchData = jasmine
+      .createSpy()
+      .and.returnValues(Promise.resolve("accepted"), unavailable.promise, latest.promise);
+    const didUpdate = jasmine.createSpy();
+    const observer = new ModelObserver({ fetchData, didUpdate });
+    await observer.setActiveModel(model);
+    didUpdate.calls.reset();
+
+    emitter.emit("did-update");
+    emitter.emit("did-update");
+    unavailable.reject(
+      Object.assign(new Error("Repository removed"), {
+        code: "ERR_GIT_REPOSITORY_UNAVAILABLE",
+        name: "AbortError",
+      }),
+    );
+    await until(() => fetchData.calls.count() === 3);
+
+    expect(observer.getActiveModelData()).toBeNull();
+    expect(didUpdate).toHaveBeenCalledOnceWith(model);
+    latest.resolve("replacement");
+    await observer.getLastModelDataRefreshPromise();
+    expect(observer.getActiveModelData()).toBe("replacement");
+    observer.destroy();
+  });
+
   it("does not restore a repository after the active context was cleared", async () => {
     const read = deferred();
     const didUpdate = jasmine.createSpy();
