@@ -13,7 +13,8 @@ import { Keys } from "../lib/models/repository-states/cache/keys";
 import { flushViews } from "./helpers/etch";
 
 async function waitUntil(check) {
-  for (let pass = 0; pass < 10000; pass++) {
+  const deadline = performance.now() + 10000;
+  while (performance.now() < deadline) {
     if (check()) return;
     await new Promise((resolve) => setImmediate(resolve));
   }
