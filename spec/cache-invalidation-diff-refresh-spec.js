@@ -99,7 +99,16 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
     }
   }
 
-  async function refreshThroughEviction({ wrapped, kind }) {
+  async function refreshThroughEviction({ wrapped, kind, layout = "unified", unequal = false }) {
+    if (unequal) {
+      const filePath = path.join(directory, "example.txt");
+      const lines = fs.readFileSync(filePath, "utf8").split("\n");
+      for (const start of [100, 400, 700])
+        for (let row = start; row < start + 40; row++) lines[row] = `new ${row} short`;
+      fs.writeFileSync(filePath, lines.join("\n"));
+      repository.observeFilesystemChange([{ action: "modified", path: filePath }]);
+      await coreRepository.refreshStatusSnapshot();
+    }
     const discardLines = jasmine
       .createSpy("discard real hunk")
       .and.callFake((...args) =>
@@ -113,6 +122,7 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
       workingDirectory: directory,
       relPath: "example.txt",
       stagingStatus: "unstaged",
+      initialDiffView: layout,
       workspace: lumine.workspace,
       config: lumine.config,
       commands: lumine.commands,
@@ -126,13 +136,32 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
     await item.getFilePatchLoadedPromise();
     await settle();
     const editor = item.refEditor.get();
-    editor.setSoftWrapped(wrapped);
-    await settle();
+    if (!wrapped) {
+      editor.setSoftWrapped(false);
+      await settle();
+    }
+    const patchView = item.refPatchController.get().refView.get();
+    const pair = layout === "side-by-side" ? patchView.refSideBySide.get() : null;
+    if (pair) expect(pair.initialScrollAnchor ?? null).toBeNull();
+    const nativeEditors = () =>
+      Array.from(item.element.querySelectorAll("lumine-text-editor"), (element) =>
+        element.getModel(),
+      );
     const element = editor.getElement();
     const component = element.getComponent();
     const buffer = editor.getBuffer();
-    const screenRow = editor.screenPositionForBufferPosition([95, 0]).row;
-    element.setScrollTop(component.pixelPositionBeforeBlocksForRow(screenRow) + 7);
+    const displayRow = pair
+      ? kind === "external"
+        ? pair.projection.patchRowToDisplayRow.get(95)
+        : pair.projection.hunkRanges.get(
+            pair.props.multiFilePatch.getFilePatches()[0].getHunks()[1],
+          )[0]
+      : 95;
+    const screenRow = editor.screenPositionForBufferPosition([displayRow, 0]).row;
+    element.setScrollTop(
+      component.pixelPositionBeforeBlocksForRow(screenRow) +
+        (pair && kind !== "external" ? -30 : 7),
+    );
     if (!wrapped) element.setScrollLeft(180);
     await settle();
     const top = element.getScrollTop();
@@ -141,14 +170,37 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
     expect(editor.isSoftWrapped()).toBe(wrapped);
     if (!wrapped) expect(left).toBeGreaterThan(0);
     expect(item.element.querySelectorAll(".git-panel-HunkHeaderView").length).toBe(3);
+    const originals = nativeEditors().map((model) => {
+      const element = model.getElement();
+      const firstChangedDecoration = model
+        .getDecorations({ type: "line" })
+        .find((decoration) =>
+          /git-panel-FilePatchView-line--(?:added|deleted)/.test(decoration.getProperties().class),
+        );
+      return {
+        model,
+        element,
+        component: element.getComponent(),
+        buffer: model.getBuffer(),
+        marker: pair ? firstChangedDecoration?.getMarker() : null,
+      };
+    });
+    if (pair) {
+      expect(originals.length).toBe(2);
+      expect(originals.every((entry) => entry.marker !== null)).toBe(true);
+      expect(originals[0].element.getScrollTop()).toBeCloseTo(top, 0);
+      if (unequal) expect(pair.wrapAlignment.padding[1].size).toBeGreaterThan(0);
+    }
 
     const frames = [];
     const sample = () => {
       frames.push({
-        editor: item.element.querySelector("lumine-text-editor")?.getModel(),
+        editors: nativeEditors(),
         loading: Boolean(item.element.querySelector(".git-panel-Loader")),
-        top: component.renderedScrollTop,
-        left: component.renderedScrollLeft,
+        offsets: originals.map(({ component }) => [
+          component.renderedScrollTop,
+          component.renderedScrollLeft,
+        ]),
       });
       frame = requestAnimationFrame(sample);
     };
@@ -177,7 +229,7 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
     if (kind === "external") {
       const filePath = path.join(directory, "example.txt");
       const lines = fs.readFileSync(filePath, "utf8").split("\n");
-      for (let row = 400; row < 440; row++) lines[row] = lines[row].replace("new", "old");
+      for (let row = 400; row < 440; row++) lines[row] = `old ${row} ${"long content ".repeat(25)}`;
       fs.writeFileSync(filePath, lines.join("\n"));
       repository.observeFilesystemChange([{ action: "modified", path: filePath }]);
       await coreRepository.refreshStatusSnapshot();
@@ -185,6 +237,13 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
       await flushViews(() => {
         const suffix = kind === "stage" ? "stageButton" : "discardButton";
         const button = item.element.querySelectorAll(`.git-panel-HunkHeaderView-${suffix}`)[1];
+        if (pair) {
+          expect(getComputedStyle(button).visibility).toBe("visible");
+          const buttonRect = button.getBoundingClientRect();
+          const viewport = element.getBoundingClientRect();
+          expect(buttonRect.bottom).toBeGreaterThan(viewport.top);
+          expect(buttonRect.top).toBeLessThan(viewport.bottom);
+        }
         button.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
         button.focus();
         button.click();
@@ -202,7 +261,7 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
       true,
     );
     expect(item.element.querySelector(".git-panel-Loader")).toBeNull();
-    expect(item.element.querySelector("lumine-text-editor")).toBe(element);
+    expect(nativeEditors()).toEqual(originals.map(({ model }) => model));
     expect(editor.isDestroyed()).toBe(false);
     expect(item.refEditor.get()).toBe(editor);
     expect(item.refEditor.get().getBuffer()).toBe(buffer);
@@ -224,11 +283,40 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
     expect(element.getScrollTop()).toBeCloseTo(top, 0);
     expect(element.getScrollLeft()).toBeCloseTo(left, 0);
     expect(frames.length).toBeGreaterThan(0);
-    expect(frames.every((paint) => paint.editor === editor && !paint.loading)).toBe(true);
-    expect(Math.max(...frames.map((paint) => Math.abs(paint.top - top)))).toBeLessThanOrEqual(1);
-    expect(Math.max(...frames.map((paint) => Math.abs(paint.left - left)))).toBeLessThanOrEqual(1);
+    expect(frames.every((paint) => !paint.loading)).toBe(true);
     expect(pool.getContext(directory).getRepository()).toBe(repository);
     expect(repository.isPresent()).toBe(true);
+    originals.forEach((before, index) => {
+      const current = nativeEditors()[index];
+      expect(current).toBe(before.model);
+      expect(current.getBuffer()).toBe(before.buffer);
+      expect(current.getElement()).toBe(before.element);
+      expect(current.getElement().getScrollTop()).toBeCloseTo(top, 0);
+      expect(current.getElement().getScrollLeft()).toBeCloseTo(left, 0);
+      expect(current.isSoftWrapped()).toBe(wrapped);
+      if (before.marker) {
+        const markers = current
+          .getDecorations({ type: "line" })
+          .map((decoration) => decoration.getMarker());
+        expect(markers).toContain(before.marker);
+      }
+      expect(frames.every((paint) => paint.editors[index] === before.model)).toBe(true);
+      expect(
+        Math.max(...frames.map((paint) => Math.abs(paint.offsets[index][0] - top))),
+      ).toBeLessThanOrEqual(1);
+      expect(
+        Math.max(...frames.map((paint) => Math.abs(paint.offsets[index][1] - left))),
+      ).toBeLessThanOrEqual(1);
+    });
+    if (pair) {
+      expect(
+        Math.max(...frames.map((paint) => Math.abs(paint.offsets[0][0] - paint.offsets[1][0]))),
+      ).toBeLessThanOrEqual(1);
+      expect(
+        Math.max(...frames.map((paint) => Math.abs(paint.offsets[0][1] - paint.offsets[1][1]))),
+      ).toBeLessThanOrEqual(1);
+      if (unequal) expect(pair.wrapAlignment.padding[1].size).toBeGreaterThan(0);
+    }
   }
 
   for (const scenario of [
@@ -236,8 +324,11 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
     { wrapped: false, kind: "stage" },
     { wrapped: true, kind: "delete" },
     { wrapped: false, kind: "external" },
+    { wrapped: true, kind: "stage", layout: "side-by-side" },
+    { wrapped: true, kind: "stage", layout: "side-by-side", unequal: true },
+    { wrapped: true, kind: "external", layout: "side-by-side", unequal: true },
   ]) {
-    it(`keeps a ${scenario.wrapped ? "wrapped" : "unwrapped"} real changed-file pane stable after ${scenario.kind} updates supersede its cache read`, async () => {
+    it(`keeps a ${scenario.wrapped ? "wrapped" : "unwrapped"} real ${scenario.layout || "unified"} changed-file pane ${scenario.unequal ? "with unequal line lengths " : ""}stable after ${scenario.kind} updates supersede its cache read`, async () => {
       await refreshThroughEviction(scenario);
     }, 30000);
   }
