@@ -127,20 +127,20 @@ describe("commit detail diff layout", () => {
     const header = view.element.querySelector(
       ".git-panel-CommitDetailView-header.native-key-bindings",
     );
-    const toggles = view.element.querySelectorAll(".git-panel-DiffViewToggle");
+    const toggles = view.element.querySelectorAll(".patch-view-DiffViewToggle");
     expect(toggles.length).toBe(1);
     expect(header.contains(toggles[0])).toBe(true);
     expect(
-      view.element.querySelectorAll(".git-panel-FilePatchView-header [data-diff-view]").length,
+      view.element.querySelectorAll(".patch-view-FilePatchView-header [data-diff-view]").length,
     ).toBe(0);
   }
 
   it("defaults to unified with one accessible layout toggle in the commit header", () => {
     expect(controller().getDiffView()).toBe("unified");
     expect(view.element.querySelectorAll("lumine-text-editor").length).toBe(1);
-    expect(view.element.querySelectorAll(".git-panel-FilePatchView-header").length).toBe(2);
+    expect(view.element.querySelectorAll(".patch-view-FilePatchView-header").length).toBe(2);
     expectOneHeaderToggle();
-    const toggle = view.element.querySelector(".git-panel-DiffViewToggle");
+    const toggle = view.element.querySelector(".patch-view-DiffViewToggle");
     expect(toggle.getAttribute("role")).toBe("group");
     expect(toggle.getAttribute("aria-label")).toBe("Diff view");
     expect(button("unified").textContent).toBe("Unified");

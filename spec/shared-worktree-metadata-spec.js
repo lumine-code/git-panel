@@ -1,5 +1,6 @@
 /** @babel */
 import fs from "fs";
+import externalGit from "./helpers/external-git";
 import os from "os";
 import path from "path";
 import { Disposable } from "lumine";
@@ -33,7 +34,7 @@ describe("Shared worktree metadata", () => {
   });
 
   const git = (directory, ...args) =>
-    lumine.repositories.executeGit([
+    externalGit([
       "-C",
       directory,
       "-c",
@@ -100,7 +101,7 @@ describe("Shared worktree metadata", () => {
     expect((await repository.getCurrentBranch()).getUpstream().getName()).toBe(
       "refs/remotes/origin/main",
     );
-    expect((await repository.getRemotes()).withName("origin").getUrl()).toBe(
+    expect((await repository.getRemotes()).withName("origin").fetchUrl).toBe(
       "https://example.invalid/old.git",
     );
     expect(await repository.getConfig("remote.origin.url")).toBe("https://example.invalid/old.git");
@@ -122,7 +123,7 @@ describe("Shared worktree metadata", () => {
     expect((await repository.getCurrentBranch()).getUpstream().getName()).toBe(
       "refs/remotes/origin/next",
     );
-    expect((await repository.getRemotes()).withName("origin").getUrl()).toBe(
+    expect((await repository.getRemotes()).withName("origin").fetchUrl).toBe(
       "https://example.invalid/new.git",
     );
     expect(await repository.getConfig("remote.origin.url")).toBe("https://example.invalid/new.git");
@@ -196,61 +197,18 @@ describe("Shared worktree metadata", () => {
     });
   }
 
-  it("shares a refs refresh and retains changes arriving while it is pending", async () => {
-    const strategy = new GitShellOutStrategy(fixture);
-    let resolveRefresh;
-    const snapshot = { initialized: true };
-    const repository = {
-      getRefsSnapshot: () => snapshot,
-      refreshRefsSnapshot: jasmine.createSpy("refreshRefsSnapshot").and.callFake(
-        () =>
-          new Promise((resolve) => {
-            resolveRefresh = resolve;
-          }),
-      ),
-    };
-    spyOn(strategy, "getCoreRepository").and.returnValue(Promise.resolve(repository));
-    try {
-      strategy.observeRefsChange();
-      const first = strategy.getRefsSnapshot();
-      const second = strategy.getRefsSnapshot();
-      await Promise.resolve();
-      expect(repository.refreshRefsSnapshot).toHaveBeenCalledTimes(1);
-      strategy.observeRefsChange();
-      resolveRefresh(snapshot);
-      await Promise.all([first, second]);
-      expect(strategy.coveredRefsChangeCount).toBe(1);
-      const trailing = strategy.getRefsSnapshot();
-      await Promise.resolve();
-      expect(repository.refreshRefsSnapshot).toHaveBeenCalledTimes(2);
-      resolveRefresh(snapshot);
-      await trailing;
-      expect(await strategy.getRefsSnapshot()).toBe(snapshot);
-      expect(repository.refreshRefsSnapshot).toHaveBeenCalledTimes(2);
-    } finally {
-      strategy.destroy();
-    }
-  });
-
-  it("acknowledges only the ref changes captured before an explicit core read", async () => {
+  it("delegates resumed ref freshness to core's snapshot refresh", async () => {
     const strategy = new GitShellOutStrategy(fixture);
     const snapshot = { initialized: true };
     const repository = {
-      getRefsSnapshot: () => snapshot,
-      refreshRefsSnapshot: jasmine
-        .createSpy("refreshRefsSnapshot")
-        .and.returnValue(Promise.resolve(snapshot)),
+      ensureRefsSnapshot: jasmine.createSpy("ensure refs").and.resolveTo(snapshot),
+      refreshRefsSnapshot: jasmine.createSpy("refresh refs").and.resolveTo(snapshot),
     };
-    spyOn(strategy, "getCoreRepository").and.returnValue(Promise.resolve(repository));
+    spyOn(strategy, "getCoreRepository").and.resolveTo(repository);
     try {
-      strategy.observeRefsChange();
-      const covered = strategy.captureRefsChangeWatermark();
-      strategy.acknowledgeRefsChangeWatermark(covered);
       expect(await strategy.getRefsSnapshot()).toBe(snapshot);
-      expect(repository.refreshRefsSnapshot).not.toHaveBeenCalled();
       strategy.observeRefsChange();
-      strategy.acknowledgeRefsChangeWatermark(covered);
-      await strategy.getRefsSnapshot();
+      expect(await strategy.getRefsSnapshot()).toBe(snapshot);
       expect(repository.refreshRefsSnapshot).toHaveBeenCalledTimes(1);
     } finally {
       strategy.destroy();

@@ -98,46 +98,6 @@
         "type": "separator"
       }
     ],
-    ".git-panel-FilePatchView--staged": [
-      {
-        "type": "separator"
-      },
-      {
-        "label": "Jump to File",
-        "command": "git-panel:jump-to-file",
-        "after": ["core:confirm"]
-      },
-      {
-        "label": "Unstage Selection",
-        "command": "core:confirm",
-        "beforeGroupContaining": ["core:undo"]
-      },
-      {
-        "type": "separator"
-      }
-    ],
-    ".git-panel-FilePatchView--unstaged": [
-      {
-        "type": "separator"
-      },
-      {
-        "label": "Jump to File",
-        "command": "git-panel:jump-to-file",
-        "after": ["core:confirm"]
-      },
-      {
-        "label": "Stage Selection",
-        "command": "core:confirm",
-        "beforeGroupContaining": ["core:undo"]
-      },
-      {
-        "label": "Discard Selection",
-        "command": "git-panel:discard-selected-lines"
-      },
-      {
-        "type": "separator"
-      }
-    ],
     ".git-panel-CommitView-messageEditor": [
       {
         "type": "separator"

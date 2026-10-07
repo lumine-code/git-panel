@@ -53,7 +53,7 @@ describe("git-panel reactivation", () => {
 
   it("opens the Git dock item on the first cold focus command", async () => {
     const workspaceElement = lumine.views.getView(lumine.workspace);
-    const uri = "lumine-github://dock-item/git";
+    const uri = "lumine-git://dock-item/git";
 
     await lumine.commands.dispatch(workspaceElement, "git-panel:toggle-focus");
 

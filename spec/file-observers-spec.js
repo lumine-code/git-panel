@@ -1,5 +1,6 @@
 /** @babel */
 import fs from "fs";
+import externalGit from "./helpers/external-git";
 import os from "os";
 import path from "path";
 import { Disposable } from "lumine";
@@ -217,7 +218,7 @@ describe("file observation for repository state", () => {
     const gitDirectory = path.join(directory, "metadata");
     fs.mkdirSync(workingDirectory);
     const git = (...args) =>
-      lumine.repositories.executeGit([
+      externalGit([
         "-C",
         workingDirectory,
         "-c",
@@ -268,7 +269,7 @@ describe("file observation for repository state", () => {
     const linkedDirectory = path.join(directory, "linked");
     fs.mkdirSync(mainDirectory);
     const git = (cwd, ...args) =>
-      lumine.repositories.executeGit([
+      externalGit([
         "-C",
         cwd,
         "-c",

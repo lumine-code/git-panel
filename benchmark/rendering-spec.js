@@ -1,4 +1,5 @@
 /** @babel */
+require("../lib/index");
 import path from "path";
 import StagingView from "../lib/views/staging-view";
 

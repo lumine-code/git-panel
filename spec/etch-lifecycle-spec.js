@@ -354,7 +354,7 @@ describe("git-panel native Etch lifecycle", () => {
 
   it("opens, closes and unloads fresh native pane generations repeatedly", async () => {
     const packagePath = path.join(__dirname, "..");
-    const uri = "lumine-github://dock-item/git";
+    const uri = "lumine-git://dock-item/git";
     const workspaceElement = lumine.views.getView(lumine.workspace);
     jasmine.attachToDOM(workspaceElement);
     const generations = [];

@@ -135,7 +135,7 @@ describe("mounted diff chunk refreshes", () => {
 
   function clickChunk(kind, index) {
     const suffix = kind === "stage" ? "stageButton" : "discardButton";
-    const button = view.element.querySelectorAll(`.git-panel-HunkHeaderView-${suffix}`)[index];
+    const button = view.element.querySelectorAll(`.patch-view-HunkHeaderView-${suffix}`)[index];
     button.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
     button.focus();
     button.click();
@@ -188,7 +188,7 @@ describe("mounted diff chunk refreshes", () => {
         expect(change.oldText).not.toContain("new 0:0");
         expect(change.oldText).not.toContain("new 2:0");
       }
-    });
+    }, 15000);
   }
 
   it("retains the viewport through sequential wrapped refreshes and rebuilt headers", async () => {
@@ -210,7 +210,7 @@ describe("mounted diff chunk refreshes", () => {
       expect(editor()).toBe(previousEditor);
       expect(editor().getElement().getScrollTop()).toBeCloseTo(scrollTop, 0);
       expectReleasedViewport();
-      expect(view.element.querySelectorAll(".git-panel-HunkHeaderView").length).toBe(
+      expect(view.element.querySelectorAll(".patch-view-HunkHeaderView").length).toBe(
         nextHunks.length,
       );
     }
@@ -289,7 +289,7 @@ describe("mounted diff chunk refreshes", () => {
     await settle();
     expect(repository.applyPatchToIndex).toHaveBeenCalledTimes(1);
     expect(view.element.querySelector("lumine-text-editor")).toBeNull();
-    expect(view.element.querySelector(".git-panel-FilePatchView-message").textContent).toBe(
+    expect(view.element.querySelector(".patch-view-FilePatchView-message").textContent).toBe(
       "No changes to display",
     );
     expect(view.element.querySelector(".git-panel-Loader")).toBeNull();

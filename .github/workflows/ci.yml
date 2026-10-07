@@ -104,6 +104,9 @@ jobs:
       - name: Rebuild native modules for Electron
         working-directory: lumine
         run: npm run build
+      - name: Install spec packages
+        working-directory: lumine
+        run: node script/install-spec-packages.js --package ../git-panel --home "$RUNNER_TEMP/git-panel-spec-home" --github-env "$GITHUB_ENV"
       - name: Run the Jasmine spec suite on Linux
         if: runner.os == 'Linux'
         working-directory: lumine

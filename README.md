@@ -90,30 +90,24 @@ Commands available in `.git-panel-RecentCommit`:
 - `git-panel:copy-commit-subject`: copy commit subject to clipboard,
 - `git-panel:checkout-to-commit`: check out the commit.
 
-Commands available in `.git-panel-FilePatchView` (diff view):
-
-- `git-panel:toggle-patch-selection-mode`: toggle hunk/line selection mode,
-- `git-panel:discard-selected-lines`: discard selected lines,
-- `git-panel:jump-to-file`: jump to file at selected line,
-- `git-panel:surface`: navigate back to parent view,
-- `git-panel:select-next-hunk`: select next hunk (in hunk mode),
-- `git-panel:select-previous-hunk`: select previous hunk (in hunk mode).
-
 ## Customization
 
-Override the package custom properties in your `styles.css` to adjust its accent and diff colors:
+Override the package custom properties in your `styles.css` to adjust its accent and conflict colors:
 
 ```css
 :root {
   --git-panel-color-blue: var(--accent-indicator-color);
-  --git-panel-diff-added: color-mix(in srgb, var(--syntax-color-added) 22%, transparent);
-  --git-panel-diff-deleted: color-mix(in srgb, var(--syntax-color-removed) 22%, transparent);
+  --git-panel-conflict-ours: var(--syntax-color-added);
+  --git-panel-conflict-base: var(--syntax-color-modified);
 }
 ```
 
 ## Services
 
-- [`git-panel`](docs/git-panel.md): provided to give forge packages access to the repository model, its diffs, and its remotes.
+- `background-tips.provider`: provided to teach the package's headline workflow on the empty workspace.
+- [`git-panel`](docs/git-panel.md): provided to navigate to the Git tab and its init and clone dialogs.
+- `patch-view`: consumed to render editable patches and commit diffs in shared native layouts.
+- `git.commit-links`: consumed to resolve a pushed commit's optional forge URL.
 - `busy-signal`: consumed to report staging, discard, and undo operations on the busy indicator.
 - `linter.editors`: consumed to register the commit message editor for linting, so spell checking reaches it.
 - `autocomplete.watch-editor`: consumed to register the commit message editor for completions, so the suggestion overlay reaches it.

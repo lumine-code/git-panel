@@ -190,32 +190,24 @@ describe("WorkdirContext observation leases", () => {
     lease.dispose();
   });
 
-  it("acknowledges only the status watermark captured before the fresh read", async () => {
-    model.captureStatusChangeWatermark = () => 4;
-    model.acknowledgeStatusChangeWatermark = jasmine.createSpy("acknowledge watermark");
+  it("waits for both core snapshots before reopening an observed view", async () => {
     const status = deferred();
-    core.refreshStatusSnapshot.and.returnValue(status.promise);
-    const context = createContext();
-    const lease = context.retainObservation();
-    await flush();
-    status.resolve({});
-    await lease.ready;
-    expect(model.acknowledgeStatusChangeWatermark).toHaveBeenCalledOnceWith(4);
-    lease.dispose();
-  });
-
-  it("acknowledges the refs watermark captured before the fresh refs read", async () => {
-    model.captureRefsChangeWatermark = () => 6;
-    model.acknowledgeRefsChangeWatermark = jasmine.createSpy("acknowledge refs watermark");
     const refs = deferred();
+    core.refreshStatusSnapshot.and.returnValue(status.promise);
     core.refreshRefsSnapshot.and.returnValue(refs.promise);
     const context = createContext();
     const lease = context.retainObservation();
+    let ready = false;
+    lease.ready.then(() => (ready = true));
     await flush();
-    expect(model.acknowledgeRefsChangeWatermark).not.toHaveBeenCalled();
+    expect(core.refreshStatusSnapshot).toHaveBeenCalledTimes(1);
+    expect(core.refreshRefsSnapshot).toHaveBeenCalledTimes(1);
+    status.resolve({});
+    await flush();
+    expect(ready).toBe(false);
     refs.resolve({});
     await lease.ready;
-    expect(model.acknowledgeRefsChangeWatermark).toHaveBeenCalledOnceWith(6);
+    expect(ready).toBe(true);
     lease.dispose();
   });
 

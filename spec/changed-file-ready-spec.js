@@ -1,4 +1,5 @@
 /** @babel */
+import path from "path";
 import { Emitter } from "lumine";
 import ChangedFileItem from "../lib/items/changed-file-item";
 import { buildFilePatch } from "../lib/models/patch";
@@ -116,12 +117,48 @@ describe("native changed-file readiness and navigation", () => {
 });
 
 describe("current-file diff command guards", () => {
+  it("opens the dispatch target's file repository while another repository is pinned", async () => {
+    const controller = Object.create(GitRootController.prototype);
+    const workingDirectory = path.dirname(__filename);
+    const editor = { getPath: () => __filename, getCursorBufferPosition: () => ({ row: 4 }) };
+    const coreRepository = {
+      getWorkingDirectory: () => workingDirectory,
+      posixRelativePath: () => "selected.js",
+    };
+    const event = { target: document.createElement("div") };
+    const getContext = jasmine
+      .createSpy("resolve dispatch context")
+      .and.returnValue({ editor, repository: coreRepository });
+    const patchView = {
+      getFilePatchLoadedPromise: async () => {},
+      goToDiffLine: jasmine.createSpy("navigate"),
+      focus: jasmine.createSpy("focus"),
+    };
+    const open = jasmine
+      .createSpy("open targeted diff")
+      .and.resolveTo({ whenHydrated: async () => patchView });
+    controller.quietlySelectItem = jasmine.createSpy("select in pinned panel");
+    controller.props = {
+      repositories: { getCommandContext: getContext },
+      repository: { getWorkingDirectoryPath: () => "another-repository" },
+      workspace: { open, getActivePane: () => ({}) },
+      config: { get: () => "none" },
+    };
+    await controller.viewChangesForCurrentFile("unstaged", event);
+    expect(getContext).toHaveBeenCalledOnceWith(event, { scope: "file" });
+    expect(open.calls.mostRecent().args[0]).toBe(
+      ChangedFileItem.buildURI("selected.js", workingDirectory, "unstaged"),
+    );
+    expect(controller.quietlySelectItem).not.toHaveBeenCalled();
+    expect(patchView.goToDiffLine).toHaveBeenCalledOnceWith(5);
+  });
   it("handles a workspace without an active editor and explains unsaved files", async () => {
     let editor = null;
     const controller = Object.create(GitRootController.prototype);
     const warning = jasmine.createSpy("unsaved file warning");
     controller.props = {
       workspace: { getActiveTextEditor: () => editor },
+      repositories: { getCommandContext: () => ({ editor, repository: null }) },
       notificationManager: { addWarning: warning },
     };
     await controller.viewChangesForCurrentFile("unstaged");
@@ -138,10 +175,15 @@ describe("current-file diff command guards", () => {
     const notification = { dismiss: jasmine.createSpy("dismiss explanation") };
     controller.props = {
       workspace: { getActiveTextEditor: () => ({ getPath: () => __filename }) },
+      repositories: {
+        getCommandContext: () => ({ editor: { getPath: () => __filename }, repository: null }),
+        getForPath: () => null,
+        resolveForPath: async () => null,
+      },
       repository: { getWorkingDirectoryPath: () => null },
       project: { relativizePath: () => [projectPath, "example.txt"] },
       notificationManager: {
-        addInfo: (_message, chosen) => {
+        addWarning: (_message, chosen) => {
           options = chosen;
           return notification;
         },
@@ -152,7 +194,7 @@ describe("current-file diff command guards", () => {
     spyOn(controller, "viewChangesForCurrentFile").and.resolveTo();
     await options.buttons[0].onDidClick();
     expect(controller.props.initialize).toHaveBeenCalledOnceWith(projectPath);
-    expect(controller.viewChangesForCurrentFile).toHaveBeenCalledOnceWith("unstaged");
+    expect(controller.viewChangesForCurrentFile).toHaveBeenCalledOnceWith("unstaged", undefined);
     expect(notification.dismiss).toHaveBeenCalled();
   });
 });

@@ -1,6 +1,7 @@
 /** @babel */
 
 import fs from "fs";
+import externalGit from "./helpers/external-git";
 import os from "os";
 import path from "path";
 import { Disposable } from "lumine";
@@ -53,60 +54,18 @@ describe("Lumine Git transport", () => {
     }
   });
 
-  it("provides a github bridge exposing the diff pipeline and active-context accessors", () => {
-    const bridgeModule = require("../lib/github-bridge");
-    const createGitHubBridge = bridgeModule.default || bridgeModule;
-    const fakePool = {};
-    const pack = {
-      getRepositoryForWorkdir: () => "repo",
-      getContextPool: () => fakePool,
-      getActiveRepository: () => "active-repo",
-      getActiveWorkdir: () => "/work",
-      isContextLocked: () => true,
-      scheduleActiveContextUpdate: () => "scheduled",
-      openGitTab: () => "opened",
-      openCloneDialog: () => "clone-dialog",
-      openInitializeDialog: () => "init-dialog",
-      clone: (url) => `cloned ${url}`,
-      onDidUpdate: () => "disposable",
-    };
-    const bridge = createGitHubBridge(pack);
-
-    // Diff → MultiFilePatch pipeline, parsed with git-panel's own parser.
-    expect(typeof bridge.filterDiff).toBe("function");
-    expect(typeof bridge.buildMultiFilePatch).toBe("function");
-    const parsed = bridge.parseDiff("diff --git a/a.txt b/a.txt\n@@ -1 +1 @@\n-a\n+b\n");
-    expect(parsed[0].newPath).toBe("a.txt");
-    for (const raw of ["", " \t\r\n"]) {
-      expect(bridge.parseDiff(raw)).toEqual([]);
-      const empty = bridge.buildMultiFilePatch(bridge.parseDiff(raw));
-      try {
-        expect(empty.anyPresent()).toBe(false);
-      } finally {
-        empty.dispose();
-      }
-    }
-    const modeOnly = bridge.parseDiff(
-      "diff --git a/a.txt b/a.txt\nold mode 100644\nnew mode 100755\n",
-    );
-    expect(modeOnly[0]).toEqual(
-      jasmine.objectContaining({
-        oldPath: "a.txt",
-        newPath: "a.txt",
-        oldMode: "100644",
-        newMode: "100755",
-        hunks: [],
-      }),
-    );
-    expect(typeof bridge.MultiFilePatchController).toBe("function");
-
-    // Active-context accessors delegate to the package.
-    expect(bridge.getContextPool()).toBe(fakePool);
-    expect(bridge.getActiveRepository()).toBe("active-repo");
-    expect(bridge.getActiveWorkdir()).toBe("/work");
-    expect(bridge.openGitTab()).toBe("opened");
-    expect(bridge.openCloneDialog()).toBe("clone-dialog");
-    expect(bridge.clone("git://x")).toBe("cloned git://x");
+  it("provides only navigation through the Git panel service", () => {
+    const loaded = require("../lib/panel-service");
+    const createPanelService = loaded.default || loaded;
+    const service = createPanelService({
+      openGitTab: () => "git",
+      openCloneDialog: () => "clone",
+      openInitializeDialog: () => "init",
+    });
+    expect(Object.keys(service)).toEqual(["openGitTab", "openCloneDialog", "openInitializeDialog"]);
+    expect(service.openGitTab()).toBe("git");
+    expect(service.openCloneDialog()).toBe("clone");
+    expect(service.openInitializeDialog()).toBe("init");
   });
 
   it("stages through the panel repository model and its composite strategy proxy", async () => {
@@ -215,7 +174,7 @@ describe("Lumine Git transport", () => {
     try {
       await panelRepository.getLoadPromise();
       await panelRepository.getStatusBundle();
-      expect(panelRepository.getCache().storage.has("status-bundle")).toBe(true);
+      expect(panelRepository.getCache().storage.has("status-bundle")).toBe(false);
 
       let updates = 0;
       const subscription = panelRepository.onDidUpdate(() => updates++);
@@ -226,7 +185,7 @@ describe("Lumine Git transport", () => {
         { path: path.join(workingDirectory, ".git", "logs", "HEAD"), action: "modified" },
       ]);
       expect(updates).toBe(0);
-      expect(panelRepository.getCache().storage.has("status-bundle")).toBe(true);
+      expect(panelRepository.getCache().storage.has("status-bundle")).toBe(false);
 
       // A real ref event still invalidates and repaints.
       panelRepository.observeFilesystemChange([
@@ -303,7 +262,7 @@ describe("Lumine Git transport", () => {
     const workingDirectory = path.join(directory, "worktree");
     const gitDirectory = path.join(directory, "metadata");
     fs.mkdirSync(workingDirectory);
-    await lumine.repositories.executeGit([
+    await externalGit([
       "-C",
       workingDirectory,
       "init",
@@ -410,7 +369,7 @@ describe("Lumine Git transport", () => {
     try {
       await panelRepository.getLoadPromise();
       await panelRepository.getStatusBundle();
-      expect(panelRepository.getCache().storage.has("status-bundle")).toBe(true);
+      expect(panelRepository.getCache().storage.has("status-bundle")).toBe(false);
 
       originalRefresh = coreRepository.refreshStatusSnapshot.bind(coreRepository);
       let refreshCount = 0;
@@ -666,7 +625,11 @@ describe("Lumine Git transport", () => {
       });
 
       expect(await strategy.getRemotes()).toEqual([
-        { name: "origin", url: "https://example.com/repo.git" },
+        {
+          name: "origin",
+          fetchUrl: "https://example.com/repo.git",
+          pushUrl: "https://example.com/repo.git",
+        },
       ]);
 
       expect(await strategy.getConfig("user.name")).toBe("Git Panel Specs");

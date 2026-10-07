@@ -24,7 +24,6 @@ describe("pane view styles", () => {
       "git-panel-CommitDetail-root",
       "git-panel-GitTimings-root",
       "git-panel-GitCache-root",
-      "git-panel-FilePatchView",
       "git-panel-CommitDetailView",
       "git-panel-GitTimingsView",
       "git-panel-CacheView",
@@ -74,27 +73,27 @@ describe("pane item host factories", () => {
     const factories = [
       [
         GitPackage.prototype.createGitPaneItem,
-        { uri: "lumine-github://dock-item/git" },
+        { uri: "lumine-git://dock-item/git" },
         "GitDockItem",
       ],
       [
         GitPackage.prototype.createFilePatchPaneItem,
-        { uri: "lumine-github://file-patch/a?workdir=b&stagingStatus=staged" },
+        { uri: "lumine-git://file-patch/a?workdir=b&stagingStatus=staged" },
         "FilePatchControllerStub",
       ],
       [
         GitPackage.prototype.createCommitPreviewPaneItem,
-        { uri: "lumine-github://commit-preview?workdir=b" },
+        { uri: "lumine-git://commit-preview?workdir=b" },
         "CommitPreviewStub",
       ],
       [
         GitPackage.prototype.createCommitDetailPaneItem,
-        { uri: "lumine-github://commit-detail?workdir=b&sha=c" },
+        { uri: "lumine-git://commit-detail?workdir=b&sha=c" },
         "CommitDetailStub",
       ],
       [
         GitPackage.prototype.createGitTimingsPaneItem,
-        { uri: "lumine-github://debug/timings" },
+        { uri: "lumine-git://debug/timings" },
         "GitTimingsView",
       ],
     ];

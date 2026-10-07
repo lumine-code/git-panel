@@ -56,7 +56,7 @@ describe("git panel theme roles", () => {
     container.style.setProperty("--text-color-added", "rgb(20,120,40)");
     container.style.setProperty("--text-color-success", "rgb(180,20,140)");
     container.style.setProperty("--background-color-success", "rgb(190,30,150)");
-    container.innerHTML = '<span class="git-panel-FilePatchView-metaDiff--added">Added</span>';
+    container.innerHTML = '<span class="patch-view-FilePatchView-metaDiff--added">Added</span>';
     const added = container.firstElementChild;
     const before = [getComputedStyle(added).color, getComputedStyle(added).backgroundColor];
     container.style.setProperty("--text-color-success", "rgb(1,2,3)");
