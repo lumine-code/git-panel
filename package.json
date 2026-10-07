@@ -99,35 +99,31 @@
       "default": "none"
     },
     "automaticCommitMessageWrapping": {
+      "title": "Wrap Commit Message Bodies",
       "description": "Hard wrap commit message body in commit box to 72 characters. Does not apply to expanded commit editors, where message formatting is preserved.",
       "type": "boolean",
       "default": true
     },
     "graphicalConflictResolution": {
+      "title": "Graphical Conflict Resolution",
       "description": "Resolve merge conflicts with in-editor controls",
       "type": "boolean",
       "default": true
     },
     "excludedUsers": {
+      "title": "Excluded Co-Authors",
       "description": "Comma-separated list of email addresses to exclude from the co-author selection list",
       "type": "string",
       "default": ""
     },
     "reportCannotLocateWorkspaceError": {
+      "title": "Report Missing Repositories",
       "description": "Log an error to the console if a git repository cannot be located for the opened file",
       "type": "boolean",
       "default": false
     },
-    "remoteFetchProtocol": {
-      "description": "Transport protocol to prefer when creating a new git remote",
-      "type": "string",
-      "enum": [
-        "https",
-        "ssh"
-      ],
-      "default": "https"
-    },
     "openGitTabOnStart": {
+      "title": "Open Git Tab on Start",
       "description": "Automatically open the Git tab when the editor starts",
       "type": "boolean",
       "default": false
@@ -139,11 +135,13 @@
       "default": true
     },
     "filesystemEventDiagnostics": {
+      "title": "Filesystem Event Diagnostics",
       "description": "Trace observed filesystem events to the console",
       "type": "boolean",
       "default": false
     },
     "performanceMask": {
+      "title": "Performance Event Patterns",
       "description": "Performance event stream patterns to capture",
       "type": "array",
       "items": {
@@ -154,21 +152,25 @@
       ]
     },
     "performanceToConsole": {
+      "title": "Log Performance to Console",
       "description": "Log performance data to the console",
       "type": "boolean",
       "default": false
     },
     "performanceToDirectory": {
+      "title": "Performance Output Directory",
       "description": "Log performance data to JSON files in a directory",
       "type": "string",
       "default": ""
     },
     "performanceToProfile": {
+      "title": "Capture Performance Profiles",
       "description": "Capture CPU profiles",
       "type": "boolean",
       "default": false
     },
     "debug": {
+      "title": "Debug Logging",
       "description": "Log additional debug information to the console, including caught errors and diagnostics",
       "type": "boolean",
       "default": false
