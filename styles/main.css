@@ -298,7 +298,7 @@
   fill: var(--text-color);
 }
 .git-panel-CommitView-coAuthorToggleIcon.focused {
-  fill: var(--button-background-color-selected);
+  fill: var(--accent-indicator-color);
 }
 .git-panel-CommitView-coAuthorEditor {
   position: relative;
@@ -470,7 +470,7 @@
   line-height: 1;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
-  background-color: var(--syntax-background-color);
+  background-color: var(--input-background-color);
   color: var(--text-color-subtle);
   pointer-events: none;
 }
@@ -725,7 +725,7 @@ lumine-text-editor .git-panel-ResolvedLines {
   color: var(--text-color-highlight);
 }
 .git-panel-Dialog--insetButton:focus {
-  border: solid 1px var(--button-background-color-selected);
+  border: solid 1px var(--accent-indicator-color);
   border-radius: 4px;
 }
 .git-panel-DialogSpinner {
@@ -778,7 +778,8 @@ lumine-text-editor .git-panel-ResolvedLines {
   color: var(--text-color);
 }
 .git-panel-RepositoryHome-owner .Select__option--is-focused {
-  background: var(--button-background-color-selected);
+  color: var(--accent-foreground-color);
+  background: var(--accent-background-color);
 }
 .git-panel-RepositoryHome-owner .Select__option--is-disabled {
   color: var(--text-color-subtle);
@@ -813,7 +814,7 @@ lumine-text-editor .git-panel-ResolvedLines {
   margin: var(--ui-spacing) 0;
 }
 .git-panel-RemoteConfiguration-details summary:focus {
-  border: solid 1px var(--button-background-color-selected);
+  border: solid 1px var(--accent-indicator-color);
   border-radius: 4px;
 }
 .git-panel-RemoteConfiguration-details main {
@@ -834,7 +835,7 @@ lumine-text-editor .git-panel-ResolvedLines {
   margin-right: var(--ui-spacing);
 }
 .git-panel-RemoteConfiguration-protocolOption:focus-within {
-  border: solid 1px var(--button-background-color-selected);
+  border: solid 1px var(--accent-indicator-color);
   border-radius: 4px;
 }
 .git-panel-RemoteConfiguration-sourceRemote {
@@ -864,7 +865,7 @@ lumine-text-editor .git-panel-ResolvedLines {
   margin-right: var(--ui-spacing);
 }
 .git-panel-Create-visibilityOption:focus-within {
-  border: solid 1px var(--button-background-color-selected);
+  border: solid 1px var(--accent-indicator-color);
   border-radius: 4px;
 }
 .git-panel-Create-visibilityOption span::before {
@@ -1335,20 +1336,12 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   border-radius: var(--ui-border-radius);
 }
 .git-panel-FilePatchView-metaDiff--added {
-  color: color-mix(in srgb, var(--text-color-highlight) 40%, var(--text-color-success));
-  background-color: color-mix(
-    in srgb,
-    var(--base-background-color) 80%,
-    var(--background-color-success)
-  );
+  color: color-mix(in srgb, var(--text-color-highlight) 40%, var(--text-color-added));
+  background-color: color-mix(in srgb, var(--base-background-color) 80%, var(--text-color-added));
 }
 .git-panel-FilePatchView-metaDiff--removed {
-  color: color-mix(in srgb, var(--text-color-highlight) 40%, var(--text-color-error));
-  background-color: color-mix(
-    in srgb,
-    var(--base-background-color) 80%,
-    var(--background-color-error)
-  );
+  color: color-mix(in srgb, var(--text-color-highlight) 40%, var(--text-color-removed));
+  background-color: color-mix(in srgb, var(--base-background-color) 80%, var(--text-color-removed));
 }
 .git-panel-FilePatchView-metaDiff--fullWidth {
   display: block;
@@ -1461,8 +1454,8 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
 .git-panel-FilePatchView:focus-within
   .gutter[gutter-name="git-panel-comment-icon"]
   .git-panel-editorCommentGutterIcon.git-panel-FilePatchView-line--selected {
-  color: var(--button-text-color-selected);
-  background: var(--button-background-color-selected);
+  color: var(--accent-foreground-color);
+  background: var(--accent-background-color);
 }
 .git-panel-FilePatchView:focus-within
   .gutter.old
@@ -1481,7 +1474,7 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
 .git-panel-FilePatchView:focus-within lumine-text-editor .selection .region {
   background-color: color-mix(
     in srgb,
-    var(--button-background-color-selected) 25%,
+    var(--syntax-selection-color) 25%,
     var(--syntax-background-color)
   );
 }
@@ -1491,7 +1484,7 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   .region {
   background-color: color-mix(
     in srgb,
-    var(--button-background-color-selected) 8%,
+    var(--syntax-selection-color) 8%,
     var(--syntax-background-color)
   );
 }
@@ -1668,8 +1661,8 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   background-color: var(--background-color-selected);
 }
 .git-panel-FilePatchView:focus-within .git-panel-HunkHeaderView--isSelected {
-  color: var(--button-text-color-selected);
-  background-color: var(--button-background-color-selected);
+  color: var(--accent-foreground-color);
+  background-color: var(--accent-background-color);
 }
 .git-panel-FilePatchView:focus-within
   .git-panel-HunkHeaderView--isSelected
@@ -1680,7 +1673,7 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
 .git-panel-FilePatchView:focus-within
   .git-panel-HunkHeaderView--isSelected
   .git-panel-HunkHeaderView-discardButton:hover {
-  background-color: color-mix(in srgb, var(--button-background-color-selected) 96%, white);
+  background-color: color-mix(in srgb, var(--accent-background-color) 96%, white);
 }
 .git-panel-FilePatchView:focus-within
   .git-panel-HunkHeaderView--isSelected
@@ -1691,7 +1684,7 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
 .git-panel-FilePatchView:focus-within
   .git-panel-HunkHeaderView--isSelected
   .git-panel-HunkHeaderView-discardButton:active {
-  background-color: color-mix(in srgb, var(--button-background-color-selected) 96%, black);
+  background-color: color-mix(in srgb, var(--accent-background-color) 96%, black);
 }
 
 /* loader.css */
@@ -1990,8 +1983,8 @@ pre.git-panel-Message-description {
   background: var(--background-color-selected);
 }
 .git-panel-RecentCommits:focus .git-panel-RecentCommit.is-selected {
-  color: var(--button-text-color-selected);
-  background: var(--button-background-color-selected);
+  color: var(--accent-foreground-color);
+  background: var(--accent-background-color);
 }
 @media (min-height: 900px) {
   .git-panel-RecentCommits {
@@ -2088,7 +2081,7 @@ pre.git-panel-Message-description {
   width: auto;
 }
 .git-panel-StagingView-headerButton.selected {
-  color: var(--text-color-selected);
+  color: var(--button-text-color-selected);
   background-color: var(--button-background-color-selected);
 }
 .git-panel-StagingView-title {
@@ -2112,8 +2105,8 @@ pre.git-panel-Message-description {
   background: var(--background-color-selected);
 }
 .git-panel-StagingView:focus .git-panel-StagingView-group.is-focused .is-selected {
-  color: var(--button-text-color-selected);
-  background: var(--button-background-color-selected);
+  color: var(--accent-foreground-color);
+  background: var(--accent-background-color);
 }
 
 /* timings-view.css */
