@@ -115,44 +115,6 @@
   flex: 1;
   min-width: 0;
 }
-.git-panel-DiffViewToggle {
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-.git-panel-ChangesView {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-}
-.git-panel-ChangesView-header {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--ui-spacing);
-  flex: 0 0 auto;
-  padding: calc(var(--ui-spacing) * 2);
-  border-bottom: 1px solid var(--pane-item-border-color);
-  background-color: var(--pane-item-background-color);
-}
-.git-panel-ChangesView-title {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  font-size: 1.4em;
-  line-height: 1.3;
-  color: var(--text-color-highlight);
-}
-.git-panel-ChangesView--compact .git-panel-ChangesView-header {
-  padding: var(--ui-spacing);
-}
-.git-panel-ChangesView--compact .git-panel-ChangesView-title {
-  font-size: 1em;
-}
-.git-panel-ChangesView .git-panel-FilePatchView,
-.git-panel-ChangesView .git-panel-FilePatchView-container {
-  min-height: 0;
-}
 .git-panel-CommitDetailView-avatar {
   border-radius: var(--ui-border-radius);
   height: 16px;
@@ -1276,9 +1238,7 @@ pre.git-panel-Message-description {
 .git-panel-CommitDetail-root,
 .git-panel-GitTimings-root,
 .git-panel-GitCache-root,
-.git-panel-FilePatchView,
 .git-panel-CommitDetailView,
-.git-panel-ChangesView,
 .git-panel-GitTimingsView,
 .git-panel-CacheView {
   background-color: var(--syntax-background-color);
