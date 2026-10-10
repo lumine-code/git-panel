@@ -121,6 +121,7 @@ describe("pending patch pane item reuse", () => {
       const updates = elements.map((element) => element.getNextUpdatePromise());
       for (const element of elements) element.getComponent().scheduleUpdate();
       await Promise.all(updates);
+      await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   }
 
@@ -271,22 +272,35 @@ describe("pending patch pane item reuse", () => {
       item.getElement().style.cssText = "display: flex; width: 760px; height: 340px;";
       const view = item.getHydratedView();
       const controller = view.refPatchController.get();
+      const initialPatchView = controller.refView.get();
+      // Set the view-owned wrapping preference before scoped initialization
+      // and native measurements, so both columns start with a horizontal range.
+      initialPatchView.layoutViewportPreferences = {
+        unified: { softWrapped: false, leftColumn: 0 },
+        "side-by-side": { softWrapped: false, leftColumn: 0 },
+      };
+      await flushViews(() => initialPatchView.invalidate());
       await flushViews(() => controller.setDiffView(layout));
       const patchView = controller.refView.get();
       const pair = patchView.refSideBySide.getOr(null);
       const editors = pair
         ? [pair.editors.old.get(), pair.editors.new.get()]
         : [view.refEditor.get()];
-      for (const editor of editors) editor.setSoftWrapped(false);
       await settleEditors(item);
+      for (const editor of editors) expect(editor.isSoftWrapped()).toBe(false);
       pair?.releaseInitialScrollAnchor();
       const secondHunk = controller.props.multiFilePatch.getFilePatches()[0].getHunks()[1];
       patchView.setCanonicalSelectionRanges([secondHunk.getRange()], { autoscroll: false });
       await settleEditors(item);
+      // Manual fixture scrolling represents input taking over after selection.
+      // Release the passive selection/layout anchors as a real gesture does.
+      pair?.releasePatchViewport();
+      patchView.fullWidthHeaders.releaseViewport();
       const canonicalRow = secondHunk.getRange().start.row;
       const row = pair ? pair.projection.patchRowToDisplayRow.get(canonicalRow) : canonicalRow;
       for (const editor of editors) {
         const element = editor.getElement();
+        element.getComponent().scrollAnimator.cancel();
         element.setScrollTop(element.getComponent().pixelPositionBeforeBlocksForRow(row) + 7);
         element.setScrollLeft(180);
       }
@@ -297,8 +311,12 @@ describe("pending patch pane item reuse", () => {
         buffer: editor.getBuffer(),
       }));
       for (const { element } of previous) {
-        expect(element.getScrollTop()).toBeGreaterThan(0);
-        expect(element.getScrollLeft()).toBeGreaterThan(0);
+        expect(element.getScrollTop())
+          .withContext(`${layout} vertical fixture offset`)
+          .toBeGreaterThan(0);
+        expect(element.getScrollLeft())
+          .withContext(`${layout} horizontal fixture offset`)
+          .toBeGreaterThan(0);
       }
       expect(Math.min(...controller.state.selectedRows)).toBeGreaterThan(0);
 
