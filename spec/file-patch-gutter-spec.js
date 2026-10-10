@@ -20,6 +20,7 @@ function renderPatchRoot(maxLineNumberWidth) {
   view.refFullWidthHeaders = { setter() {} };
   view.renderCommands = () => null;
   view.renderEmptyPatch = () => null;
+  view.renderPatchEditor = () => null;
 
   return view.render();
 }

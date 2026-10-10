@@ -37,10 +37,22 @@ describe("patch document identity", () => {
     expect(commit.isReadOnly()).toBe(true);
   });
 
+  it("gives forward-slash and native nested paths the same canonical identity", () => {
+    for (const stage of ["staged", "unstaged"]) {
+      const forwardSlash = PatchDocument.file(__dirname, "nested/a.txt", stage);
+      const nativePath = PatchDocument.file(__dirname, path.join("nested", "a.txt"), stage);
+      expect(forwardSlash.relPath).toBe(path.join("nested", "a.txt"));
+      expect(forwardSlash).toEqual(nativePath);
+      expect(forwardSlash.getURI()).toBe(nativePath.getURI());
+      expect(PatchDocument.fromURI(forwardSlash.getURI())).toEqual(forwardSlash);
+    }
+  });
+
   it("rejects incomplete and unknown patch document URIs", () => {
     for (const uri of [
       "lumine-git://patch/file/unstaged?workdir=repo",
       "lumine-git://patch/file/unknown/a.txt?workdir=repo",
+      "lumine-git://patch/file/unstaged/nested/a.txt?workdir=repo",
       "lumine-git://patch/commit?workdir=repo",
       "lumine-git://patch/commit/abc/extra?workdir=repo",
       "lumine-git://patch/staged-all/extra?workdir=repo",
