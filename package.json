@@ -51,13 +51,20 @@
       "versions": {
         "1.0.0": "provideBackgroundTips"
       }
+    },
+    "git-panel.diff": {
+      "versions": {
+        "1.0.0": "provideDiff"
+      }
     }
   },
   "dependencies": {
     "@lumine-code/etch": "github:lumine-code/etch#09b0556a819a3fd975130066ea5b408c2da25ce3",
     "classnames": "2.5.1",
     "dayjs": "^1.11.23",
-    "node-emoji": "2.2.0"
+    "node-emoji": "2.2.0",
+    "bintrees": "1.0.2",
+    "diff": "^9.0.0"
   },
   "consumedServices": {
     "busy-signal": {
@@ -73,11 +80,6 @@
     "autocomplete.watch-editor": {
       "versions": {
         "^1.0.0": "consumeAutocompleteWatchEditor"
-      }
-    },
-    "patch-view": {
-      "versions": {
-        "^1.0.0": "consumePatchView"
       }
     },
     "git.commit-links": {
@@ -174,6 +176,12 @@
       "description": "Log additional debug information to the console, including caught errors and diagnostics",
       "type": "boolean",
       "default": false
+    },
+    "showDiffIconGutter": {
+      "title": "Show Diff Icon Gutter",
+      "description": "Show change regions with icons in addition to color.",
+      "type": "boolean",
+      "default": false
     }
   },
   "deserializers": {
@@ -190,8 +198,5 @@
     "eslint-plugin-n": "^18.4.1",
     "globals": "^17.13.0",
     "prettier": "^3.9.9"
-  },
-  "specPackages": [
-    "patch-view"
-  ]
+  }
 }

@@ -75,5 +75,15 @@
     "home": "git-panel:selectbox-home",
     "delete": "git-panel:selectbox-delete",
     "escape": "git-panel:selectbox-escape"
+  },
+  ".git-panel-FilePatchView lumine-text-editor:not([mini])": {
+    "enter": "core:confirm",
+    "o": "git-panel:jump-to-file",
+    "/": "git-panel:toggle-patch-selection-mode",
+    "backspace": "git-panel:discard-selected-lines"
+  },
+  ".git-panel-FilePatchView--hunkMode lumine-text-editor:not([mini])": {
+    "up": "git-panel:select-previous-hunk",
+    "down": "git-panel:select-next-hunk"
   }
 }

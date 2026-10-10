@@ -8,7 +8,8 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 
 - **Staging area**: stage, unstage, and discard changes per file, hunk, or selected line.
 - **Commits and branches**: compose commits and create, switch, or manage branches.
-- **Diff viewer**: inspect changes with hunk, line, and word-level highlighting; use the commit or changes header toggle to switch from the default unified view to side by side with aligned soft wrapping, keeping the same diff location and selection.
+- **Diff viewer**: inspect changes with hunk, line, and word-level highlighting; switch between unified and side-by-side layouts with aligned soft wrapping, keeping the same diff location and selection.
+- **Shared rendering**: provide native diff layouts to other packages through the git-panel.diff service.
 - **Conflict resolution**: resolve merge conflicts with in-editor controls.
 - **Repository management**: initialize, clone, and work with multiple repositories.
 
@@ -90,6 +91,19 @@ Commands available in `.git-panel-RecentCommit`:
 - `git-panel:copy-commit-subject`: copy commit subject to clipboard,
 - `git-panel:checkout-to-commit`: check out the commit.
 
+Commands available in `.git-panel-FilePatchView`:
+
+- `git-panel:select-next-hunk`: move the selection to the next hunk of the diff,
+- `git-panel:select-previous-hunk`: move the selection to the previous hunk of the diff,
+- `git-panel:toggle-patch-selection-mode`: select by hunk instead of by line, or back again,
+- `git-panel:jump-to-file`: open the source file at the selected line,
+- `git-panel:surface`: return to the changed-file list,
+- `git-panel:discard-selected-lines`: discard the selected changed lines,
+- `git-panel:stage-file-mode-change`: stage the change to a file's permission bits,
+- `git-panel:unstage-file-mode-change`: unstage the change to a file's permission bits,
+- `git-panel:stage-symlink-change`: stage a change between a symlink and a regular file,
+- `git-panel:unstage-symlink-change`: unstage a change between a symlink and a regular file.
+
 ## Customization
 
 Override the package custom properties in your `styles.css` to adjust its accent and conflict colors:
@@ -106,7 +120,7 @@ Override the package custom properties in your `styles.css` to adjust its accent
 
 - `background-tips.provider`: provided to teach the package's headline workflow on the empty workspace.
 - [`git-panel`](docs/git-panel.md): provided to navigate to the Git tab and its init and clone dialogs.
-- `patch-view`: consumed to render editable patches and commit diffs in shared native layouts.
+- [`git-panel.diff`](docs/git-panel.diff.md): provided to build patch snapshots and render shared native diff layouts.
 - `git.commit-links`: consumed to resolve a pushed commit's optional forge URL.
 - `busy-signal`: consumed to report staging, discard, and undo operations on the busy indicator.
 - `linter.editors`: consumed to register the commit message editor for linting, so spell checking reaches it.

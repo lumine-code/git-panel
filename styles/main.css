@@ -1634,3 +1634,594 @@ pre.git-panel-Message-description {
   );
   --git-panel-diff-added-highlight: color-mix(in srgb, var(--syntax-color-added) 25%, transparent);
 }
+/* changes-view.css */
+.git-panel-ChangesView {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background-color: var(--syntax-background-color);
+}
+.git-panel-ChangesView-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ui-spacing);
+  flex: 0 0 auto;
+  padding: calc(var(--ui-spacing) * 2);
+  border-bottom: 1px solid var(--pane-item-border-color);
+  background-color: var(--pane-item-background-color);
+}
+.git-panel-ChangesView-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 1.4em;
+  line-height: 1.3;
+  color: var(--text-color-highlight);
+}
+.git-panel-ChangesView--compact .git-panel-ChangesView-header {
+  padding: var(--ui-spacing);
+}
+.git-panel-ChangesView--compact .git-panel-ChangesView-title {
+  font-size: 1em;
+}
+.git-panel-ChangesView .git-panel-FilePatchView,
+.git-panel-ChangesView .git-panel-FilePatchView-container {
+  min-height: 0;
+}
+.git-panel-DiffViewToggle {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* file-patch-view.css */
+.git-panel-FilePatchView {
+  display: flex;
+  flex-direction: column;
+  -webkit-user-select: none;
+  cursor: default;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+.git-panel-FilePatchView--blank .git-panel-FilePatchView-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.2em;
+  padding: var(--ui-spacing);
+}
+.git-panel-FilePatchView-controlBlock {
+  background-color: var(--syntax-background-color);
+  display: flow-root;
+  font-family: var(--ui-font-family);
+  font-size: var(--ui-font-size);
+  line-height: normal;
+}
+.git-panel-FilePatchView-controlBlock .git-panel-FilePatchView-header {
+  margin: calc(var(--ui-spacing) * 4) var(--ui-spacing) var(--ui-spacing);
+}
+.git-panel-FilePatchView-controlBlock .git-panel-HunkHeaderView {
+  margin: var(--ui-spacing);
+}
+.git-panel-FilePatchView-controlBlock--adjacent .git-panel-HunkHeaderView {
+  margin-top: 0;
+}
+.git-panel-FilePatchView-header {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  border: 1px solid var(--base-border-color);
+  border-radius: var(--ui-border-radius);
+  font-family: var(--ui-font-family);
+  font-size: var(--ui-font-size);
+  background-color: color-mix(in srgb, var(--syntax-text-color) 6%, var(--syntax-background-color));
+  cursor: default;
+}
+.git-panel-FilePatchView-header .btn {
+  font-size: 0.9em;
+}
+.git-panel-FilePatchView-header .btn.icon-move-up::before,
+.git-panel-FilePatchView-header .btn.icon-move-down::before {
+  font-size: 1em;
+  margin-right: 0.5em;
+}
+.git-panel-FilePatchView-header .btn-group {
+  margin: calc(var(--ui-spacing) / 2);
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+.git-panel-FilePatchView-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: var(--ui-spacing);
+}
+.git-panel-FilePatchView-message {
+  font-family: var(--ui-font-family);
+  text-align: center;
+  margin: 15px 0 0 0;
+}
+.git-panel-FilePatchView-showDiffButton {
+  background: transparent;
+  border: none;
+  color: var(--text-color-highlight);
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+.git-panel-FilePatchView-showDiffButton:hover {
+  color: var(--git-panel-color-blue);
+}
+.git-panel-FilePatchView-collapseButton {
+  background: transparent;
+  border: none;
+  padding: calc(var(--ui-spacing) / 1.5);
+}
+.git-panel-FilePatchView-collapseButton + .git-panel-FilePatchView-title {
+  margin-left: 0;
+}
+.git-panel-FilePatchView-collapseButtonIcon:before {
+  margin-right: 0;
+  vertical-align: -2px;
+}
+.git-panel-FilePatchView-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+.git-panel-FullWidthBlockOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+.git-panel-FullWidthBlock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: auto;
+}
+.git-panel-FilePatchView-container .large-file-patch {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.2em;
+  padding: var(--ui-spacing);
+}
+.git-panel-FilePatchView-container .large-file-patch {
+  flex-direction: column;
+}
+.git-panel-FilePatchView-container lumine-text-editor {
+  width: 100%;
+  height: 100%;
+}
+.git-panel-SideBySidePatchView {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.git-panel-SideBySidePatchView-editors {
+  position: relative;
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.git-panel-SideBySidePatchView-column {
+  flex: 1 1 0;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.git-panel-SideBySidePatchView-column + .git-panel-SideBySidePatchView-column {
+  box-shadow: inset 1px 0 var(--base-border-color);
+}
+.git-panel-SideBySidePatchView-column .git-panel-LumineTextEditor-container,
+.git-panel-SideBySidePatchView-column lumine-text-editor {
+  flex: 1;
+  display: flex;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.git-panel-SideBySidePatchView lumine-text-editor .line.cursor-line {
+  /* The hidden caret must not paint a current-line overlay in either diff
+     column. Keep change and explicit-selection backgrounds intact. */
+  box-shadow: none;
+}
+.git-panel-SideBySidePatchView-column[data-diff-side="old"] .vertical-scrollbar,
+.git-panel-SideBySidePatchView-column[data-diff-side="old"] .scrollbar-corner {
+  /* The right editor's native scrollbar controls both aligned columns. Keep
+     both editors' scrollbar measurements equal without drawing a second one. */
+  visibility: hidden !important;
+}
+.git-panel-SideBySidePatchView-sharedHeaders {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+.git-panel-SideBySidePatchView-sharedHeader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: auto;
+}
+.git-panel-SideBySidePatchView-headerSpacer {
+  pointer-events: none;
+}
+.git-panel-SideBySidePatchView .gutter[gutter-name$="-wrap-padding"] {
+  contain: style;
+  overflow: visible;
+  min-width: 0;
+  width: 0;
+  flex: 0 0 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.git-panel-SideBySidePatchView-gutterPaddingItem {
+  position: relative;
+}
+.git-panel-SideBySidePatchView-gutterPadding {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+.git-panel-SideBySidePatchView-placeholder {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
+}
+.git-panel-FilePatchView-meta {
+  font-family: var(--ui-font-family);
+  padding-top: var(--ui-spacing);
+}
+.git-panel-FilePatchView-metaContainer {
+  border: 1px solid var(--base-border-color);
+  border-radius: var(--ui-border-radius);
+}
+.git-panel-FilePatchView-metaHeader {
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  border-bottom: 1px solid var(--base-border-color);
+}
+.git-panel-FilePatchView-metaTitle {
+  flex: 1;
+  margin: 0;
+  padding-left: var(--ui-spacing);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.git-panel-FilePatchView-metaControls {
+  margin-left: var(--ui-spacing);
+}
+.git-panel-FilePatchView-metaButton {
+  line-height: 1.9;
+  padding-left: var(--ui-spacing);
+  padding-right: var(--ui-spacing);
+  font-family: var(--ui-font-family);
+  border: none;
+  border-left: 1px solid var(--base-border-color);
+  background-color: transparent;
+  cursor: default;
+}
+.git-panel-FilePatchView-metaButton:hover {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
+}
+.git-panel-FilePatchView-metaButton:active {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 2%, var(--syntax-background-color));
+}
+.git-panel-FilePatchView-metaButton.icon-move-up::before,
+.git-panel-FilePatchView-metaButton.icon-move-down::before {
+  font-size: 1em;
+  margin-right: 0.25em;
+  vertical-align: baseline;
+}
+.git-panel-FilePatchView-metaDetails {
+  padding: var(--ui-spacing);
+}
+.git-panel-FilePatchView-metaDiff {
+  margin: 0 0.2em;
+  padding: 0.2em 0.4em;
+  line-height: 1.6;
+  border-radius: var(--ui-border-radius);
+}
+.git-panel-FilePatchView-metaDiff--added {
+  color: color-mix(in srgb, var(--text-color-highlight) 40%, var(--text-color-added));
+  background-color: color-mix(in srgb, var(--base-background-color) 80%, var(--text-color-added));
+}
+.git-panel-FilePatchView-metaDiff--removed {
+  color: color-mix(in srgb, var(--text-color-highlight) 40%, var(--text-color-removed));
+  background-color: color-mix(in srgb, var(--base-background-color) 80%, var(--text-color-removed));
+}
+.git-panel-FilePatchView-metaDiff--fullWidth {
+  display: block;
+  margin: calc(var(--ui-spacing) / 2) 0 0 0;
+}
+.git-panel-FilePatchView-metaDiff--fullWidth:first-child {
+  margin-top: 0;
+}
+.git-panel-FilePatchView-metaDiff code {
+  margin: 0 0.2em;
+  padding: 0 0.2em;
+  font-size: 0.9em;
+  color: inherit;
+  line-height: 1;
+  vertical-align: middle;
+  word-break: break-all;
+  background-color: var(--base-background-color);
+}
+.git-panel-FilePatchView-line--deleted {
+  background-color: var(--git-panel-diff-deleted);
+}
+.git-panel-FilePatchView-line--added {
+  background-color: var(--git-panel-diff-added);
+}
+.git-panel-FilePatchView-word--deleted .region {
+  background-color: var(--git-panel-diff-deleted-highlight);
+  border-radius: 2px;
+}
+.git-panel-FilePatchView-word--added .region {
+  background-color: var(--git-panel-diff-added-highlight);
+  border-radius: 2px;
+}
+.git-panel-FilePatchView .gutter .icon-right {
+  display: none;
+}
+.git-panel-FilePatchView .gutter.old .line-number,
+.git-panel-FilePatchView .gutter.new .line-number {
+  width: calc(var(--git-panel-line-number-content-width, 5ch) + 1ch + 0.5em);
+  opacity: 1;
+  padding: 0 1ch 0 0.5em;
+}
+.git-panel-FilePatchView .gutter.icons .line-number {
+  padding: 0;
+  opacity: 1;
+  width: 2ch;
+  font-family: var(--ui-font-family);
+  text-align: center;
+  color: color-mix(in srgb, var(--syntax-gutter-text-color) 50%, var(--syntax-text-color));
+  -webkit-font-smoothing: antialiased;
+}
+.git-panel-FilePatchView .gutter.icons .line-number:before {
+  display: inline-block;
+  min-width: 2ch;
+}
+.git-panel-FilePatchView .gutter.icons .line-number.git-panel-FilePatchView-line--added:before {
+  content: "+";
+}
+.git-panel-FilePatchView .gutter.icons .line-number.git-panel-FilePatchView-line--deleted:before {
+  content: "-";
+}
+.git-panel-FilePatchView .gutter.icons .line-number.git-panel-FilePatchView-line--nonewline:before {
+  content: "\f09c";
+  font-family: "Octicons Regular";
+  font-weight: normal;
+  font-style: normal;
+  width: inherit;
+  min-width: auto;
+}
+.git-panel-FilePatchView--inactive .highlights .highlight.selection {
+  display: none;
+}
+.git-panel-FilePatchView lumine-text-editor[readonly] .cursors {
+  display: none;
+}
+.git-panel-FilePatchView .gutter.old .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView .gutter.new .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView .gutter.icons .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView
+  .gutter[gutter-name="git-panel-comment-icon"]
+  .git-panel-editorCommentGutterIcon.git-panel-FilePatchView-line--selected {
+  color: var(--text-color-selected);
+  background: var(--background-color-selected);
+}
+.git-panel-FilePatchView
+  .gutter.old
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView
+  .gutter.new
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView
+  .gutter.icons
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView
+  .gutter[gutter-name="git-panel-comment-icon"]
+  .git-panel-editorCommentGutterIcon.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty {
+  z-index: -1;
+}
+.git-panel-FilePatchView lumine-text-editor .selection .region {
+  background-color: transparent;
+}
+.git-panel-FilePatchView:focus-within
+  .gutter.old
+  .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView:focus-within
+  .gutter.new
+  .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView:focus-within
+  .gutter.icons
+  .line-number.git-panel-FilePatchView-line--selected,
+.git-panel-FilePatchView:focus-within
+  .gutter[gutter-name="git-panel-comment-icon"]
+  .git-panel-editorCommentGutterIcon.git-panel-FilePatchView-line--selected {
+  color: var(--accent-foreground-color);
+  background: var(--accent-background-color);
+}
+.git-panel-FilePatchView:focus-within
+  .gutter.old
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView:focus-within
+  .gutter.new
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView:focus-within
+  .gutter.icons
+  .line-number.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty,
+.git-panel-FilePatchView:focus-within
+  .gutter[gutter-name="git-panel-comment-icon"]
+  .git-panel-editorCommentGutterIcon.git-panel-FilePatchView-line--selected.git-panel-editorCommentGutterIcon.empty {
+  z-index: -1;
+}
+.git-panel-FilePatchView:focus-within lumine-text-editor .selection .region {
+  background-color: color-mix(
+    in srgb,
+    var(--syntax-selection-color) 25%,
+    var(--syntax-background-color)
+  );
+}
+.git-panel-FilePatchView.git-panel-FilePatchView--hunkMode:focus-within
+  lumine-text-editor
+  .selection
+  .region {
+  background-color: color-mix(
+    in srgb,
+    var(--syntax-selection-color) 8%,
+    var(--syntax-background-color)
+  );
+}
+.git-panel-FilePatchHeaderView-basename {
+  font-weight: bold;
+}
+
+/* hunk-header-view.css */
+.git-panel-HunkHeaderView {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  font-family: var(--editor-font-family);
+  font-size: var(--ui-font-size);
+  white-space: nowrap;
+  border: 1px solid var(--base-border-color);
+  border-radius: var(--ui-border-radius);
+  background-color: color-mix(in srgb, var(--syntax-text-color) 0%, var(--syntax-background-color));
+  cursor: default;
+}
+.git-panel-HunkHeaderView-title {
+  flex: 1;
+  line-height: 2.4;
+  padding: 0 var(--ui-spacing);
+  color: var(--text-color-subtle);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -webkit-font-smoothing: antialiased;
+}
+.git-panel-HunkHeaderView-title:hover {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView-title:active {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 2%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView-stageButton,
+.git-panel-HunkHeaderView-discardButton {
+  line-height: 1;
+  padding-left: var(--ui-spacing);
+  padding-right: var(--ui-spacing);
+  font-family: var(--ui-font-family);
+  border: none;
+  border-left: inherit;
+  background-color: transparent;
+  cursor: default;
+}
+.git-panel-HunkHeaderView-stageButton:hover,
+.git-panel-HunkHeaderView-discardButton:hover {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView-stageButton:active,
+.git-panel-HunkHeaderView-discardButton:active {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 2%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView-stageButton .keystroke,
+.git-panel-HunkHeaderView-discardButton .keystroke {
+  margin-right: 1em;
+}
+.git-panel-HunkHeaderView-discardButton:before {
+  text-align: left;
+  width: auto;
+  vertical-align: 2px;
+}
+.git-panel-HunkHeaderView-title:hover,
+.git-panel-HunkHeaderView-stageButton:hover,
+.git-panel-HunkHeaderView-discardButton:hover {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView-title:active,
+.git-panel-HunkHeaderView-stageButton:active,
+.git-panel-HunkHeaderView-discardButton:active {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 2%, var(--syntax-background-color));
+}
+.git-panel-HunkHeaderView--isSelected {
+  color: var(--text-color-selected);
+  background-color: var(--background-color-selected);
+  border-color: transparent;
+}
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-title {
+  color: inherit;
+}
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-title:hover,
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-stageButton:hover,
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-discardButton:hover {
+  background-color: var(--background-color-highlight);
+}
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-title:active,
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-stageButton:active,
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-discardButton:active {
+  background-color: var(--background-color-selected);
+}
+.git-panel-FilePatchView:focus-within .git-panel-HunkHeaderView--isSelected {
+  color: var(--accent-foreground-color);
+  background-color: var(--accent-background-color);
+}
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-title:hover,
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-stageButton:hover,
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-discardButton:hover {
+  background-color: color-mix(in srgb, var(--accent-background-color) 96%, white);
+}
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-title:active,
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-stageButton:active,
+.git-panel-FilePatchView:focus-within
+  .git-panel-HunkHeaderView--isSelected
+  .git-panel-HunkHeaderView-discardButton:active {
+  background-color: color-mix(in srgb, var(--accent-background-color) 96%, black);
+}
+
+/* lumine-text-editor.css */
+.git-panel-LumineTextEditor-container {
+  width: 100%;
+  height: 100%;
+}
+.git-panel-LumineTextEditor-empty .cursor-line {
+  display: none;
+}

@@ -10,7 +10,6 @@ describe("untracked symbolic-link diffs through Core", () => {
     for (const method of ["openExternal", "openPath", "showItemInFolder", "openApplication"])
       spyOn(lumine.shell, method).and.returnValue(Promise.resolve());
     spyOn(lumine.application, "openWindow").and.returnValue(Promise.resolve());
-    await lumine.packages.activatePackage("patch-view");
     await lumine.packages.activatePackage("git-panel");
     const pack = lumine.packages.getActivePackage("git-panel");
     const loaded = require(path.join(pack.path, "lib/git-shell-out-strategy"));

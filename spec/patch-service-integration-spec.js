@@ -4,25 +4,14 @@ import RefHolder from "../lib/models/ref-holder";
 import { buildMultiFilePatch } from "../lib/models/patch";
 
 describe("patch renderer service integration", () => {
-  it("reacquires constructors when a provider generation changes", () => {
-    const holder = require("../lib/patch-view");
-    const previous = holder.getPatchView();
-    const module = require("../lib/views/changes-view");
-    class FirstGeneration {}
-    class NextGeneration {}
-    const first = holder.consumePatchView({ views: { ChangesView: FirstGeneration } });
-    const next = holder.consumePatchView({ views: { ChangesView: NextGeneration } });
-    try {
-      expect(module.default).toBe(NextGeneration);
-      first.dispose();
-      expect(module.default).toBe(NextGeneration);
-      next.dispose();
-      expect(holder.getPatchView()).toBeNull();
-    } finally {
-      first.dispose();
-      next.dispose();
-      if (previous) holder.consumePatchView(previous);
-    }
+  it("publishes the renderer from Git Panel without exposing its module graph", async () => {
+    const provider = await lumine.packages.startPackage("git-panel");
+    const service = provider.mainModule.provideDiff();
+    expect(lumine.packages.serviceHub.hasProvider("git-panel.diff", "^1.0.0")).toBe(true);
+    const loadedView = require("../lib/views/changes-view");
+    expect(service.ChangesView).toBe(loadedView.default || loadedView);
+    expect(service.models).toBeUndefined();
+    expect(service.views).toBeUndefined();
   });
   it("mounts the shared provider through the panel's native view factory", async () => {
     const patch = buildMultiFilePatch([]);
@@ -38,7 +27,7 @@ describe("patch renderer service integration", () => {
       tooltips: lumine.tooltips,
     });
     try {
-      expect(view.element.querySelector(".patch-view-ChangesView")).not.toBeNull();
+      expect(view.element.querySelector(".git-panel-ChangesView")).not.toBeNull();
       expect(holder.getOr(null)).not.toBeNull();
     } finally {
       await view.destroy();

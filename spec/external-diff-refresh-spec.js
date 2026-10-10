@@ -208,7 +208,7 @@ describe("mounted diff snapshots from repository updates", () => {
     const patch = controller().props.multiFilePatch;
     const loadedHunks = patch.getFilePatches()[0].getHunks();
     expect(loadedHunks.length).toBe(hunks.length);
-    expect(view.element.querySelectorAll(".patch-view-HunkHeaderView").length).toBe(hunks.length);
+    expect(view.element.querySelectorAll(".git-panel-HunkHeaderView").length).toBe(hunks.length);
     let canonicalRow = 0;
     let displayRow = 0;
     loadedHunks.forEach((loaded, index) => {
@@ -323,7 +323,7 @@ describe("mounted diff snapshots from repository updates", () => {
       source = build([hunks[0], hunks[2]]);
       const suffix = kind === "stage" ? "stageButton" : "discardButton";
       await flushViews(() => {
-        const button = view.element.querySelectorAll(`.patch-view-HunkHeaderView-${suffix}`)[1];
+        const button = view.element.querySelectorAll(`.git-panel-HunkHeaderView-${suffix}`)[1];
         button.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
         button.focus();
         button.click();
@@ -339,7 +339,7 @@ describe("mounted diff snapshots from repository updates", () => {
       finishPaints();
       expect(pair().editors.old.get().getText()).not.toContain("old 1:0");
       expect(pair().editors.new.get().getText()).not.toContain("new 1:0");
-      expect(view.element.querySelectorAll(".patch-view-HunkHeaderView").length).toBe(2);
+      expect(view.element.querySelectorAll(".git-panel-HunkHeaderView").length).toBe(2);
     });
   }
 

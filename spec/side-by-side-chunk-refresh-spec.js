@@ -172,8 +172,8 @@ describe("mounted Side by Side chunk refreshes", () => {
 
   function clickChunk(kind, index) {
     const suffix = kind === "stage" ? "stageButton" : "discardButton";
-    const button = view.element.querySelectorAll(`.patch-view-HunkHeaderView-${suffix}`)[index];
-    const header = button.closest(".patch-view-HunkHeaderView").getBoundingClientRect();
+    const button = view.element.querySelectorAll(`.git-panel-HunkHeaderView-${suffix}`)[index];
+    const header = button.closest(".git-panel-HunkHeaderView").getBoundingClientRect();
     const viewport = editor("new")
       .getElement()
       .getComponent()

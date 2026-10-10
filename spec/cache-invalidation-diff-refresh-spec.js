@@ -169,13 +169,13 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
     expect(top).toBeGreaterThan(0);
     expect(editor.isSoftWrapped()).toBe(wrapped);
     if (!wrapped) expect(left).toBeGreaterThan(0);
-    expect(item.element.querySelectorAll(".patch-view-HunkHeaderView").length).toBe(3);
+    expect(item.element.querySelectorAll(".git-panel-HunkHeaderView").length).toBe(3);
     const originals = nativeEditors().map((model) => {
       const element = model.getElement();
       const firstChangedDecoration = model
         .getDecorations({ type: "line" })
         .find((decoration) =>
-          /patch-view-FilePatchView-line--(?:added|deleted)/.test(decoration.getProperties().class),
+          /git-panel-FilePatchView-line--(?:added|deleted)/.test(decoration.getProperties().class),
         );
       return {
         model,
@@ -236,7 +236,7 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
     } else {
       await flushViews(() => {
         const suffix = kind === "stage" ? "stageButton" : "discardButton";
-        const button = item.element.querySelectorAll(`.patch-view-HunkHeaderView-${suffix}`)[1];
+        const button = item.element.querySelectorAll(`.git-panel-HunkHeaderView-${suffix}`)[1];
         if (pair) {
           expect(getComputedStyle(button).visibility).toBe("visible");
           const buttonRect = button.getBoundingClientRect();
@@ -271,7 +271,7 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
 
     holdingReads = false;
     pendingReads[1].release();
-    await waitUntil(() => item.element.querySelectorAll(".patch-view-HunkHeaderView").length === 2);
+    await waitUntil(() => item.element.querySelectorAll(".git-panel-HunkHeaderView").length === 2);
     await settle();
     cancelAnimationFrame(frame);
     expect(item.refEditor.get()).toBe(editor);

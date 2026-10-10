@@ -21,7 +21,7 @@ Declare `git-panel` in `consumedServices` at `^1.0.0`. Consumption is passive an
 | `openCloneDialog`      | `() => Promise<unknown>` | Open the clone dialog.                     |
 | `openInitializeDialog` | `() => Promise<unknown>` | Open the repository initialization dialog. |
 
-Repository discovery, selection, snapshots, typed reads, operations and policy are owned by `lumine.repositories`. Native patch models and views are owned by the independent `patch-view` service.
+Repository discovery, selection, snapshots, typed reads, operations and policy are owned by `lumine.repositories`. This package also provides native patch rendering through `git-panel.diff`.
 
 ## Minimal example
 
@@ -39,7 +39,7 @@ openLocalChanges() {
 
 ## Behavior
 
-The methods construct the panel view graph on demand. A consumer can use core repository APIs and patch rendering while this optional navigation provider is inactive.
+The methods construct the panel view graph on demand. The separate `git-panel.diff` service can render a diff without opening the panel. Both services follow this package's lifecycle; core repository APIs remain available independently.
 
 ## Teardown
 

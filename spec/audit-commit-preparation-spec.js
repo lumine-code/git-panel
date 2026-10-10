@@ -1,5 +1,5 @@
 /** @babel */
-import "./00_patch-view-setup-spec";
+require("../lib/index");
 import fs from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";

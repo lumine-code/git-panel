@@ -161,13 +161,13 @@ describe("changes diff layout", () => {
   }
 
   function expectHeader(surface, mode) {
-    const header = view.element.querySelector(".patch-view-ChangesView-header.native-key-bindings");
-    const toggles = view.element.querySelectorAll(".patch-view-DiffViewToggle");
+    const header = view.element.querySelector(".git-panel-ChangesView-header.native-key-bindings");
+    const toggles = view.element.querySelectorAll(".git-panel-DiffViewToggle");
     expect(toggles.length).toBe(1);
     expect(header.contains(toggles[0])).toBe(true);
-    expect(header.querySelector(".patch-view-ChangesView-title").textContent).toBe(surface.title);
+    expect(header.querySelector(".git-panel-ChangesView-title").textContent).toBe(surface.title);
     expect(
-      view.element.querySelectorAll(".patch-view-FilePatchView-header [data-diff-view]").length,
+      view.element.querySelectorAll(".git-panel-FilePatchView-header [data-diff-view]").length,
     ).toBe(0);
     for (const candidate of ["unified", "side-by-side"]) {
       expect(button(candidate).classList.contains("btn")).toBe(true);
@@ -300,7 +300,7 @@ describe("changes diff layout", () => {
     const editor = pair().editors.new.get();
     editor.setSelectedBufferRange(new Range([1, 0], [1, Infinity]), { autoscroll: false });
     await flushViews(async () => {});
-    lumine.commands.dispatch(editor.getElement(), "patch-view:discard-selected-lines");
+    lumine.commands.dispatch(editor.getElement(), "git-panel:discard-selected-lines");
     await flushViews(async () => {});
     expect(discardLines).toHaveBeenCalledOnceWith(patch, new Set([2]), repository);
     expect(repository.applyPatchToIndex).not.toHaveBeenCalled();
@@ -357,8 +357,8 @@ describe("changes diff layout", () => {
     expect(pair().sharedHeaders.filter((record) => record.kind === "file").length).toBe(2);
     expect(pair().sharedHeaders.filter((record) => record.kind === "hunk").length).toBe(2);
     for (const element of [oldElement, newElement]) {
-      expect(element.querySelector(".patch-view-FilePatchView-header")).toBeNull();
-      expect(element.querySelector(".patch-view-HunkHeaderView")).toBeNull();
+      expect(element.querySelector(".git-panel-FilePatchView-header")).toBeNull();
+      expect(element.querySelector(".git-panel-HunkHeaderView")).toBeNull();
     }
     for (const editor of [oldEditor, newEditor]) {
       expect(editor.isSoftWrapped()).toBe(true);
