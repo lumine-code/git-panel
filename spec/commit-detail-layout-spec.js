@@ -1,8 +1,8 @@
 /** @babel */
 import path from "path";
 import { Disposable, Range } from "lumine";
-import CommitDetailView from "../lib/views/commit-detail-view";
-import CommitDetailItem from "../lib/items/commit-detail-item";
+import PatchView from "../lib/views/patch-view";
+import PatchDocument from "../lib/models/patch-document";
 import { buildMultiFilePatch } from "../lib/models/patch";
 import { flushViews } from "./helpers/etch";
 
@@ -45,7 +45,11 @@ describe("commit detail diff layout", () => {
       getEmail: () => "author@example.com",
       getAvatarUrl: () => null,
     };
-    view = new CommitDetailView({
+    view = new PatchView({
+      document: PatchDocument.commit(__dirname, "1234567890"),
+      multiFilePatch: patch,
+      surfaceKind: "commit",
+      readOnly: true,
       commit: {
         getMessageSubject: () => "Update both files",
         getMessageBody: () => "",
@@ -55,15 +59,15 @@ describe("commit detail diff layout", () => {
         getCoAuthors: () => [],
         getSha: () => "1234567890",
         getMultiFileDiff: () => patch,
+        isBodyLong: () => false,
       },
       currentRemote: { isGithubRepo: () => false },
-      itemType: CommitDetailItem,
       workspace: lumine.workspace,
       commands: lumine.commands,
       config: lumine.config,
       keymaps: lumine.keymaps,
       tooltips: { add: () => new Disposable(), addComposite: () => new Disposable() },
-      surfaceCommit: () => {},
+      surface: () => {},
     });
     container.appendChild(view.element);
     await flushViews(async () => {});

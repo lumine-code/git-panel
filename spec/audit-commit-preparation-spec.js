@@ -7,13 +7,15 @@ import Repository from "../lib/models/repository";
 import GitTabController from "../lib/controllers/git-tab-controller";
 import CommitController from "../lib/controllers/commit-controller";
 import CommitView from "../lib/views/commit-view";
-import ChangedFileItem from "../lib/items/changed-file-item";
+import PatchItem from "../lib/items/patch-item";
+import PatchDocument from "../lib/models/patch-document";
+import Commit from "../lib/models/commit";
 import { Emitter } from "lumine";
 import { buildFilePatch } from "../lib/models/patch";
 import {
-  getFilePatchPaneItems,
-  destroyFilePatchPaneItems,
-  destroyEmptyFilePatchPaneItems,
+  getPatchPaneItems,
+  destroyPatchPaneItems,
+  destroyEmptyPatchPaneItems,
 } from "../lib/helpers";
 import { createViewModel, flushViews } from "./helpers/etch";
 
@@ -169,6 +171,8 @@ describe("Patch cleanup against current native pane items", () => {
     empty = false,
     loading = false,
     metadata = false,
+    kind = "file",
+    directory = path.join(lumine.getConfigDirPath(), "native-patch"),
   } = {}) {
     const emitter = new Emitter();
     emitters.push(emitter);
@@ -198,14 +202,32 @@ describe("Patch cleanup against current native pane items", () => {
           ],
     );
     patches.push(patch);
+    const commit = new Commit({
+      sha: "cleanup-commit",
+      author: {
+        getEmail: () => "author@example.com",
+        getFullName: () => "Author",
+        getAvatarUrl: () => null,
+      },
+      authorDate: 1,
+      messageSubject: "Cleanup commit",
+      messageBody: "",
+    });
+    commit.setMultiFileDiff(patch.clone());
+    patches.push(commit);
     const repository = {
       isLoading: () => loading,
       onDidUpdate: (callback) => emitter.on("did-update", callback),
       getFilePatchForPath: async () => patch,
+      getStagedChangesPatch: async () => patch,
+      getCommit: async () => commit,
+      getCurrentBranch: () => ({ getName: () => "main" }),
+      getRemoteForBranch: () => ({ isGithubRepo: () => false }),
+      isCommitPushed: () => false,
       isPartiallyStaged: () => false,
       hasDiscardHistory: () => false,
     };
-    const item = new ChangedFileItem({
+    const item = new PatchItem({
       workdirContextPool: {
         retain: () => ({
           context: { getRepository: () => repository },
@@ -214,9 +236,12 @@ describe("Patch cleanup against current native pane items", () => {
         }),
         onDidChangePoolContexts: () => ({ dispose() {} }),
       },
-      workingDirectory: path.join(lumine.getConfigDirPath(), "native-patch"),
-      relPath: "example.txt",
-      stagingStatus,
+      document:
+        kind === "file"
+          ? PatchDocument.file(directory, "example.txt", stagingStatus)
+          : kind === "staged-all"
+            ? PatchDocument.staged(directory)
+            : PatchDocument.commit(directory, "cleanup-commit"),
       workspace: lumine.workspace,
       commands: lumine.commands,
       keymaps: lumine.keymaps,
@@ -226,24 +251,32 @@ describe("Patch cleanup against current native pane items", () => {
     items.push(item);
     lumine.workspace.getActivePane().addItem(item);
     await flushViews(() => {});
-    if (!loading) await item.getFilePatchLoadedPromise();
+    if (!loading) await item.getPatchLoadedPromise();
     return item;
   }
-  it("finds actual staged and unstaged items and closes only the staged one", async () => {
+  it("finds every patch document and closes the staged file and staged-all preview", async () => {
     const staged = await createItem({ stagingStatus: "staged" });
     const unstaged = await createItem();
+    const all = await createItem({ kind: "staged-all" });
+    const commit = await createItem({ kind: "commit" });
     expect(staged.isFilePatchItem()).toBe(true);
     expect(staged.getStagingStatus()).toBe("staged");
-    expect(getFilePatchPaneItems({}, lumine.workspace)).toEqual([staged, unstaged]);
-    expect(getFilePatchPaneItems({ onlyStaged: true }, lumine.workspace)).toEqual([staged]);
-    destroyFilePatchPaneItems({ onlyStaged: true }, lumine.workspace);
-    expect(staged.isDestroyed).toBe(true);
-    expect(unstaged.isDestroyed).toBe(false);
+    expect(getPatchPaneItems({}, lumine.workspace)).toEqual(
+      jasmine.arrayWithExactContents([staged, unstaged, all, commit]),
+    );
+    expect(getPatchPaneItems({ onlyStaged: true }, lumine.workspace)).toEqual([staged, all]);
+    destroyPatchPaneItems({ onlyStaged: true }, lumine.workspace);
+    expect(staged.destroyed).toBe(true);
+    expect(unstaged.destroyed).toBe(false);
+    expect(all.destroyed).toBe(true);
+    expect(commit.destroyed).toBe(false);
   });
   it("closes truly empty patches and preserves metadata-only changes and loading items", async () => {
     const empty = await createItem({ empty: true });
     const metadata = await createItem({ metadata: true });
     const loading = await createItem({ loading: true });
+    const all = await createItem({ kind: "staged-all", empty: true });
+    const commit = await createItem({ kind: "commit", empty: true });
     expect(
       empty.refPatchController
         .get()
@@ -252,10 +285,32 @@ describe("Patch cleanup against current native pane items", () => {
     ).toBe(true);
     expect(metadata.refPatchController.get().props.multiFilePatch.getFilePatches().length).toBe(1);
     expect(loading.refPatchController.isEmpty()).toBe(true);
-    expect(getFilePatchPaneItems({ empty: true }, lumine.workspace)).toEqual([empty]);
-    destroyEmptyFilePatchPaneItems(lumine.workspace);
-    expect(empty.isDestroyed).toBe(true);
-    expect(metadata.isDestroyed).toBe(false);
-    expect(loading.isDestroyed).toBe(false);
+    expect(getPatchPaneItems({ empty: true }, lumine.workspace)).toEqual(
+      jasmine.arrayWithExactContents([empty, all, commit]),
+    );
+    destroyEmptyPatchPaneItems(lumine.workspace);
+    expect(empty.destroyed).toBe(true);
+    expect(metadata.destroyed).toBe(false);
+    expect(loading.destroyed).toBe(false);
+    expect(all.destroyed).toBe(true);
+    expect(commit.destroyed).toBe(true);
+  });
+
+  it("cleans up staged documents only in the repository whose commit finished", async () => {
+    const directory = path.join(lumine.getConfigDirPath(), "committed-repository");
+    const otherDirectory = path.join(lumine.getConfigDirPath(), "other-repository");
+    const staged = await createItem({ directory, stagingStatus: "staged" });
+    const all = await createItem({ directory, kind: "staged-all" });
+    const unstaged = await createItem({ directory });
+    const commit = await createItem({ directory, kind: "commit" });
+    const otherFile = await createItem({ directory: otherDirectory, stagingStatus: "staged" });
+    const otherAll = await createItem({ directory: otherDirectory, kind: "staged-all" });
+    expect(
+      getPatchPaneItems({ onlyStaged: true, workingDirectory: directory }, lumine.workspace),
+    ).toEqual([staged, all]);
+    destroyPatchPaneItems({ onlyStaged: true, workingDirectory: directory }, lumine.workspace);
+    expect(staged.destroyed).toBe(true);
+    expect(all.destroyed).toBe(true);
+    for (const item of [unstaged, commit, otherFile, otherAll]) expect(item.destroyed).toBe(false);
   });
 });

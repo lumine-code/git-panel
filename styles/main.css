@@ -1229,13 +1229,9 @@ pre.git-panel-Message-description {
 }
 
 /* pane-view.css */
-.git-panel-PaneItemHost-git-file-patch-controller,
-.git-panel-PaneItemHost-git-commit-preview,
-.git-panel-PaneItemHost-git-commit-detail,
+.git-panel-PaneItemHost-git-patch,
 .git-panel-PaneItemHost-git-timings-view,
-.git-panel-FilePatch-root,
-.git-panel-CommitPreview-root,
-.git-panel-CommitDetail-root,
+.git-panel-Patch-root,
 .git-panel-GitTimings-root,
 .git-panel-GitCache-root,
 .git-panel-CommitDetailView,
@@ -1776,6 +1772,15 @@ pre.git-panel-Message-description {
   display: flex;
   height: 100%;
   flex-direction: column;
+}
+.git-panel-FilePatchView-editor {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+.git-panel-FilePatchView-editor[hidden] {
+  display: none;
 }
 .git-panel-FullWidthBlockOverlay {
   position: absolute;

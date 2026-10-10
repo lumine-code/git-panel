@@ -124,6 +124,18 @@ describe("shared read-only diff views", () => {
     expect(ownBuffer.isDestroyed()).toBe(true);
   });
 
+  it("renders a generic read-only commit surface without Git commit metadata", async () => {
+    await mount();
+    await flushViews(() => view.update({ ...view.props, surfaceKind: "commit" }));
+    expect(view.element.querySelector(".git-panel-ChangesView-title").textContent).toBe("Snapshot");
+    expect(view.element.querySelector(".git-panel-CommitDetailView-header")).toBeNull();
+    expect(view.element.querySelectorAll("lumine-text-editor").length).toBe(1);
+    expect(controller().props.readOnly).toBe(true);
+    expect(view.element.querySelector(".git-panel-HunkHeaderView-stageButton")).toBeNull();
+    await controller().toggleRows(new Set([1]), "line");
+    expect(view.props.repository.applyPatchToIndex).not.toHaveBeenCalled();
+  });
+
   it("opens Side by Side without activating the first hunk and keeps mutation controls disabled", async () => {
     await mount(patch(), "side-by-side");
     expect(view.getDiffView()).toBe("side-by-side");

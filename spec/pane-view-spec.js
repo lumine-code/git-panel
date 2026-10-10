@@ -1,9 +1,8 @@
 /** @babel */
 import path from "path";
 
-import ChangedFileItem from "../lib/items/changed-file-item";
-import CommitDetailItem from "../lib/items/commit-detail-item";
-import CommitPreviewItem from "../lib/items/commit-preview-item";
+import PatchItem from "../lib/items/patch-item";
+import PatchDocument from "../lib/models/patch-document";
 import GitTabItem from "../lib/items/git-tab-item";
 import GitCacheView from "../lib/views/git-cache-view";
 import GitTimingsView from "../lib/views/git-timings-view";
@@ -15,13 +14,9 @@ describe("pane view styles", () => {
       path.join(__dirname, "..", "styles", "main.css"),
     );
     const elements = [
-      "git-panel-PaneItemHost-git-file-patch-controller",
-      "git-panel-PaneItemHost-git-commit-preview",
-      "git-panel-PaneItemHost-git-commit-detail",
+      "git-panel-PaneItemHost-git-patch",
       "git-panel-PaneItemHost-git-timings-view",
-      "git-panel-FilePatch-root",
-      "git-panel-CommitPreview-root",
-      "git-panel-CommitDetail-root",
+      "git-panel-Patch-root",
       "git-panel-GitTimings-root",
       "git-panel-GitCache-root",
       "git-panel-CommitDetailView",
@@ -53,13 +48,7 @@ describe("pane item locations", () => {
   });
 
   it("keeps editor-like Git views in the workspace center", () => {
-    const itemTypes = [
-      ChangedFileItem,
-      CommitPreviewItem,
-      CommitDetailItem,
-      GitTimingsView,
-      GitCacheView,
-    ];
+    const itemTypes = [PatchItem, GitTimingsView, GitCacheView];
 
     for (const ItemType of itemTypes) {
       expect(ItemType.prototype.getAllowedLocations()).toEqual(["center"]);
@@ -77,19 +66,28 @@ describe("pane item host factories", () => {
         "GitDockItem",
       ],
       [
-        GitPackage.prototype.createFilePatchPaneItem,
-        { uri: "lumine-git://file-patch/a?workdir=b&stagingStatus=staged" },
-        "FilePatchControllerStub",
+        GitPackage.prototype.createPatchPaneItem,
+        {
+          uri: PatchDocument.file("b", "a", "staged").getURI(),
+          params: { document: PatchDocument.file("b", "a", "staged") },
+        },
+        "PatchPaneItem",
       ],
       [
-        GitPackage.prototype.createCommitPreviewPaneItem,
-        { uri: "lumine-git://commit-preview?workdir=b" },
-        "CommitPreviewStub",
+        GitPackage.prototype.createPatchPaneItem,
+        {
+          uri: PatchDocument.staged("b").getURI(),
+          params: { document: PatchDocument.staged("b") },
+        },
+        "PatchPaneItem",
       ],
       [
-        GitPackage.prototype.createCommitDetailPaneItem,
-        { uri: "lumine-git://commit-detail?workdir=b&sha=c" },
-        "CommitDetailStub",
+        GitPackage.prototype.createPatchPaneItem,
+        {
+          uri: PatchDocument.commit("b", "c").getURI(),
+          params: { document: PatchDocument.commit("b", "c") },
+        },
+        "PatchPaneItem",
       ],
       [
         GitPackage.prototype.createGitTimingsPaneItem,

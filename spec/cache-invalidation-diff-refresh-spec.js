@@ -3,7 +3,8 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { Disposable } from "lumine";
-import ChangedFileItem from "../lib/items/changed-file-item";
+import PatchItem from "../lib/items/patch-item";
+import PatchDocument from "../lib/models/patch-document";
 import GitRootController from "../lib/controllers/git-root-controller";
 import GitShellOutStrategy from "../lib/git-shell-out-strategy";
 import Repository from "../lib/models/repository";
@@ -117,23 +118,21 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
           ...args,
         ),
       );
-    item = new ChangedFileItem({
+    item = new PatchItem({
       workdirContextPool: pool,
-      workingDirectory: directory,
-      relPath: "example.txt",
-      stagingStatus: "unstaged",
+      document: PatchDocument.file(directory, "example.txt", "unstaged"),
       initialDiffView: layout,
       workspace: lumine.workspace,
       config: lumine.config,
       commands: lumine.commands,
       keymaps: lumine.keymaps,
       tooltips: { add: () => new Disposable(), addComposite: () => new Disposable() },
-      surfaceFileAtPath: () => {},
+      surfaceDocument: () => {},
       discardLines,
       undoLastDiscard: () => {},
     });
     container.appendChild(item.element);
-    await item.getFilePatchLoadedPromise();
+    await item.getPatchLoadedPromise();
     await settle();
     const editor = item.refEditor.get();
     if (!wrapped) {

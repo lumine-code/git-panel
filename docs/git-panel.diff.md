@@ -22,8 +22,18 @@ interface DiffService {
   buildFilePatch(files: DiffFile[], options?: object): MultiFilePatch;
   buildMultiFilePatch(files: DiffFile[], options?: object): MultiFilePatch;
   buildPatch(snapshot: { files?: DiffFile[]; rawPatch?: string }, options?: object): MultiFilePatch;
+  buildPatchURI(document: PatchDocument): string;
   ChangesView: new (props: DiffProps) => NativeDiffView;
 }
+type PatchDocument =
+  | {
+      kind: "file";
+      workingDirectory: string;
+      relPath: string;
+      stagingStatus: "staged" | "unstaged";
+    }
+  | { kind: "staged-all"; workingDirectory: string }
+  | { kind: "commit"; workingDirectory: string; sha: string };
 interface DiffProps {
   multiFilePatch: MultiFilePatch;
   readOnly: true;
@@ -83,6 +93,8 @@ async showDiff(repository) {
 ## Behavior
 
 `buildPatch` prefers structured records when present and normalizes paths for the editor. Raw patches pass through core's patch filter before parsing. Read-only views clone and own their accepted snapshot, preserving their buffer, selection and viewport when its contents are replaced. Git Panel owns the shared styles, commands and context menus.
+
+`buildPatchURI` identifies a local repository patch without exposing private models or URI encoding. Open it with `lumine.workspace.open(uri, {pending: true})` to share the pending patch pane across document kinds and repositories. Git Panel must be active to handle the URI. Promote the tab to keep a document open separately.
 
 ## Teardown
 

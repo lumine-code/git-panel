@@ -13,7 +13,7 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 - **Conflict resolution**: resolve merge conflicts with in-editor controls.
 - **Repository management**: initialize, clone, and work with multiple repositories.
 
-Selecting another changed file in the same repository reloads the pending diff tab in place, keeping its layout and starting at the new file's first hunk. The current diff remains visible while the next one loads; promoting the tab keeps it open separately.
+The pending diff tab is shared by staged and unstaged files, all staged changes, and commits across repositories. Opening another patch replaces its document in place, keeping the native editors and layout and starting at the new document's first hunk. The current diff remains visible while the next one loads; promoting the tab keeps it open separately.
 
 ## Installation
 

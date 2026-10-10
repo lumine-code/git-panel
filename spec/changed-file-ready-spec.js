@@ -1,7 +1,8 @@
 /** @babel */
 import path from "path";
 import { Emitter } from "lumine";
-import ChangedFileItem from "../lib/items/changed-file-item";
+import PatchItem from "../lib/items/patch-item";
+import PatchDocument from "../lib/models/patch-document";
 import { buildFilePatch } from "../lib/models/patch";
 import { flushViews } from "./helpers/etch";
 import GitRootController from "../lib/controllers/git-root-controller";
@@ -44,7 +45,7 @@ describe("native changed-file readiness and navigation", () => {
       isPartiallyStaged: () => false,
       hasDiscardHistory: () => false,
     };
-    item = new ChangedFileItem({
+    item = new PatchItem({
       workdirContextPool: {
         retain: () => ({
           context: { getRepository: () => repository },
@@ -53,9 +54,7 @@ describe("native changed-file readiness and navigation", () => {
         }),
         onDidChangePoolContexts: () => ({ dispose() {} }),
       },
-      workingDirectory: "C:\\native-changed-file-spec",
-      relPath: "example.txt",
-      stagingStatus: "unstaged",
+      document: PatchDocument.file("C:\\native-changed-file-spec", "example.txt", "unstaged"),
       workspace: lumine.workspace,
       commands: lumine.commands,
       keymaps: lumine.keymaps,
@@ -69,7 +68,7 @@ describe("native changed-file readiness and navigation", () => {
   it("resolves only after the patch view exists and navigates the source line", async () => {
     createItem();
     await flushViews(async () => {});
-    const controller = await item.getFilePatchLoadedPromise();
+    const controller = await item.getPatchLoadedPromise();
     expect(controller).toBe(item.refPatchController.get());
     const editor = item.refEditor.get();
     item.goToDiffLine(11);
@@ -82,7 +81,7 @@ describe("native changed-file readiness and navigation", () => {
 
   it("settles readiness with null when closed while the repository is loading", async () => {
     createItem({ loading: true });
-    const readiness = item.getFilePatchLoadedPromise();
+    const readiness = item.getPatchLoadedPromise();
     await item.destroy();
     expect(await readiness).toBeNull();
     await flushViews(async () => {});
@@ -97,7 +96,7 @@ describe("native changed-file readiness and navigation", () => {
     expect(item.refPatchController.isEmpty()).toBe(true);
     resume();
     await flushViews(async () => {});
-    expect(await item.getFilePatchLoadedPromise()).not.toBeNull();
+    expect(await item.getPatchLoadedPromise()).not.toBeNull();
     expect(readPatch).toHaveBeenCalled();
     await item.destroy();
     await item.destroy();
@@ -110,9 +109,21 @@ describe("native changed-file readiness and navigation", () => {
     await item.destroy();
     resume();
     await flushViews(async () => {});
-    expect(await item.getFilePatchLoadedPromise()).toBeNull();
+    expect(await item.getPatchLoadedPromise()).toBeNull();
     expect(readPatch).not.toHaveBeenCalled();
     expect(release).toHaveBeenCalledTimes(1);
+  });
+
+  it("emits one destroy event and releases one observation when a listener destroys it again", async () => {
+    createItem();
+    await flushViews(() => {});
+    const didDestroy = jasmine.createSpy("destroy event").and.callFake(() => item.destroy());
+    item.onDidDestroy(didDestroy);
+    await item.destroy();
+    await item.destroy();
+    expect(didDestroy).toHaveBeenCalledTimes(1);
+    expect(release).toHaveBeenCalledTimes(1);
+    expect(item.destroyed).toBe(true);
   });
 });
 
@@ -130,7 +141,7 @@ describe("current-file diff command guards", () => {
       .createSpy("resolve dispatch context")
       .and.returnValue({ editor, repository: coreRepository });
     const patchView = {
-      getFilePatchLoadedPromise: async () => {},
+      getPatchLoadedPromise: async () => {},
       goToDiffLine: jasmine.createSpy("navigate"),
       focus: jasmine.createSpy("focus"),
     };
@@ -147,7 +158,7 @@ describe("current-file diff command guards", () => {
     await controller.viewChangesForCurrentFile("unstaged", event);
     expect(getContext).toHaveBeenCalledOnceWith(event, { scope: "file" });
     expect(open.calls.mostRecent().args[0]).toBe(
-      ChangedFileItem.buildURI("selected.js", workingDirectory, "unstaged"),
+      PatchDocument.file(workingDirectory, "selected.js", "unstaged").getURI(),
     );
     expect(controller.quietlySelectItem).not.toHaveBeenCalled();
     expect(patchView.goToDiffLine).toHaveBeenCalledOnceWith(5);

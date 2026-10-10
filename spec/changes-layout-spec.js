@@ -1,10 +1,8 @@
 /** @babel */
 import path from "path";
 import { Disposable, Range } from "lumine";
-import ChangedFileController from "../lib/controllers/changed-file-controller";
-import CommitPreviewController from "../lib/controllers/commit-preview-controller";
-import ChangedFileItem from "../lib/items/changed-file-item";
-import CommitPreviewItem from "../lib/items/commit-preview-item";
+import PatchView from "../lib/views/patch-view";
+import PatchDocument from "../lib/models/patch-document";
 import RefHolder from "../lib/models/ref-holder";
 import { buildMultiFilePatch } from "../lib/models/patch";
 import { flushViews } from "./helpers/etch";
@@ -32,24 +30,21 @@ function diff(filePath, oldValue = "old value", newValue = "new value", context 
 const surfaces = [
   {
     name: "unstaged file changes",
-    Controller: ChangedFileController,
-    itemType: ChangedFileItem,
+    kind: "file",
     stagingStatus: "unstaged",
     title: "Unstaged Changes",
     fileCount: 1,
   },
   {
     name: "staged file changes",
-    Controller: ChangedFileController,
-    itemType: ChangedFileItem,
+    kind: "file",
     stagingStatus: "staged",
     title: "Staged Changes",
     fileCount: 1,
   },
   {
     name: "combined staged changes",
-    Controller: CommitPreviewController,
-    itemType: CommitPreviewItem,
+    kind: "staged-all",
     stagingStatus: "staged",
     title: "Staged Changes",
     fileCount: 2,
@@ -102,11 +97,16 @@ describe("changes diff layout", () => {
     const patch = build(
       raw || Array.from({ length: surface.fileCount }, (_, index) => diff(`file-${index + 1}.txt`)),
     );
-    view = new surface.Controller({
+    view = new PatchView({
       multiFilePatch: patch,
-      itemType: surface.itemType,
+      document:
+        surface.kind === "file"
+          ? PatchDocument.file(path.dirname(__filename), "file-1.txt", surface.stagingStatus)
+          : PatchDocument.staged(path.dirname(__filename)),
+      title: surface.title,
       stagingStatus: surface.stagingStatus,
-      relPath: "file-1.txt",
+      surfaceKind: surface.kind === "file" ? "file" : undefined,
+      readOnly: false,
       repository,
       refPatchController,
       refEditor,
@@ -115,8 +115,7 @@ describe("changes diff layout", () => {
       config: lumine.config,
       keymaps: lumine.keymaps,
       tooltips: { add: () => new Disposable(), addComposite: () => new Disposable() },
-      surfaceFileAtPath: () => {},
-      surfaceToCommitPreviewButton: () => {},
+      surface: () => {},
       discardLines,
       undoLastDiscard: () => {},
     });

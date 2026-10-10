@@ -187,9 +187,7 @@
   "deserializers": {
     "GitTimingsView": "createGitTimingsView",
     "GitDockItem": "createDockItemStub",
-    "FilePatchControllerStub": "createFilePatchControllerStub",
-    "CommitPreviewStub": "createCommitPreviewStub",
-    "CommitDetailStub": "createCommitDetailStub"
+    "PatchPaneItem": "createPatchPaneItem"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

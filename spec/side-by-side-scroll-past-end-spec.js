@@ -1,8 +1,8 @@
 /** @babel */
 import path from "path";
 import { Disposable, Emitter } from "lumine";
-import ChangedFileContainer from "../lib/containers/changed-file-container";
-import ChangedFileItem from "../lib/items/changed-file-item";
+import PatchContainer from "../lib/containers/patch-container";
+import PatchDocument from "../lib/models/patch-document";
 import RefHolder from "../lib/models/ref-holder";
 import { buildMultiFilePatch } from "../lib/models/patch";
 import { flushViews } from "./helpers/etch";
@@ -101,19 +101,18 @@ describe("Side by Side scroll past end", () => {
       isPartiallyStaged: () => false,
       hasDiscardHistory: () => false,
     };
-    view = new ChangedFileContainer({
+    view = new PatchContainer({
       repository,
-      relPath: "example.txt",
-      stagingStatus: "unstaged",
+      document: PatchDocument.file(path.dirname(__filename), "example.txt", "unstaged"),
       initialDiffView: "side-by-side",
-      itemType: ChangedFileItem,
+
       refPatchController,
       workspace: lumine.workspace,
       config: lumine.config,
       commands: lumine.commands,
       keymaps: lumine.keymaps,
       tooltips: { add: () => new Disposable(), addComposite: () => new Disposable() },
-      surfaceFileAtPath: () => {},
+      surface: () => {},
       discardLines: () => {},
       undoLastDiscard: () => {},
     });

@@ -3,8 +3,8 @@ import { Emitter } from "lumine";
 import Present from "../lib/models/repository-states/present";
 import Commit from "../lib/models/commit";
 import PatchBuffer from "../lib/models/patch/patch-buffer";
-import ChangedFileContainer from "../lib/containers/changed-file-container";
-import ChangedFileItem from "../lib/items/changed-file-item";
+import PatchContainer from "../lib/containers/patch-container";
+import PatchDocument from "../lib/models/patch-document";
 import { flushViews } from "./helpers/etch";
 
 const raw = (text = "after") => ({
@@ -116,17 +116,17 @@ describe("repository snapshot cache ownership", () => {
     });
     const props = {
       repository,
-      relPath: "example.txt",
-      stagingStatus: "unstaged",
-      itemType: ChangedFileItem,
+      document: PatchDocument.file(__dirname, "example.txt", "unstaged"),
+      surface: () => {},
+
       workspace: lumine.workspace,
       commands: lumine.commands,
       config: lumine.config,
       keymaps: lumine.keymaps,
       tooltips: lumine.tooltips,
     };
-    const first = new ChangedFileContainer(props);
-    const second = new ChangedFileContainer(props);
+    const first = new PatchContainer(props);
+    const second = new PatchContainer(props);
     views.push(first, second);
     jasmine.attachToDOM(first.element);
     jasmine.attachToDOM(second.element);

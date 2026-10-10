@@ -1,8 +1,8 @@
 /** @babel */
 import path from "path";
 import { Disposable, Emitter } from "lumine";
-import ChangedFileContainer from "../lib/containers/changed-file-container";
-import ChangedFileItem from "../lib/items/changed-file-item";
+import PatchContainer from "../lib/containers/patch-container";
+import PatchDocument from "../lib/models/patch-document";
 import RefHolder from "../lib/models/ref-holder";
 import { buildMultiFilePatch } from "../lib/models/patch";
 import { flushViews } from "./helpers/etch";
@@ -91,11 +91,10 @@ describe("mounted diff chunk refreshes", () => {
 
   async function mount(hunks) {
     source = build(hunks);
-    view = new ChangedFileContainer({
+    view = new PatchContainer({
       repository,
-      relPath: "example.txt",
-      stagingStatus: "unstaged",
-      itemType: ChangedFileItem,
+      document: PatchDocument.file(path.dirname(__filename), "example.txt", "unstaged"),
+
       refEditor,
       refPatchController,
       workspace: lumine.workspace,
@@ -103,7 +102,7 @@ describe("mounted diff chunk refreshes", () => {
       commands: lumine.commands,
       keymaps: lumine.keymaps,
       tooltips: { add: () => new Disposable(), addComposite: () => new Disposable() },
-      surfaceFileAtPath: () => {},
+      surface: () => {},
       discardLines,
       undoLastDiscard: () => {},
     });
@@ -282,17 +281,21 @@ describe("mounted diff chunk refreshes", () => {
   it("shows the empty diff after the last chunk is staged", async () => {
     await mount([hunk(0, 20)]);
     const previousEditor = editor();
+    const previousBuffer = previousEditor.getBuffer();
     const empty = buildMultiFilePatch([]);
     patches.push(empty);
     source = empty;
     await flushViews(() => clickChunk("stage", 0));
     await settle();
     expect(repository.applyPatchToIndex).toHaveBeenCalledTimes(1);
-    expect(view.element.querySelector("lumine-text-editor")).toBeNull();
+    expect(view.element.querySelector("lumine-text-editor")).toBe(previousEditor.getElement());
+    expect(view.element.querySelector(".git-panel-FilePatchView-editor").hidden).toBe(true);
+    expect(editor()).toBe(previousEditor);
+    expect(editor().getBuffer()).toBe(previousBuffer);
     expect(view.element.querySelector(".git-panel-FilePatchView-message").textContent).toBe(
       "No changes to display",
     );
     expect(view.element.querySelector(".git-panel-Loader")).toBeNull();
-    expect(previousEditor.isDestroyed()).toBe(true);
+    expect(previousEditor.isDestroyed()).toBe(false);
   });
 });

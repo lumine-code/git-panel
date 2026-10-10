@@ -369,7 +369,7 @@ describe("side-by-side soft wrapping", () => {
     await render();
     expect(Array.from(view.props.selectedRows)).toEqual([1]);
     lumine.commands.dispatch(newEditor.getElement(), "core:confirm");
-    expect(view.props.toggleRows).toHaveBeenCalledWith(new Set([1]), "line");
+    expect(view.props.toggleRows).toHaveBeenCalledWith();
   });
 
   it("keeps aligned rendered rows in every rapid smooth wheel frame with wrapped gaps", async () => {

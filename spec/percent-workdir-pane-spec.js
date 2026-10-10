@@ -39,9 +39,9 @@ describe("Git pane URI working-directory spelling", () => {
     const workdir = path.join(scratch, directoryName);
     await fs.mkdir(workdir);
     coreRepository = await lumine.repositories.initialize(workdir, { initialBranch: "main" });
-    const loaded = require(path.join(pack.path, "lib/items/commit-preview-item"));
-    const CommitPreview = loaded.default || loaded;
-    const uri = CommitPreview.buildURI(workdir);
+    const loaded = require(path.join(pack.path, "lib/models/patch-document"));
+    const PatchDocument = loaded.default || loaded;
+    const uri = PatchDocument.staged(workdir).getURI();
     const item = await lumine.workspace.open(uri, { pending: false });
     expect(typeof item?.getHydrationState).toBe("function");
     if (typeof item?.getHydrationState !== "function") return;

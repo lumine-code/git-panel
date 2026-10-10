@@ -171,8 +171,8 @@ describe("mounted side-by-side diff view", () => {
       expect(Array.from(view.props.selectedRows)).toEqual([canonicalRow]);
       expect(view.props.selectionMode).toBe("line");
       lumine.commands.dispatch(editor(side).getElement(), "core:confirm");
-      expect(view.props.toggleRows).toHaveBeenCalledWith(new Set([canonicalRow]), "line");
-      const staged = patch.getStagePatchForLines(view.props.toggleRows.calls.mostRecent().args[0]);
+      expect(view.props.toggleRows).toHaveBeenCalledWith();
+      const staged = patch.getStagePatchForLines(view.props.selectedRows);
       patches.push(staged);
       expect(staged.toString()).toContain(included);
       expect(staged.toString()).not.toContain(excluded);

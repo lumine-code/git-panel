@@ -1,12 +1,11 @@
 /** @babel */
 import { createViewModel } from "./helpers/etch";
-
-import ChangedFileContainer from "../lib/containers/changed-file-container";
-import CommitPreviewContainer from "../lib/containers/commit-preview-container";
-import { buildFilePatch } from "../lib/models/patch";
+import PatchContainer from "../lib/containers/patch-container";
+import PatchDocument from "../lib/models/patch-document";
+import { buildFilePatch, buildMultiFilePatch } from "../lib/models/patch";
 import { COLLAPSED, DEFERRED, EXPANDED, REMOVED } from "../lib/models/patch/patch";
 
-const diff = {
+const diff = (text = "after") => ({
   oldPath: "file.txt",
   newPath: "file.txt",
   oldMode: "100644",
@@ -19,92 +18,85 @@ const diff = {
       newStartLine: 1,
       newLineCount: 1,
       heading: "",
-      lines: [
-        { kind: "deleted", text: "before" },
-        { kind: "added", text: "after" },
-      ],
+      lines: ["-before", `+${text}`],
     },
   ],
-};
+});
 
 const filePatch = (filePath, renderStatus) => ({
   getPath: () => filePath,
   getRenderStatus: () => renderStatus,
   isPresent: () => true,
-  onDidChangeRenderStatus: () => ({ dispose() {} }),
 });
 
-const multiFilePatch = (...filePatches) => ({
-  getFilePatches: () => filePatches,
-});
-
-const multiFilePatchWithBuffer = (patchBuffer, ...filePatches) => {
-  let currentPatchBuffer = patchBuffer;
-  return {
-    adoptBuffer: jasmine.createSpy().and.callFake((nextPatchBuffer) => {
-      currentPatchBuffer = nextPatchBuffer;
-    }),
-    getFilePatches: () => filePatches,
-    getPatchBuffer: () => currentPatchBuffer,
-  };
-};
+const multiFilePatch = (...filePatches) => ({ getFilePatches: () => filePatches });
 
 describe("render status across patch refreshes", () => {
+  const containers = [],
+    sources = [];
+  const own = (source) => {
+    sources.push(source);
+    return source;
+  };
+  const create = (document, props = {}) => {
+    const container = createViewModel(PatchContainer, { document, ...props });
+    containers.push(container);
+    return container;
+  };
+  afterEach(() => {
+    while (containers.length) containers.pop().willDestroy();
+    while (sources.length) sources.pop().dispose();
+  });
+
   it("preserves an initially expanded changed-file patch", async () => {
     let options;
-    const initialPatch = buildFilePatch([diff], { largeDiffThreshold: 10 });
-    const container = createViewModel(ChangedFileContainer, {
+    const initialPatch = own(buildFilePatch([diff()], { largeDiffThreshold: 10 }));
+    const container = create(PatchDocument.file(__dirname, "file.txt", "unstaged"), {
       largeDiffThreshold: 0,
-      relPath: "file.txt",
-      stagingStatus: "unstaged",
     });
     container.lastMultiFilePatch = initialPatch;
     container.patchBuffer = initialPatch.getPatchBuffer();
     const repository = {
-      getFilePatchForPath: (filePath, nextOptions) => {
+      getFilePatchForPath: (_filePath, nextOptions) => {
         options = nextOptions;
-        return Promise.resolve(buildFilePatch([diff], nextOptions.builder));
+        return own(buildFilePatch([diff()], nextOptions.builder));
       },
-      hasDiscardHistory: () => Promise.resolve(false),
-      isPartiallyStaged: () => Promise.resolve(false),
+      hasDiscardHistory: () => false,
+      isPartiallyStaged: () => false,
     };
-
     const result = await container.fetchData(repository);
     container.prepareData(result);
-
     expect(options.builder.renderStatusOverrides).toEqual({ "file.txt": EXPANDED });
     expect(options.patchBuffer).toBeUndefined();
     expect(result.multiFilePatch.getFilePatches()[0].getRenderStatus()).toBe(EXPANDED);
     expect(result.multiFilePatch.getBuffer().isEmpty()).toBe(false);
   });
 
-  it("follows the buffer from a cached changed-file patch", async () => {
+  it("owns a cloned changed-file snapshot while keeping the cached source independent", async () => {
     let options;
-    const cachedBuffer = { name: "cached" };
-    const cachedPatch = multiFilePatchWithBuffer(cachedBuffer, filePatch("file.txt", EXPANDED));
+    const source = own(buildFilePatch([diff()]));
+    spyOn(source, "adoptBuffer").and.callThrough();
     const repository = {
-      getFilePatchForPath: (filePath, nextOptions) => {
+      getFilePatchForPath: (_path, nextOptions) => {
         options = nextOptions;
-        return Promise.resolve(cachedPatch);
+        return source;
       },
-      hasDiscardHistory: () => Promise.resolve(false),
+      hasDiscardHistory: () => false,
       isLoading: () => false,
-      isPartiallyStaged: () => Promise.resolve(false),
+      isPartiallyStaged: () => false,
     };
-    const container = createViewModel(ChangedFileContainer, {
-      relPath: "file.txt",
-      repository,
-      stagingStatus: "unstaged",
-    });
-
+    const container = create(PatchDocument.file(__dirname, "file.txt", "unstaged"), { repository });
     const data = await container.fetchData(repository);
     container.prepareData(data);
     container.renderWithData(data);
-
-    expect(container.patchBuffer).toBe(cachedBuffer);
+    expect(data.multiFilePatch).not.toBe(source);
+    expect(container.patchBuffer).toBe(data.multiFilePatch.getPatchBuffer());
+    expect(data.multiFilePatch.getBuffer()).not.toBe(source.getBuffer());
     expect(options.patchBuffer).toBeUndefined();
-    expect(cachedPatch.adoptBuffer).not.toHaveBeenCalled();
+    expect(source.adoptBuffer).not.toHaveBeenCalled();
     container.willDestroy();
+    expect(source.isDisposed()).toBe(false);
+    expect(source.getBuffer().isDestroyed()).toBe(false);
   });
 
   it("adopts a changed-file patch only after its companion data is ready", async () => {
@@ -112,51 +104,46 @@ describe("render status across patch refreshes", () => {
     const partialStage = new Promise((resolve) => {
       resolvePartialStage = resolve;
     });
-    const currentBuffer = { name: "current" };
-    const nextBuffer = { name: "next" };
-    const currentPatch = multiFilePatchWithBuffer(currentBuffer, filePatch("file.txt", EXPANDED));
-    const nextPatch = multiFilePatchWithBuffer(nextBuffer, filePatch("file.txt", EXPANDED));
+    const initial = own(buildFilePatch([diff("current")]));
+    const next = own(buildFilePatch([diff("next")]));
     const repository = {
-      getFilePatchForPath: () => Promise.resolve(nextPatch),
+      getFilePatchForPath: () => initial,
       hasDiscardHistory: () => false,
-      isPartiallyStaged: () => partialStage,
+      isLoading: () => false,
+      isPartiallyStaged: () => false,
     };
-    const container = createViewModel(ChangedFileContainer, {
-      relPath: "file.txt",
-      stagingStatus: "unstaged",
-    });
-    container.lastMultiFilePatch = currentPatch;
-    container.patchBuffer = currentBuffer;
-    const willUpdate = jasmine.createSpy();
-    const didUpdate = jasmine.createSpy();
-    const willSub = container.onWillUpdatePatch(willUpdate);
-    const didSub = container.onDidUpdatePatch(didUpdate);
-
+    const container = create(PatchDocument.file(__dirname, "file.txt", "unstaged"), { repository });
+    const initialData = await container.fetchData(repository);
+    container.prepareData(initialData);
+    container.renderWithData(initialData);
+    const currentBuffer = container.patchBuffer;
+    const willUpdate = jasmine.createSpy("will update"),
+      didUpdate = jasmine.createSpy("did update");
+    const willSub = container.onWillUpdatePatch(willUpdate),
+      didSub = container.onDidUpdatePatch(didUpdate);
+    repository.getFilePatchForPath = () => next;
+    repository.isPartiallyStaged = () => partialStage;
     const fetch = container.fetchData(repository);
     await Promise.resolve();
-
-    expect(nextPatch.adoptBuffer).not.toHaveBeenCalled();
+    expect(currentBuffer.getBuffer().getText()).toContain("current");
     expect(willUpdate).not.toHaveBeenCalled();
-
     resolvePartialStage(false);
     const data = await fetch;
-
-    expect(data.multiFilePatch).toBe(nextPatch);
-    expect(nextPatch.adoptBuffer).not.toHaveBeenCalled();
+    expect(currentBuffer.getBuffer().getText()).toContain("current");
     expect(willUpdate).not.toHaveBeenCalled();
-
     container.prepareData(data);
-
-    expect(nextPatch.adoptBuffer).toHaveBeenCalledOnceWith(currentBuffer);
+    expect(data.multiFilePatch.getPatchBuffer()).toBe(currentBuffer);
+    expect(currentBuffer.getBuffer().getText()).toContain("next");
+    expect(next.getBuffer()).not.toBe(currentBuffer.getBuffer());
     expect(willUpdate).toHaveBeenCalledTimes(1);
-    expect(didUpdate).toHaveBeenCalledOnceWith(nextPatch);
+    expect(didUpdate).toHaveBeenCalledOnceWith(data.multiFilePatch);
     willSub.dispose();
     didSub.dispose();
   });
 
-  it("uses the live statuses from the current commit preview on its next refresh", async () => {
+  it("uses the live statuses from the current staged-all preview on its next refresh", async () => {
     let options;
-    const container = createViewModel(CommitPreviewContainer, {});
+    const container = create(PatchDocument.staged(__dirname));
     container.state.renderStatusOverrides = { "remembered.txt": COLLAPSED };
     container.lastMultiFilePatch = multiFilePatch(
       filePatch("expanded.txt", EXPANDED),
@@ -166,13 +153,11 @@ describe("render status across patch refreshes", () => {
     const repository = {
       getStagedChangesPatch: (nextOptions) => {
         options = nextOptions;
-        return Promise.resolve(multiFilePatchWithBuffer({ name: "next" }));
+        return own(buildMultiFilePatch([]));
       },
     };
-
     const data = await container.fetchData(repository);
     container.prepareData(data);
-
     expect(options.builder.renderStatusOverrides).toEqual({
       "remembered.txt": COLLAPSED,
       "expanded.txt": EXPANDED,
@@ -180,38 +165,31 @@ describe("render status across patch refreshes", () => {
     });
   });
 
-  it("follows the buffer from a cached commit preview", async () => {
+  it("refreshes staged-all snapshots in the live buffer without changing either cached source", async () => {
     let options;
-    const cachedBuffer = { name: "cached" };
-    const cachedPatch = multiFilePatchWithBuffer(cachedBuffer, filePatch("file.txt", EXPANDED));
-    const refreshedBuffer = { name: "refreshed" };
-    const refreshedPatch = multiFilePatchWithBuffer(
-      refreshedBuffer,
-      filePatch("file.txt", EXPANDED),
-    );
-    let callCount = 0;
+    const initial = own(buildMultiFilePatch([diff("cached")]));
+    const refreshed = own(buildMultiFilePatch([diff("refreshed")]));
+    let calls = 0;
     const repository = {
       getStagedChangesPatch: (nextOptions) => {
         options = nextOptions;
-        return Promise.resolve(callCount++ === 0 ? cachedPatch : refreshedPatch);
+        return calls++ === 0 ? initial : refreshed;
       },
       isLoading: () => false,
     };
-    const container = createViewModel(CommitPreviewContainer, { repository });
-
+    const container = create(PatchDocument.staged(__dirname), { repository });
     const initialData = await container.fetchData(repository);
     container.prepareData(initialData);
-    container.renderResult(initialData);
-    const refreshedData = await container.fetchData(repository);
-
-    expect(container.patchBuffer).toBe(cachedBuffer);
+    container.renderWithData(initialData);
+    const liveBuffer = container.patchBuffer;
+    const data = await container.fetchData(repository);
     expect(options.patchBuffer).toBeUndefined();
-    expect(refreshedData.multiFilePatch).toBe(refreshedPatch);
-    expect(refreshedPatch.adoptBuffer).not.toHaveBeenCalled();
-
-    container.prepareData(refreshedData);
-
-    expect(refreshedPatch.adoptBuffer).toHaveBeenCalledOnceWith(cachedBuffer);
-    container.willDestroy();
+    expect(data.multiFilePatch).toBe(refreshed);
+    expect(liveBuffer.getBuffer().getText()).toContain("cached");
+    container.prepareData(data);
+    expect(data.multiFilePatch.getPatchBuffer()).toBe(liveBuffer);
+    expect(liveBuffer.getBuffer().getText()).toContain("refreshed");
+    expect(initial.getBuffer().getText()).toContain("cached");
+    expect(refreshed.getBuffer()).not.toBe(liveBuffer.getBuffer());
   });
 });
