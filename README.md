@@ -13,6 +13,8 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 - **Conflict resolution**: resolve merge conflicts with in-editor controls.
 - **Repository management**: initialize, clone, and work with multiple repositories.
 
+Selecting another changed file in the same repository reloads the pending diff tab in place, keeping its layout and starting at the new file's first hunk. The current diff remains visible while the next one loads; promoting the tab keeps it open separately.
+
 ## Installation
 
 To install `git-panel` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/git-panel`.
