@@ -53,6 +53,7 @@ describe("patch scrollbar widget", () => {
     constructor() {
       this.element = document.createElement("div");
       this.element.className = "simplemap";
+      this.element.style.cssText = "position: absolute; top: 0; right: 0; pointer-events: none;";
       this.items = [];
       this.setItems = jasmine.createSpy("setItems").and.callFake((items) => (this.items = items));
       this.update = jasmine.createSpy("update");
@@ -77,7 +78,7 @@ describe("patch scrollbar widget", () => {
     await new Promise((resolve) => requestAnimationFrame(resolve));
   }
 
-  async function mount(patch, layout, parent = container) {
+  async function mount(patch, layout, parent = container, props = {}) {
     view = new MultiFilePatchView({
       multiFilePatch: patch,
       initialDiffView: layout,
@@ -99,6 +100,7 @@ describe("patch scrollbar widget", () => {
       surface: () => {},
       undoLastDiscard: () => {},
       diveIntoMirrorPatch: () => {},
+      ...props,
     });
     parent.append(view.element);
     await paint();
@@ -114,9 +116,8 @@ describe("patch scrollbar widget", () => {
         Math.max(0, Math.min(100, (marker.top / component.getScrollHeight()) * 100)),
         5,
       );
-      if (marker.end !== undefined) {
-        expect(widget.items[index].end).toBeGreaterThanOrEqual(widget.items[index].prc);
-      }
+      expect(widget.items[index].end).toBeUndefined();
+      expect(widget.items[index].height).toBeUndefined();
     }
     expect(widget.element.style.width).toBe(
       `${component.getVerticalScrollbarWidth() || lumine.config.get("scrollmap.overlayWidth") || 0}px`,
@@ -125,6 +126,15 @@ describe("patch scrollbar widget", () => {
   }
 
   for (const layout of ["unified", "side-by-side"]) {
+    it(`draws no markers for compact ${layout} views without headers`, async () => {
+      subscriptions.add(consumeScrollmapWidget(Widget));
+      await mount(build([diff("first.txt")]), layout, container, { compact: true });
+      expect(view.element.querySelector(".git-panel-FilePatchView-header")).toBeNull();
+      expect(view.element.querySelector(".git-panel-HunkHeaderView-title")).toBeNull();
+      expect(view.getScrollmapState().markers).toEqual([]);
+      expect(widgets[0].items).toEqual([]);
+    });
+
     it(`attaches a late widget to the native scrollbar and uses wrapped/header pixels in ${layout}`, async () => {
       const patch = build([diff("first.txt"), diff("second.txt")]);
       await mount(patch, layout);
@@ -294,11 +304,45 @@ describe("patch scrollbar widget", () => {
       const fileItem = widget.items.find((item) => item.cls.includes("marker-git-file"));
       const hunkItem = widget.items.find((item) => item.cls.includes("marker-git-hunk"));
       expect(centerColor(fileItem)).not.toEqual(centerColor(hunkItem));
+      expect(
+        widget.items.every((item) => item.end === undefined && item.height === undefined),
+      ).toBe(true);
+      const columnsFor = (item) => {
+        const row = Math.min(canvas.height - 1, Math.floor((item.prc / 100) * canvas.height) + 1);
+        return Array.from({ length: canvas.width }, (_, column) => column).filter(
+          (column) => pixels[(row * canvas.width + column) * 4 + 3] > 0,
+        );
+      };
+      const fileColumns = columnsFor(fileItem);
+      const hunkColumns = columnsFor(hunkItem);
+      expect(fileColumns).toEqual(hunkColumns);
+      expect(fileColumns.length).toBeGreaterThan(0);
+      expect(fileColumns.length).toBeLessThan(canvas.width);
+      expect(
+        Math.abs((fileColumns[0] + fileColumns.at(-1) + 1) / 2 - canvas.width / 2),
+      ).toBeLessThanOrEqual(1);
+      const paintedRuns = [];
+      for (let row = 0; row < canvas.height; row++) {
+        const alpha = pixels[(row * canvas.width + Math.floor(canvas.width / 2)) * 4 + 3];
+        if (!alpha) continue;
+        const previous = paintedRuns.at(-1);
+        if (previous && previous.end === row - 1) previous.end = row;
+        else paintedRuns.push({ start: row, end: row });
+      }
+      expect(paintedRuns.length).toBe(widget.items.length);
+      for (const run of paintedRuns) {
+        expect(run.end - run.start + 1).toBeLessThanOrEqual(
+          Math.ceil(3 * window.devicePixelRatio) + 1,
+        );
+      }
       const fileProbe = maps[0].querySelector(".marker-git-file.scrollmap-style-probe");
       const hunkProbe = maps[0].querySelector(".marker-git-hunk.scrollmap-style-probe");
       const fileColor = getComputedStyle(fileProbe).backgroundColor;
       const hunkColor = getComputedStyle(hunkProbe).backgroundColor;
       expect(fileColor).not.toBe(hunkColor);
+      expect(getComputedStyle(fileProbe).width).toBe(getComputedStyle(hunkProbe).width);
+      expect(getComputedStyle(fileProbe).height).toBe("3px");
+      expect(getComputedStyle(hunkProbe).height).toBe("2px");
       expect(getComputedStyle(fileProbe).opacity).toBe("0.7");
       expect(getComputedStyle(hunkProbe).opacity).toBe("0.7");
       await flushViews(() =>
@@ -315,6 +359,11 @@ describe("patch scrollbar widget", () => {
       );
       expect(getComputedStyle(currentFileProbe).backgroundColor).toBe(fileColor);
       expect(getComputedStyle(currentHunkProbe).backgroundColor).toBe(hunkColor);
+      expect(getComputedStyle(currentFileProbe).width).toBe(
+        getComputedStyle(currentHunkProbe).width,
+      );
+      expect(getComputedStyle(currentFileProbe).height).toBe("3px");
+      expect(getComputedStyle(currentHunkProbe).height).toBe("2px");
       expect(getComputedStyle(currentFileProbe).opacity).toBe("1");
       expect(getComputedStyle(currentHunkProbe).opacity).toBe("1");
     } finally {

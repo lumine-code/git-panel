@@ -146,7 +146,7 @@ describe("patch navigation outline", () => {
       const hunkMarkers = state.markers.filter((marker) => marker.level === 2);
       expect(hunkMarkers.length).toBe(2);
       expect(hunkMarkers[1].current).toBe(true);
-      expect(hunkMarkers[1].end).toBeGreaterThan(hunkMarkers[1].top);
+      expect(hunkMarkers[1].end).toBeUndefined();
       const ids = headers[1].children.map((header) => header.id);
       await flushViews(() => view.changePatchRenderStatus(second, false));
       expect(headers[1].children.map((header) => header.id)).toEqual(ids);

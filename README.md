@@ -125,7 +125,7 @@ Override the package custom properties in your `styles.css` to adjust its accent
 - [`git-panel`](docs/git-panel.md): provided to navigate to the Git tab and its init and clone dialogs.
 - [`git-panel.diff`](docs/git-panel.diff.md): provided to build patch snapshots and render shared native diff layouts.
 - `navigation.adapter`: provided to outline the current patch's files and hunks in Navigation Panel.
-- `scrollmap.widget`: consumed to mark file headers, hunk ranges, and the current diff location on the scrollbar.
+- `scrollmap.widget`: consumed to mark file and hunk headers on the scrollbar.
 - `git.commit-links`: consumed to resolve a pushed commit's optional forge URL.
 - `busy-signal`: consumed to report staging, discard, and undo operations on the busy indicator.
 - `linter.editors`: consumed to register the commit message editor for linting, so spell checking reaches it.

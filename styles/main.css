@@ -2240,22 +2240,31 @@ pre.git-panel-Message-description {
   display: none;
 }
 /* Standalone diff markers follow the native scrollbar geometry. */
-.git-panel-patch-scrollmap.simplemap .marker {
-  opacity: 0.7;
+.git-panel-patch-scrollmap.simplemap {
+  .marker.marker-git-file,
+  .marker.marker-git-hunk {
+    left: 0;
+    right: 0;
+    width: min(6px, 60%);
+    margin: 0 auto;
+    opacity: 0.7;
+  }
 
-  &.marker-git-file {
+  .marker.marker-git-file {
     z-index: 16;
-    min-height: 2px;
+    height: 3px;
+    min-height: 3px;
     background-color: var(--ui-site-color-1);
   }
 
-  &.marker-git-hunk {
+  .marker.marker-git-hunk {
     z-index: 14;
+    height: 2px;
     min-height: 2px;
     background-color: var(--ui-site-color-2);
   }
 
-  &.current {
+  .marker.current {
     z-index: 18;
     opacity: 1;
   }
