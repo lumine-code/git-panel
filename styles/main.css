@@ -2243,10 +2243,6 @@ pre.git-panel-Message-description {
 .git-panel-patch-scrollmap.simplemap {
   .marker.marker-git-file,
   .marker.marker-git-hunk {
-    left: 0;
-    right: 0;
-    width: min(6px, 60%);
-    margin: 0 auto;
     opacity: 0.7;
   }
 

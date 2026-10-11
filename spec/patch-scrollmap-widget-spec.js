@@ -345,6 +345,37 @@ describe("patch scrollbar widget", () => {
       expect(getComputedStyle(hunkProbe).height).toBe("2px");
       expect(getComputedStyle(fileProbe).opacity).toBe("0.7");
       expect(getComputedStyle(hunkProbe).opacity).toBe("0.7");
+      const assertDefaultCenter = () => {
+        const baseProbe = widget.canvas.styles.probeFor("marker");
+        expect(baseProbe.className).toBe("marker scrollmap-style-probe");
+        baseProbe.style.backgroundColor = "rgb(255, 255, 255)";
+        const baseWidth = getComputedStyle(baseProbe).width;
+        const file = maps[0].querySelector(".marker-git-file.scrollmap-style-probe");
+        const hunk = maps[0].querySelector(".marker-git-hunk.scrollmap-style-probe");
+        expect(getComputedStyle(file).width).toBe(baseWidth);
+        expect(getComputedStyle(hunk).width).toBe(baseWidth);
+        const items = widget.items;
+        const baseItem = { prc: 95 };
+        widget.setItems([...items, baseItem]);
+        const drawn = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+        const columns = (item) => {
+          const row = Math.min(canvas.height - 1, Math.ceil((item.prc / 100) * canvas.height));
+          return Array.from({ length: canvas.width }, (_, column) => column).filter(
+            (column) => drawn[(row * canvas.width + column) * 4 + 3] > 0,
+          );
+        };
+        const baseColumns = columns(baseItem);
+        expect(baseColumns.length).toBeGreaterThan(0);
+        expect(columns(items.find((item) => item.cls.includes("marker-git-file")))).toEqual(
+          baseColumns,
+        );
+        expect(columns(items.find((item) => item.cls.includes("marker-git-hunk")))).toEqual(
+          baseColumns,
+        );
+        widget.setItems(items);
+        return baseWidth;
+      };
+      const baseWidth = assertDefaultCenter();
       await flushViews(() =>
         view.navigateToNavigationHeader(view.getNavigationHeaders()[0].children[0], {
           focus: false,
@@ -362,10 +393,24 @@ describe("patch scrollbar widget", () => {
       expect(getComputedStyle(currentFileProbe).width).toBe(
         getComputedStyle(currentHunkProbe).width,
       );
+      expect(getComputedStyle(currentFileProbe).width).toBe(baseWidth);
       expect(getComputedStyle(currentFileProbe).height).toBe("3px");
       expect(getComputedStyle(currentHunkProbe).height).toBe("2px");
       expect(getComputedStyle(currentFileProbe).opacity).toBe("1");
       expect(getComputedStyle(currentHunkProbe).opacity).toBe("1");
+      const overlayWidth = lumine.config.get("scrollmap.overlayWidth");
+      try {
+        spyOn(
+          view.getScrollmapState().editor.getElement().getComponent(),
+          "getVerticalScrollbarWidth",
+        ).and.returnValue(0);
+        lumine.config.set("scrollmap.overlayWidth", 3);
+        await paint();
+        expect(widget.element.style.width).toBe("3px");
+        assertDefaultCenter();
+      } finally {
+        lumine.config.set("scrollmap.overlayWidth", overlayWidth);
+      }
     } finally {
       lease?.dispose();
       if (!scrollmapWasActive) await lumine.packages.deactivatePackage("scrollmap");
