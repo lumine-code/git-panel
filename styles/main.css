@@ -2097,15 +2097,21 @@ pre.git-panel-Message-description {
   z-index: -1;
 }
 .git-panel-FilePatchView:focus-within lumine-text-editor .selection .region {
-  /* Blend over the diff instead of replacing it with the editor background. */
-  background-color: color-mix(in srgb, var(--syntax-selection-color) 70%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-indicator-color) 70%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--syntax-selection-color) 25%,
+    var(--syntax-background-color)
+  );
 }
 .git-panel-FilePatchView.git-panel-FilePatchView--hunkMode:focus-within
   lumine-text-editor
   .selection
   .region {
-  background-color: color-mix(in srgb, var(--syntax-selection-color) 40%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--syntax-selection-color) 8%,
+    var(--syntax-background-color)
+  );
 }
 .git-panel-FilePatchHeaderView-basename {
   font-weight: bold;
