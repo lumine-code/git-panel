@@ -153,6 +153,31 @@ describe("copying a diff from mounted chunk controls", () => {
     button.click();
   }
 
+  function visibleTooltip(index) {
+    const id = copyButton(index).getAttribute("aria-describedby");
+    return id ? document.getElementById(id) : null;
+  }
+
+  function expectCopyFeedback(index, copied) {
+    const button = copyButton(index);
+    expect(button.classList.contains("icon-clippy")).toBe(true);
+    expect(button.classList.contains("icon-check")).toBe(false);
+    const tooltip = visibleTooltip(index);
+    if (copied) {
+      expect(tooltip?.isConnected).toBe(true);
+      expect(tooltip?.classList.contains("in")).toBe(true);
+      expect(tooltip?.querySelector(".tooltip-inner")?.textContent).toBe("Copied");
+    } else {
+      expect(tooltip?.querySelector(".tooltip-inner")?.textContent).not.toBe("Copied");
+      expect(
+        Array.from(
+          document.querySelectorAll(".tooltip.in .tooltip-inner"),
+          (node) => node.textContent,
+        ),
+      ).not.toContain("Copied");
+    }
+  }
+
   function expectNoMutation() {
     for (const method of [
       "applyPatchToIndex",
@@ -174,7 +199,7 @@ describe("copying a diff from mounted chunk controls", () => {
       await flushViews(() => clickCopy(1));
       await flushViews(() => {});
       expect(clipboard.write).toHaveBeenCalledOnceWith(fileHeader + secondHunk + "\n");
-      expect(copyButton(1).classList.contains("icon-check")).toBe(true);
+      expectCopyFeedback(1, true);
       expect(selection()).toEqual(before);
       expectNoMutation();
     });
@@ -307,8 +332,7 @@ describe("copying a diff from mounted chunk controls", () => {
     const oldSnapshot = controller().props.multiFilePatch;
     await flushViews(() => clickCopy(0));
     expect(clipboard.write).toHaveBeenCalledOnceWith(fileHeader + firstHunk + "\n");
-    expect(copyButton(0).classList.contains("icon-clippy")).toBe(true);
-    expect(copyButton(0).classList.contains("icon-check")).toBe(false);
+    expectCopyFeedback(0, false);
     await flushViews(() =>
       view.update({
         ...view.props,
@@ -321,7 +345,7 @@ describe("copying a diff from mounted chunk controls", () => {
     finishWrite();
     await flushViews(() => {});
     expect(clipboard.write).toHaveBeenCalledOnceWith(fileHeader + firstHunk + "\n");
-    expect(copyButton(0).classList.contains("icon-check")).toBe(false);
+    expectCopyFeedback(0, false);
     expectNoMutation();
   });
 
@@ -332,7 +356,7 @@ describe("copying a diff from mounted chunk controls", () => {
       throw new Error("Clipboard write rejected");
     });
     await flushViews(() => clickCopy(0));
-    expect(copyButton(0).classList.contains("icon-check")).toBe(false);
+    expectCopyFeedback(0, false);
     expect(notificationManager.addError).toHaveBeenCalledOnceWith("Unable to copy diff", {
       description: "Clipboard write rejected",
       dismissable: true,
@@ -344,7 +368,8 @@ describe("copying a diff from mounted chunk controls", () => {
     const notificationManager = { addError: jasmine.createSpy("copy failure") };
     await mount("unified", { notificationManager });
     await flushViews(() => clickCopy(0));
-    expect(copyButton(0).classList.contains("icon-check")).toBe(true);
+    await flushViews(() => {});
+    expectCopyFeedback(0, true);
     let rejectWrite;
     clipboard.write.and.returnValue(
       new Promise((resolve, reject) => {
@@ -353,15 +378,33 @@ describe("copying a diff from mounted chunk controls", () => {
     );
     await flushViews(() => clickCopy(0));
     expect(clipboard.write).toHaveBeenCalledTimes(2);
-    expect(copyButton(0).classList.contains("icon-clippy")).toBe(true);
-    expect(copyButton(0).classList.contains("icon-check")).toBe(false);
+    expectCopyFeedback(0, false);
     rejectWrite(new Error("Clipboard write rejected"));
     await flushViews(() => {});
-    expect(copyButton(0).classList.contains("icon-check")).toBe(false);
+    expectCopyFeedback(0, false);
     expect(notificationManager.addError).toHaveBeenCalledOnceWith("Unable to copy diff", {
       description: "Clipboard write rejected",
       dismissable: true,
     });
+    expectNoMutation();
+  });
+
+  it("shows Copied after each immediate successful click and then restores the hover hint", async () => {
+    await mount("unified");
+    for (let count = 1; count <= 2; count++) {
+      await flushViews(() => clickCopy(0));
+      await flushViews(() => {});
+      expect(clipboard.write).toHaveBeenCalledTimes(count);
+      expectCopyFeedback(0, true);
+    }
+    globalThis.advanceClock(1500);
+    await flushViews(() => {});
+    await flushViews(() => {});
+    expectCopyFeedback(0, false);
+    copyButton(0).dispatchEvent(new MouseEvent("mouseenter"));
+    globalThis.advanceClock(1000);
+    await flushViews(() => {});
+    expect(visibleTooltip(0)?.querySelector(".tooltip-inner")?.textContent).toBe("Copy Hunk Diff");
     expectNoMutation();
   });
 
