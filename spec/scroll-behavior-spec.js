@@ -52,7 +52,6 @@ function buildPatchView(selectionMode) {
   const editor = {
     getElement: () => element,
     scrollToBufferPosition: jasmine.createSpy(),
-    scrollToBufferRange: jasmine.createSpy(),
     setCursorBufferPosition: jasmine.createSpy(),
     setSelectedBufferRange: jasmine.createSpy(),
     setSelectedBufferRanges: jasmine.createSpy(),
@@ -271,20 +270,32 @@ describe("scroll behavior", () => {
     });
 
     it("reveals hunk selection once using its requested navigation mode", () => {
-      const { editor, view } = buildPatchView("hunk");
+      const { view } = buildPatchView("hunk");
       views.push(view);
+      const editor = lumine.workspace.buildTextEditor();
+      editor.setText(Array.from({ length: 100 }, (_, index) => `row ${index}`).join("\n"));
+      view.refEditor.setter(editor);
       const range = [
         [4, 0],
-        [7, 0],
+        [80, 0],
       ];
-
-      view.setCanonicalSelectionRanges([range], { mode: "zone" });
-
-      expect(editor.setSelectedBufferRanges).toHaveBeenCalledOnceWith([range], {
-        mode: "zone",
-        autoscroll: false,
-      });
-      expect(editor.scrollToBufferRange).toHaveBeenCalledOnceWith(range, { mode: "zone" });
+      const requested = jasmine.createSpy("native scroll request");
+      const subscription = editor.onDidRequestAutoscroll(requested);
+      try {
+        for (const reversed of [false, true]) {
+          requested.calls.reset();
+          view.setCanonicalSelectionRanges([range], { mode: "zone", reversed });
+          expect(editor.getSelectedBufferRange().serialize()).toEqual(range);
+          expect(requested).toHaveBeenCalledTimes(1);
+          const request = requested.calls.mostRecent().args[0];
+          expect(request.screenRange).toEqual(editor.getLastSelection().getScreenRange());
+          expect(request.options.mode).toEqual(editor.getScrollZone());
+          expect(request.options.reversed).toBe(reversed);
+        }
+      } finally {
+        subscription.dispose();
+        editor.destroy();
+      }
     });
   });
 });
