@@ -65,6 +65,9 @@ jobs:
       LUMINE_JASMINE_REPORTER: list
       LUMINE_DISABLE_SHELLING_OUT_FOR_ENVIRONMENT: "true"
       LUMINE_HOME: ${{ github.workspace }}/git-panel-spec-home
+      HOME: ${{ github.workspace }}/git-panel-spec-home
+      USERPROFILE: ${{ github.workspace }}/git-panel-spec-home
+      XDG_CONFIG_HOME: ${{ github.workspace }}/git-panel-spec-home
       TEMP: ${{ github.workspace }}/git-panel-spec-tmp
       TMP: ${{ github.workspace }}/git-panel-spec-tmp
       TMPDIR: ${{ github.workspace }}/git-panel-spec-tmp
