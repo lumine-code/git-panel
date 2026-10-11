@@ -2099,7 +2099,7 @@ pre.git-panel-Message-description {
 .git-panel-FilePatchView:focus-within lumine-text-editor .selection .region {
   background-color: color-mix(
     in srgb,
-    var(--syntax-selection-color) 25%,
+    var(--syntax-selection-color) 40%,
     var(--syntax-background-color)
   );
 }
@@ -2109,7 +2109,7 @@ pre.git-panel-Message-description {
   .region {
   background-color: color-mix(
     in srgb,
-    var(--syntax-selection-color) 8%,
+    var(--syntax-selection-color) 15%,
     var(--syntax-background-color)
   );
 }
