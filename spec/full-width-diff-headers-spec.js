@@ -289,6 +289,7 @@ describe("full-width diff controls", () => {
         ".git-panel-HunkHeaderView",
         ".git-panel-HunkHeaderView-title",
         ".git-panel-HunkHeaderView-stageButton",
+        ".git-panel-HunkHeaderView-copyButton",
         ".git-panel-HunkHeaderView-discardButton",
       ];
       for (const width of [920, 460]) {
