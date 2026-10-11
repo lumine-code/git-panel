@@ -1984,6 +1984,13 @@ pre.git-panel-Message-description {
 .git-panel-FilePatchView-line--added {
   background-color: var(--git-panel-diff-added);
 }
+.git-panel-FilePatchView lumine-text-editor .highlight.git-panel-FilePatchView-word--deleted,
+.git-panel-FilePatchView lumine-text-editor .highlight.git-panel-FilePatchView-word--added {
+  /* Keep word colors above selection fills regardless of marker creation order.
+     The editor's highlights container keeps both layers behind the text. */
+  position: relative;
+  z-index: 1;
+}
 .git-panel-FilePatchView-word--deleted .region {
   background-color: var(--git-panel-diff-deleted-highlight);
   border-radius: 2px;
@@ -2090,21 +2097,15 @@ pre.git-panel-Message-description {
   z-index: -1;
 }
 .git-panel-FilePatchView:focus-within lumine-text-editor .selection .region {
-  background-color: color-mix(
-    in srgb,
-    var(--syntax-selection-color) 25%,
-    var(--syntax-background-color)
-  );
+  /* Blend over the diff instead of replacing it with the editor background. */
+  background-color: color-mix(in srgb, var(--syntax-selection-color) 70%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-indicator-color) 70%, transparent);
 }
 .git-panel-FilePatchView.git-panel-FilePatchView--hunkMode:focus-within
   lumine-text-editor
   .selection
   .region {
-  background-color: color-mix(
-    in srgb,
-    var(--syntax-selection-color) 8%,
-    var(--syntax-background-color)
-  );
+  background-color: color-mix(in srgb, var(--syntax-selection-color) 40%, transparent);
 }
 .git-panel-FilePatchHeaderView-basename {
   font-weight: bold;
