@@ -2239,3 +2239,22 @@ pre.git-panel-Message-description {
 .git-panel-LumineTextEditor-empty .cursor-line {
   display: none;
 }
+/* Standalone diff markers follow the native scrollbar geometry. */
+.git-panel-patch-scrollmap.simplemap .marker {
+  &.marker-git-file {
+    z-index: 16;
+    min-height: 2px;
+    background-color: var(--text-color-info);
+  }
+
+  &.marker-git-hunk {
+    z-index: 14;
+    min-height: 2px;
+    background-color: var(--text-color-subtle);
+  }
+
+  &.current {
+    z-index: 18;
+    background-color: var(--accent-indicator-color);
+  }
+}

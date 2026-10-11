@@ -10,6 +10,8 @@ import { buildFilePatch, buildMultiFilePatch } from "../lib/models/patch";
 import StagingView from "../lib/views/staging-view";
 import { h, flushViews } from "./helpers/etch";
 
+const navigationAdapter = require("../lib/navigation-adapter");
+
 describe("pending patch pane item reuse", () => {
   let registration, emitter, repository, pool, pane, factory, readPatch;
   let patches, deferredReads, openedPromises, stylesheet, repositories, leases, commits;
@@ -330,6 +332,118 @@ describe("pending patch pane item reuse", () => {
     expect(copy.serialize().uri).toBe(nextURI);
     expect(copy.getHydratedView().getFilePath()).toBe(nextPath);
     expect(copy.getHydratedView().getStagingStatus()).toBe("staged");
+  });
+
+  it("replaces the observed navigation outline across file, staged-all and commit pending previews", async () => {
+    const item = await initialItem();
+    const view = item.getHydratedView();
+    const editor = view.refEditor.get();
+    const buffer = editor.getBuffer();
+    const updates = [];
+    const subscription = navigationAdapter.observeHeaders(item, (headers, options) => {
+      expect(options).toEqual({ instant: true });
+      updates.push(headers);
+    });
+    try {
+      expect(navigationAdapter.handlesItem(item)).toBe(true);
+      expect(updates.at(-1).map((file) => file.text)).toEqual(["one.txt"]);
+      expect(updates.at(-1)[0].children.map((chunk) => chunk.text)).toEqual(["@@ -1,2 +1,2 @@"]);
+      const stale = updates.at(-1)[0].children[0];
+      const commit = commitFor(workingDirectory, "navigation-commit");
+      commit.setMultiFileDiff(patchFor("committed.txt").clone());
+      const documents = [
+        [PatchDocument.staged(workingDirectory), ["all-one.txt", "all-two.txt"]],
+        [PatchDocument.commit(workingDirectory, "navigation-commit"), ["committed.txt"]],
+      ];
+      for (const [document, files] of documents) {
+        expect(await open(document.getURI())).toBe(item);
+        await settleEditors(item);
+        expect(item.getHydratedView()).toBe(view);
+        expect(view.refEditor.get()).toBe(editor);
+        expect(editor.getBuffer()).toBe(buffer);
+        const outline = updates.at(-1);
+        expect(outline.map((file) => file.text)).toEqual(files);
+        expect(outline.every((file) => file.children.length === 1)).toBe(true);
+        expect(outline.every((file) => file.id.includes(document.getURI()))).toBe(true);
+        const ranges = editor.getSelectedBufferRanges();
+        const updateCount = updates.length;
+        await navigationAdapter.navigateTo(item, stale, { focus: false });
+        expect(editor.getSelectedBufferRanges()).toEqual(ranges);
+        expect(updates).toHaveSize(updateCount);
+      }
+    } finally {
+      subscription.dispose();
+    }
+  });
+
+  it("refreshes observed chunks from the repository and ignores a saved header from the old snapshot", async () => {
+    const source = longPatchFor("navigation.txt");
+    const item = await initialItem("navigation.txt");
+    const editor = item.getHydratedView().refEditor.get();
+    const updates = [];
+    const subscription = navigationAdapter.observeHeaders(item, (headers) => updates.push(headers));
+    try {
+      const initial = updates.at(-1)[0];
+      expect(initial.children).toHaveSize(2);
+      expect(initial.children[1].text).toContain("section 1");
+      const stale = initial.children[1];
+      const refreshed = source.getStagePatchForHunk(source.getFilePatches()[0].getHunks()[0]);
+      patches.set(readKey("navigation.txt", false), refreshed);
+      source.dispose();
+      readPatch.calls.reset();
+      emitter.emit("did-update");
+      await waitForRead("navigation.txt");
+      await settleEditors(item);
+
+      expect(item.getHydratedView().refEditor.get()).toBe(editor);
+      const outline = updates.at(-1);
+      expect(outline.map((file) => file.text)).toEqual(["navigation.txt"]);
+      expect(outline[0].children).toHaveSize(1);
+      expect(outline[0].children[0].text).toContain("section 0");
+      expect(outline[0].patch).not.toBe(initial.patch);
+      expect(editor.getText()).not.toContain("navigation.txt 1:");
+      const ranges = editor.getSelectedBufferRanges();
+      const updateCount = updates.length;
+      await navigationAdapter.navigateTo(item, stale, { focus: false });
+      expect(editor.getSelectedBufferRanges()).toEqual(ranges);
+      expect(updates).toHaveSize(updateCount);
+    } finally {
+      subscription.dispose();
+    }
+  });
+
+  it("stops adapter updates after unsubscribe and after the observed pane host closes", async () => {
+    const item = await initialItem();
+    const unsubscribed = jasmine.createSpy("unsubscribed navigation updates");
+    const stopped = navigationAdapter.observeHeaders(item, unsubscribed);
+    expect(unsubscribed).toHaveBeenCalled();
+    stopped.dispose();
+    const stoppedCount = unsubscribed.calls.count();
+    expect(await open(uriFor("two.txt"))).toBe(item);
+    await settleEditors(item);
+    expect(unsubscribed.calls.count()).toBe(stoppedCount);
+
+    const active = jasmine.createSpy("active navigation updates");
+    const subscription = navigationAdapter.observeHeaders(item, active);
+    try {
+      const stale = active.calls.mostRecent().args[0][0].children[0];
+      expect(await open(PatchDocument.staged(workingDirectory).getURI())).toBe(item);
+      await settleEditors(item);
+      expect(active.calls.mostRecent().args[0].map((file) => file.text)).toEqual([
+        "all-one.txt",
+        "all-two.txt",
+      ]);
+      await pane.destroyItem(item);
+      const closedCount = active.calls.count();
+      emitter.emit("did-update");
+      await flushViews(() => {});
+      await navigationAdapter.navigateTo(item, stale, { focus: false });
+      expect(item.isDestroyed()).toBe(true);
+      expect(active.calls.count()).toBe(closedCount);
+      expect(unsubscribed.calls.count()).toBe(stoppedCount);
+    } finally {
+      subscription.dispose();
+    }
   });
 
   it("keeps the displayed patch until ready and lets the newest selection win", async () => {
@@ -775,6 +889,38 @@ describe("pending patch pane item reuse", () => {
       surfaceDocument.calls.reset();
       lumine.commands.dispatch(view.refEditor.get().getElement(), "git-panel:surface");
       expect(surfaceDocument).toHaveBeenCalledOnceWith(document);
+    }
+  });
+
+  it("targets the selected file and clears stale staging rows for a collapsed file header", async () => {
+    const item = await open(PatchDocument.staged(workingDirectory).getURI());
+    await flushViews(() => {});
+    await item.getPatchLoadedPromise();
+    await settleEditors(item);
+    const controller = item.refPatchController.get();
+    const diffView = controller.refView.get();
+    let headers;
+    const observation = item.observeNavigationHeaders((next) => (headers = next));
+    try {
+      await flushViews(() => item.navigateToNavigationHeader(headers[1]));
+      const file = controller.props.multiFilePatch.getFilePatches()[1];
+      expect(controller.state.selectedRows.size).toBeGreaterThan(0);
+      expect(
+        Array.from(controller.state.selectedRows).every(
+          (row) => controller.props.multiFilePatch.getFilePatchAt(row) === file,
+        ),
+      ).toBe(true);
+      await flushViews(() => diffView.changePatchRenderStatus(file, false));
+      await settleEditors(item);
+      await flushViews(() => item.navigateToNavigationHeader(headers[1]));
+      expect(controller.state.selectedRows.size).toBe(0);
+      expect(document.activeElement.classList.contains("git-panel-FilePatchView-header")).toBe(
+        true,
+      );
+      await diffView.didConfirm();
+      expect(repository.applyPatchToIndex).not.toHaveBeenCalled();
+    } finally {
+      observation.dispose();
     }
   });
 

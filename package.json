@@ -32,6 +32,11 @@
     "lumine": "^1.0.0",
     "node": ">=24"
   },
+  "specPackages": [
+    "navigation-panel",
+    "scrollmap",
+    "marker"
+  ],
   "scripts": {
     "test": "lumine --test spec",
     "lint": "eslint . --max-warnings 0",
@@ -54,6 +59,11 @@
       "versions": {
         "1.0.0": "provideDiff"
       }
+    },
+    "navigation.adapter": {
+      "versions": {
+        "1.0.0": "provideNavigationAdapter"
+      }
     }
   },
   "dependencies": {
@@ -65,6 +75,11 @@
     "diff": "^9.0.0"
   },
   "consumedServices": {
+    "scrollmap.widget": {
+      "versions": {
+        "^1.0.0": "consumeScrollmapWidget"
+      }
+    },
     "busy-signal": {
       "versions": {
         "^1.0.0": "consumeBusySignal"

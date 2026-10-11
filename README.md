@@ -9,6 +9,7 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 - **Staging area**: stage, unstage, and discard changes per file, hunk, or selected line.
 - **Commits**: compose and amend commits, or undo the last commit while keeping its changes staged.
 - **Diff viewer**: inspect changes with hunk, line, and word-level highlighting; copy a hunk or selected lines as a diff; switch between unified and side-by-side layouts with aligned soft wrapping, keeping the same diff location and selection.
+- **Patch navigation**: browse files and hunks in Navigation Panel, including collapsed diffs, and follow file and hunk markers on the scrollbar in both layouts.
 - **Shared rendering**: provide native diff layouts to other packages through the git-panel.diff service.
 - **Conflict resolution**: resolve merge conflicts with in-editor controls.
 - **Repository management**: initialize, clone, and work with multiple repositories.
@@ -123,6 +124,8 @@ Override the package custom properties in your `styles.css` to adjust its accent
 - `background-tips.provider`: provided to teach the package's headline workflow on the empty workspace.
 - [`git-panel`](docs/git-panel.md): provided to navigate to the Git tab and its init and clone dialogs.
 - [`git-panel.diff`](docs/git-panel.diff.md): provided to build patch snapshots and render shared native diff layouts.
+- `navigation.adapter`: provided to outline the current patch's files and hunks in Navigation Panel.
+- `scrollmap.widget`: consumed to mark file headers, hunk ranges, and the current diff location on the scrollbar.
 - `git.commit-links`: consumed to resolve a pushed commit's optional forge URL.
 - `busy-signal`: consumed to report staging, discard, and undo operations on the busy indicator.
 - `linter.editors`: consumed to register the commit message editor for linting, so spell checking reaches it.
