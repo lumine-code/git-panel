@@ -65,6 +65,7 @@ Commands available in `.git-panel-Git`:
 Commands available in `.git-panel-StagingView`:
 
 - `git-panel:jump-to-file`: open file in editor,
+- `git-panel:jump-to-file-in-next-pane`: open selected files in the next pane, splitting right if needed,
 - `git-panel:split-up`: open selected working-tree files in a new pane above,
 - `git-panel:split-down`: open selected working-tree files in a new pane below,
 - `git-panel:split-left`: open selected working-tree files in a new pane to the left,
@@ -100,6 +101,7 @@ Commands available in `.git-panel-FilePatchView`:
 - `git-panel:select-previous-hunk`: move the selection to the previous hunk of the diff,
 - `git-panel:toggle-patch-selection-mode`: select by hunk instead of by line, or back again,
 - `git-panel:jump-to-file`: open the source file at the selected line,
+- `git-panel:jump-to-file-in-next-pane`: open the source file at the selected line in the next pane, splitting right if needed,
 - `git-panel:surface`: return to the changed-file list,
 - `git-panel:discard-selected-lines`: discard the selected changed lines,
 - `git-panel:stage-file-mode-change`: stage the change to a file's permission bits,

@@ -76,6 +76,10 @@
         "command": "git-panel:jump-to-file"
       },
       {
+        "label": "Jump to File in Next Pane",
+        "command": "git-panel:jump-to-file-in-next-pane"
+      },
+      {
         "type": "separator"
       },
       {
@@ -168,6 +172,11 @@
         "after": ["core:confirm"]
       },
       {
+        "label": "Jump to File in Next Pane",
+        "command": "git-panel:jump-to-file-in-next-pane",
+        "after": ["git-panel:jump-to-file"]
+      },
+      {
         "label": "Unstage Selection",
         "command": "core:confirm",
         "beforeGroupContaining": ["core:undo"]
@@ -184,6 +193,11 @@
         "label": "Jump to File",
         "command": "git-panel:jump-to-file",
         "after": ["core:confirm"]
+      },
+      {
+        "label": "Jump to File in Next Pane",
+        "command": "git-panel:jump-to-file-in-next-pane",
+        "after": ["git-panel:jump-to-file"]
       },
       {
         "label": "Stage Selection",

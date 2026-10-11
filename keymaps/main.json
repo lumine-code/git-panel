@@ -30,6 +30,7 @@
   },
   ".git-panel-StagingView": {
     "o": "git-panel:jump-to-file",
+    "p": "git-panel:jump-to-file-in-next-pane",
     "left": "git-panel:focus-diff-view",
     "shift-left": "git-panel:show-diff-view"
   },
@@ -79,6 +80,7 @@
   ".git-panel-FilePatchView lumine-text-editor:not([mini])": {
     "enter": "core:confirm",
     "o": "git-panel:jump-to-file",
+    "p": "git-panel:jump-to-file-in-next-pane",
     "/": "git-panel:toggle-patch-selection-mode",
     "backspace": "git-panel:discard-selected-lines"
   },
