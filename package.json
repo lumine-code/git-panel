@@ -20,9 +20,7 @@
     "branch",
     "merge",
     "conflict",
-    "repository",
-    "push",
-    "pull"
+    "repository"
   ],
   "repository": "https://github.com/lumine-code/git-panel",
   "bugs": {

@@ -7,7 +7,7 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 ## Features
 
 - **Staging area**: stage, unstage, and discard changes per file, hunk, or selected line.
-- **Commits and branches**: compose commits and create, switch, or manage branches.
+- **Commits**: compose and amend commits, or undo the last commit while keeping its changes staged.
 - **Diff viewer**: inspect changes with hunk, line, and word-level highlighting; switch between unified and side-by-side layouts with aligned soft wrapping, keeping the same diff location and selection.
 - **Shared rendering**: provide native diff layouts to other packages through the git-panel.diff service.
 - **Conflict resolution**: resolve merge conflicts with in-editor controls.
