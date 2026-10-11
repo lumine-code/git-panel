@@ -136,6 +136,7 @@ describe("patch scrollbar widget", () => {
       expect(widget.element.parentElement).toBe(state.editor.getElement());
       expect(widget.items.filter((item) => item.cls.includes("marker-git-file")).length).toBe(2);
       expect(widget.items.filter((item) => item.cls.includes("marker-git-hunk")).length).toBe(4);
+      expect(widget.items.every((item) => item.position === undefined)).toBe(true);
       expect(state.editor.getScreenLineCount()).toBeGreaterThan(state.editor.getLineCount());
       assertPercentages(widget);
       const secondFile = widget.items.filter((item) => item.cls.includes("marker-git-file"))[1];
@@ -260,7 +261,15 @@ describe("patch scrollbar widget", () => {
     try {
       await lumine.packages.activatePackage("marker");
       const scrollmap = (await lumine.packages.activatePackage("scrollmap")).mainModule;
-      lease = consumeScrollmapWidget(scrollmap.provideScrollmapWidget());
+      const Simplemap = scrollmap.provideScrollmapWidget();
+      let widget;
+      class CapturedSimplemap extends Simplemap {
+        constructor() {
+          super();
+          widget = this;
+        }
+      }
+      lease = consumeScrollmapWidget(CapturedSimplemap);
       subscriptions.add(lease);
       await mount(build([diff("first.txt")]), "side-by-side");
       const maps = view.element.querySelectorAll(".git-panel-patch-scrollmap");
@@ -271,6 +280,43 @@ describe("patch scrollbar widget", () => {
       expect(canvas.height).toBeGreaterThan(0);
       const pixels = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
       expect(pixels.some((value, index) => index % 4 === 3 && value > 0)).toBe(true);
+      for (let row = 0; row < canvas.height; row++) {
+        expect(pixels[row * canvas.width * 4 + 3]).toBe(0);
+        expect(pixels[(row * canvas.width + canvas.width - 1) * 4 + 3]).toBe(0);
+      }
+      const centerColor = (item) => {
+        const row = Math.min(canvas.height - 1, Math.floor((item.prc / 100) * canvas.height) + 1);
+        const offset = (row * canvas.width + Math.floor(canvas.width / 2)) * 4;
+        const color = Array.from(pixels.slice(offset, offset + 4));
+        expect(color[3]).toBeGreaterThan(0);
+        return color.slice(0, 3);
+      };
+      const fileItem = widget.items.find((item) => item.cls.includes("marker-git-file"));
+      const hunkItem = widget.items.find((item) => item.cls.includes("marker-git-hunk"));
+      expect(centerColor(fileItem)).not.toEqual(centerColor(hunkItem));
+      const fileProbe = maps[0].querySelector(".marker-git-file.scrollmap-style-probe");
+      const hunkProbe = maps[0].querySelector(".marker-git-hunk.scrollmap-style-probe");
+      const fileColor = getComputedStyle(fileProbe).backgroundColor;
+      const hunkColor = getComputedStyle(hunkProbe).backgroundColor;
+      expect(fileColor).not.toBe(hunkColor);
+      expect(getComputedStyle(fileProbe).opacity).toBe("0.7");
+      expect(getComputedStyle(hunkProbe).opacity).toBe("0.7");
+      await flushViews(() =>
+        view.navigateToNavigationHeader(view.getNavigationHeaders()[0].children[0], {
+          focus: false,
+        }),
+      );
+      await paint();
+      const currentFileProbe = maps[0].querySelector(
+        ".marker-git-file.current.scrollmap-style-probe",
+      );
+      const currentHunkProbe = maps[0].querySelector(
+        ".marker-git-hunk.current.scrollmap-style-probe",
+      );
+      expect(getComputedStyle(currentFileProbe).backgroundColor).toBe(fileColor);
+      expect(getComputedStyle(currentHunkProbe).backgroundColor).toBe(hunkColor);
+      expect(getComputedStyle(currentFileProbe).opacity).toBe("1");
+      expect(getComputedStyle(currentHunkProbe).opacity).toBe("1");
     } finally {
       lease?.dispose();
       if (!scrollmapWasActive) await lumine.packages.deactivatePackage("scrollmap");

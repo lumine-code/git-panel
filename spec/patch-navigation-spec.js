@@ -101,7 +101,7 @@ describe("patch navigation outline", () => {
       subscriptions.add(view.observeNavigationHeaders((next) => (headers = next)));
       expect(headers.map((header) => header.text)).toEqual(["first.txt", "second.txt"]);
       expect(headers.map((header) => header.children.length)).toEqual([2, 2]);
-      expect(headers[1].children[1].text).toContain("@@ -20,2 +20,2 @@");
+      expect(headers[1].children[1].text).toBe("@@ -20,2 +20,2 @@ second.txt section 20");
       expect(headers[1].children[1].startPoint).toBeUndefined();
       expect(patch.getBuffer().isEmpty()).toBe(true);
       expect(view.getScrollmapState().markers.filter((marker) => marker.level === 2)).toEqual([]);
@@ -115,6 +115,11 @@ describe("patch navigation outline", () => {
       const [first, second] = patch.getFilePatches();
       expect(first.getRenderStatus().isVisible()).toBe(false);
       expect(second.getRenderStatus().isVisible()).toBe(true);
+      expect(headers[1].children.map((header) => header.text)).toEqual(
+        Array.from(view.element.querySelectorAll(".git-panel-HunkHeaderView-title"), (element) =>
+          element.textContent.trim(),
+        ),
+      );
       expect(view.getCanonicalSelectionRanges()).toEqual([second.getHunks()[1].getRange()]);
       expect(document.activeElement).toBe(input);
       expect(headers[1].children[1].currentCount).toBe(1);
@@ -244,6 +249,19 @@ describe("patch navigation outline", () => {
     const next = build([diff("example.txt", [20])]);
     await flushViews(() => view.update({ ...view.props, multiFilePatch: next }));
     expect(view.getNavigationHeaders()[0].children[0].id).toBe(id);
+  });
+
+  it("uses the same chunk title for an empty or whitespace-padded section heading", async () => {
+    const file = diff("example.txt");
+    file.hunks[0].heading = "";
+    file.hunks[1].heading = "  section heading  ";
+    await mount(build([file]), "unified");
+    const titles = Array.from(
+      view.element.querySelectorAll(".git-panel-HunkHeaderView-title"),
+      (element) => element.textContent,
+    );
+    expect(titles).toEqual(["@@ -1,2 +1,2 @@", "@@ -20,2 +20,2 @@ section heading"]);
+    expect(view.getNavigationHeaders()[0].children.map((header) => header.text)).toEqual(titles);
   });
 
   it("subscribes after hydration and cancels a disposed hydration observer", async () => {
