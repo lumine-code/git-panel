@@ -52,6 +52,7 @@ function buildPatchView(selectionMode) {
   const editor = {
     getElement: () => element,
     scrollToBufferPosition: jasmine.createSpy(),
+    scrollToBufferRange: jasmine.createSpy(),
     setCursorBufferPosition: jasmine.createSpy(),
     setSelectedBufferRange: jasmine.createSpy(),
     setSelectedBufferRanges: jasmine.createSpy(),
@@ -249,7 +250,7 @@ describe("scroll behavior", () => {
       expect(view.pendingViewport).toBeNull();
     });
 
-    it("keeps an explicit centered scroll authoritative when jumping to a file", () => {
+    it("keeps an explicit zone scroll authoritative when jumping to a file", () => {
       const { editor, multiFilePatch, view } = buildPatchView("hunk");
       views.push(view);
 
@@ -262,11 +263,28 @@ describe("scroll behavior", () => {
       );
       expect(editor.scrollToBufferPosition).toHaveBeenCalledOnceWith(
         { row: 12, column: 0 },
-        { center: true },
+        { mode: "zone" },
       );
       expect(editor.setCursorBufferPosition.calls.first().invocationOrder).toBeLessThan(
         editor.scrollToBufferPosition.calls.first().invocationOrder,
       );
+    });
+
+    it("reveals hunk selection once using its requested navigation mode", () => {
+      const { editor, view } = buildPatchView("hunk");
+      views.push(view);
+      const range = [
+        [4, 0],
+        [7, 0],
+      ];
+
+      view.setCanonicalSelectionRanges([range], { mode: "zone" });
+
+      expect(editor.setSelectedBufferRanges).toHaveBeenCalledOnceWith([range], {
+        mode: "zone",
+        autoscroll: false,
+      });
+      expect(editor.scrollToBufferRange).toHaveBeenCalledOnceWith(range, { mode: "zone" });
     });
   });
 });
