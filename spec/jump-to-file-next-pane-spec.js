@@ -97,7 +97,7 @@ describe("jumping to a file in the next pane", () => {
     anchorPane.activate();
     const dock = lumine.workspace.getRightDock();
     const dockPane = dock.getActivePane();
-    const item = { element: document.createElement("div") };
+    const item = { element: document.createElement("div"), getAllowedLocations: () => ["right"] };
     dockPane.addItem(item);
     dock.show();
     dockPane.activate();

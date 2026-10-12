@@ -173,7 +173,7 @@ describe("splitting selected changed files", () => {
     it("splits the center editor when a dock pane has focus", async () => {
       const dock = lumine.workspace.getRightDock();
       const dockPane = dock.getActivePane();
-      const item = { element: document.createElement("div") };
+      const item = { element: document.createElement("div"), getAllowedLocations: () => ["right"] };
       dockPane.addItem(item);
       dock.show();
       dockPane.activate();
