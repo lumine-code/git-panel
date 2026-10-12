@@ -61,9 +61,9 @@ describe("Git PaneItemHost", () => {
   });
 
   it("declares singleton policy before any renderer is constructed", () => {
-    const host = PaneItemHost.create("example", { singleton: true });
-    expect(host.isSingleton()).toBe(true);
-    expect(() => host.copy()).toThrowError(/singleton/);
+    const host = PaneItemHost.create("example", { copyable: false });
+    expect(host.canCopy()).toBe(false);
+    expect(host.copy()).toBeNull();
     host.destroy();
   });
 
