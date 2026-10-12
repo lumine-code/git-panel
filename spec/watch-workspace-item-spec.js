@@ -7,6 +7,7 @@ describe("watchWorkspaceItem", () => {
     const emitter = new Emitter();
     let uri = "lumine-test://other";
     const item = {
+      isSingleton: () => true,
       element: document.createElement("div"),
       getURI: () => uri,
       onDidChangeURI: (callback) => emitter.on("uri", callback),
