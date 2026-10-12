@@ -4,12 +4,13 @@ import path from "path";
 import openInNextPane from "../lib/open-in-next-pane";
 import GitRootController from "../lib/controllers/git-root-controller";
 import ChangesView from "../lib/views/changes-view";
+import PaneItemHost from "../lib/items/pane-item-host";
 import StagingView from "../lib/views/staging-view";
 import { buildMultiFilePatch } from "../lib/models/patch";
 import { h, flushViews, createViewHost, createViewModel } from "./helpers/etch";
 
 describe("jumping to a file in the next pane", () => {
-  let anchorPane, anchorEditor, initialPanes, initialItems, view, patch, stylesheet;
+  let anchorPane, anchorEditor, initialPanes, initialItems, view, patch, stylesheet, paneItem;
 
   beforeEach(async () => {
     jasmine.attachToDOM(lumine.views.getView(lumine.workspace));
@@ -247,8 +248,11 @@ describe("jumping to a file in the next pane", () => {
       tooltips: lumine.tooltips,
       surface: () => {},
     });
-    anchorPane.addItem(view);
-    anchorPane.activateItem(view);
+    paneItem = PaneItemHost.create("jump-test", { title: "Changes", singleton: true });
+    paneItem.getElement().appendChild(view.element);
+    paneItem.hydrate(view);
+    anchorPane.addItem(paneItem);
+    anchorPane.activateItem(paneItem);
     await flushViews(() => {});
     await flushViews(() => {});
     return view.refPatchController.get().refView.get();
@@ -278,7 +282,7 @@ describe("jumping to a file in the next pane", () => {
         expect(opened).not.toBe(anchorEditor);
         expect(opened.getPath()).toBe(anchorEditor.getPath());
         expect(opened.getCursorBufferPosition().toArray()).toEqual([21, side === "new" ? 3 : 0]);
-        expect(anchorPane.getActiveItem()).toBe(view);
+        expect(anchorPane.getActiveItem()).toBe(paneItem);
       });
     }
   }

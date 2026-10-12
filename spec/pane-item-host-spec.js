@@ -29,7 +29,57 @@ function createView() {
   };
 }
 
-describe("PaneItemHost", () => {
+describe("Git PaneItemHost", () => {
+  it("copies current view state and forwards cancellation without requiring hydration", () => {
+    const copies = [];
+    const factory = jasmine.createSpy("copy factory").and.callFake(({ uri, deserialized }) => {
+      const copy = PaneItemHost.create("example", { uri, hydrationProps: deserialized });
+      copies.push(copy);
+      return copy;
+    });
+    const host = PaneItemHost.create("example", {
+      uri: "example://a",
+      hydrationProps: { selectedTab: 0 },
+      copyFactory: factory,
+    });
+    const cold = host.copy();
+    expect(host.copy).toBe(host.copy);
+    expect(cold.getHydrationProps()).toEqual(jasmine.objectContaining({ selectedTab: 0 }));
+    host.hydrate({ ...createView(), captureCopyState: () => ({ selectedTab: 3 }) });
+    expect(host.customAction).toBe(host.customAction);
+    expect(host.copy().getHydrationProps()).toEqual({ selectedTab: 3 });
+    const controller = new AbortController();
+    controller.abort();
+    expect(() => host.copy({ signal: controller.signal })).toThrow();
+    expect(factory).toHaveBeenCalledTimes(2);
+    host.setURI("example://b");
+    host.setURI("example://a");
+    expect(host.getPaneItemRevision()).toBe(2);
+    host.destroy();
+    expect(() => host.copy()).toThrow();
+    for (const copy of copies) copy.destroy();
+  });
+
+  it("declares singleton policy before any renderer is constructed", () => {
+    const host = PaneItemHost.create("example", { singleton: true });
+    expect(host.isSingleton()).toBe(true);
+    expect(() => host.copy()).toThrowError(/singleton/);
+    host.destroy();
+  });
+
+  it("releases a captured copy snapshot when its provider rejects construction", () => {
+    const copySnapshot = { dispose: jasmine.createSpy("release staged snapshot") };
+    const host = PaneItemHost.create("example", {
+      copyFactory: () => {
+        throw new DOMException("Provider was unloaded", "AbortError");
+      },
+    });
+    host.hydrate({ ...createView(), captureCopyState: () => ({ copySnapshot }) });
+    expect(() => host.copy()).toThrow();
+    expect(copySnapshot.dispose).toHaveBeenCalledTimes(1);
+    host.destroy();
+  });
+
   it("provides its pane contract and fallback serialization before hydration", () => {
     const host = PaneItemHost.create("example", {
       classPrefix: "git-panel",

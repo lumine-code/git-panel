@@ -100,6 +100,16 @@ describe("pane item host factories", () => {
       const host = factory.call(packageInstance, options);
       expect(host.getHydrationState()).toBe("pending");
       expect(host.serialize()).toEqual(jasmine.objectContaining({ deserializer }));
+      if (host.isSingleton()) {
+        expect(() => host.copy()).toThrowError(/singleton/);
+      } else {
+        const copy = host.copy();
+        expect(copy).not.toBe(host);
+        expect(copy.getElement()).not.toBe(host.getElement());
+        expect(copy.getURI()).toBe(host.getURI());
+        expect(copy.getHydrationState()).toBe("pending");
+        copy.destroy();
+      }
       host.destroy();
     }
   });

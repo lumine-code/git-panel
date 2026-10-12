@@ -265,11 +265,12 @@ describe("pending patch pane item reuse", () => {
       createPaneItem: factory,
       canReusePendingItem: (view, { document }) => view.canReusePendingItem(document),
       reusePendingItem: (view, { document }, options) => view.reusePendingItem(document, options),
-      children: ({ itemHolder, params }) =>
+      children: ({ itemHolder, params, deserialized }) =>
         h(PatchItem, {
           ref: itemHolder.setter,
           workdirContextPool: pool,
           document: params.document,
+          ...deserialized,
           workspace: lumine.workspace,
           commands: lumine.commands,
           keymaps: lumine.keymaps,
@@ -444,6 +445,106 @@ describe("pending patch pane item reuse", () => {
     } finally {
       subscription.dispose();
     }
+  });
+
+  it("copies the displayed snapshot and remembers the comparison column without sharing native buffers", async () => {
+    const item = await initialItem();
+    const source = item.getHydratedView();
+    const controller = source.refPatchController.get();
+    await controller.setDiffView("side-by-side");
+    await settleEditors(item);
+    const pair = controller.refView.get().refSideBySide.get();
+    pair.activeSide = "old";
+    pair.setCanonicalSelectionRanges(
+      [
+        [
+          [1, 0],
+          [1, 2],
+        ],
+      ],
+      { autoscroll: false },
+    );
+    pair.focus();
+    const presentation = controller.capturePresentationState();
+    const originalBuffer = source.refContainer.get().lastMultiFilePatch.getBuffer();
+    const copy = item.copy();
+    const nextPane = pane.splitRight({ activate: false });
+    nextPane.addItem(copy);
+    await settleEditors(copy);
+    const copyView = copy.getHydratedView();
+    const copyController = copyView.refPatchController.get();
+    const copiedPair = copyController.refView.get().refSideBySide.get();
+    expect(copyController.getDiffView()).toBe("side-by-side");
+    expect(copiedPair.activeSide).toBe("old");
+    expect(copyController.capturePresentationState().selectionRanges).toEqual(
+      presentation.selectionRanges,
+    );
+    expect(copyView.refContainer.get().lastMultiFilePatch.getBuffer()).not.toBe(originalBuffer);
+    expect(copyView.refContainer.get().lastMultiFilePatch.getBuffer().getText()).toBe(
+      originalBuffer.getText(),
+    );
+    copy.focus();
+    expect(copiedPair.editors.old.get().getElement().contains(document.activeElement)).toBe(true);
+    await nextPane.destroyItem(copy, true);
+    expect(originalBuffer.isDestroyed()).toBe(false);
+  });
+
+  it("releases a staged copy and its registration even when it was never inserted", async () => {
+    const item = await initialItem();
+    const count = registration.openItems.size;
+    const copy = item.copy();
+    await flushViews(() => {});
+    const buffer = copy.getHydratedView().refContainer.get().lastMultiFilePatch.getBuffer();
+    expect(registration.openItems.size).toBe(count + 1);
+    await copy.destroy();
+    await flushViews(() => {});
+    expect(registration.openItems.size).toBe(count);
+    expect(buffer.isDestroyed()).toBe(true);
+    expect(item.isDestroyed()).toBe(false);
+  });
+
+  it("uses the workspace copy and move API while preserving the source renderer and focus", async () => {
+    const item = await initialItem();
+    const view = item.getHydratedView();
+    const editor = view.refEditor.get();
+    pane.activateItem(item);
+    item.getElement().focus();
+    const focused = document.activeElement;
+    const copied = await lumine.workspace.copyPaneItem(item, {
+      splitDirection: "right",
+      activatePane: false,
+    });
+    await settleEditors(copied.item);
+    expect(item.getHydratedView()).toBe(view);
+    expect(view.refEditor.get()).toBe(editor);
+    expect(copied.item.getURI()).toBe(item.getURI());
+    expect(copied.item).not.toBe(item);
+    expect(document.activeElement).toBe(focused);
+    const moved = await lumine.workspace.movePaneItem(item, {
+      targetPane: copied.pane,
+      activatePane: false,
+    });
+    expect(moved.item).toBe(item);
+    expect(item.getHydratedView()).toBe(view);
+    expect(view.refEditor.get()).toBe(editor);
+    expect(editor.isDestroyed()).toBe(false);
+    expect(lumine.workspace.paneForItem(item)).toBe(copied.pane);
+  });
+
+  it("copies a loading document without waiting or moving focus when its renderer arrives", async () => {
+    const gate = deferRead("loading.txt");
+    const item = await open(uriFor("loading.txt"));
+    const copy = item.copy();
+    const button = document.createElement("button");
+    jasmine.attachToDOM(button);
+    button.focus();
+    gate.resolve(patchFor("loading.txt"));
+    await flushViews(() => {});
+    await copy.getPatchLoadedPromise();
+    expect(copy.getURI()).toBe(item.getURI());
+    expect(copy.getElement()).not.toBe(item.getElement());
+    expect(document.activeElement).toBe(button);
+    await copy.destroy();
   });
 
   it("keeps the displayed patch until ready and lets the newest selection win", async () => {

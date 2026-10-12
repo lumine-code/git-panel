@@ -45,6 +45,7 @@ interface DiffProps {
   title?: string;
   surfaceKind?: "changes" | "file" | "commit";
   initialDiffView?: "unified" | "side-by-side";
+  presentationState?: DiffPresentationState;
   onDiffViewChange?: (layout: string) => void;
 }
 interface NativeDiffView {
@@ -52,7 +53,24 @@ interface NativeDiffView {
   update(props: DiffProps): Promise<void>;
   getDiffView(): "unified" | "side-by-side";
   setDiffView(layout: "unified" | "side-by-side"): Promise<void>;
+  focus(): void;
+  capturePresentationState(): DiffPresentationState;
+  captureCopySnapshot(): DiffCopySnapshot;
   destroy(): Promise<void>;
+}
+interface DiffCopySnapshot {
+  clone(): DiffCopySnapshot;
+  isAvailable(): boolean;
+  takePatch(): MultiFilePatch;
+  dispose(): void;
+}
+interface DiffPresentationState {
+  diffView: "unified" | "side-by-side";
+  activeSide: "old" | "new";
+  selectionMode: "hunk" | "line";
+  selectionRanges: number[][][];
+  scrollAnchor: object | null;
+  viewportPreferences: object;
 }
 ```
 
@@ -95,6 +113,8 @@ async showDiff(repository) {
 `buildPatch` prefers structured records when present and normalizes paths for the editor. Raw patches pass through core's patch filter before parsing. Read-only views clone and own their accepted snapshot, preserving their buffer, selection and viewport when its contents are replaced. Git Panel owns the shared styles, commands and context menus.
 
 `buildPatchURI` identifies a local repository patch without exposing private models or URI encoding. Open it with `lumine.workspace.open(uri, {pending: true})` to share the pending patch pane across document kinds and repositories. Git Panel must be active to handle the URI. Promote the tab to keep a document open separately.
+
+Capture presentation state and a copy snapshot together before asynchronous work when copying a containing pane item. The snapshot owns independent mutable buffers and file expansion state. `takePatch()` transfers its source-patch ownership once; the receiver disposes that patch when it closes. Dispose an unaccepted copy snapshot on cancellation. Pass the captured presentation state to the new view to preserve its layout, selection, viewport, wrapping and comparison column. Calling `focus()` restores the current comparison column; constructing a copied view does not take focus.
 
 ## Teardown
 

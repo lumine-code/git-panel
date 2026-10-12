@@ -8,6 +8,7 @@ import GitTabController from "../lib/controllers/git-tab-controller";
 import CommitController from "../lib/controllers/commit-controller";
 import CommitView from "../lib/views/commit-view";
 import PatchItem from "../lib/items/patch-item";
+import GitPackage from "../lib/git-package";
 import PatchDocument from "../lib/models/patch-document";
 import Commit from "../lib/models/commit";
 import { Emitter } from "lumine";
@@ -227,7 +228,7 @@ describe("Patch cleanup against current native pane items", () => {
       isPartiallyStaged: () => false,
       hasDiscardHistory: () => false,
     };
-    const item = new PatchItem({
+    const view = new PatchItem({
       workdirContextPool: {
         retain: () => ({
           context: { getRepository: () => repository },
@@ -248,6 +249,14 @@ describe("Patch cleanup against current native pane items", () => {
       config: lumine.config,
       tooltips: lumine.tooltips,
     });
+    const item = GitPackage.prototype.createPatchPaneItem.call(
+      { controller: null },
+      {
+        uri: view.getDocument().getURI(),
+      },
+    );
+    item.getElement().appendChild(view.element);
+    item.hydrate(view);
     items.push(item);
     lumine.workspace.getActivePane().addItem(item);
     await flushViews(() => {});
@@ -266,10 +275,10 @@ describe("Patch cleanup against current native pane items", () => {
     );
     expect(getPatchPaneItems({ onlyStaged: true }, lumine.workspace)).toEqual([staged, all]);
     destroyPatchPaneItems({ onlyStaged: true }, lumine.workspace);
-    expect(staged.destroyed).toBe(true);
-    expect(unstaged.destroyed).toBe(false);
-    expect(all.destroyed).toBe(true);
-    expect(commit.destroyed).toBe(false);
+    expect(staged.isDestroyed()).toBe(true);
+    expect(unstaged.isDestroyed()).toBe(false);
+    expect(all.isDestroyed()).toBe(true);
+    expect(commit.isDestroyed()).toBe(false);
   });
   it("closes truly empty patches and preserves metadata-only changes and loading items", async () => {
     const empty = await createItem({ empty: true });
@@ -289,11 +298,11 @@ describe("Patch cleanup against current native pane items", () => {
       jasmine.arrayWithExactContents([empty, all, commit]),
     );
     destroyEmptyPatchPaneItems(lumine.workspace);
-    expect(empty.destroyed).toBe(true);
-    expect(metadata.destroyed).toBe(false);
-    expect(loading.destroyed).toBe(false);
-    expect(all.destroyed).toBe(true);
-    expect(commit.destroyed).toBe(true);
+    expect(empty.isDestroyed()).toBe(true);
+    expect(metadata.isDestroyed()).toBe(false);
+    expect(loading.isDestroyed()).toBe(false);
+    expect(all.isDestroyed()).toBe(true);
+    expect(commit.isDestroyed()).toBe(true);
   });
 
   it("cleans up staged documents only in the repository whose commit finished", async () => {
@@ -309,8 +318,9 @@ describe("Patch cleanup against current native pane items", () => {
       getPatchPaneItems({ onlyStaged: true, workingDirectory: directory }, lumine.workspace),
     ).toEqual([staged, all]);
     destroyPatchPaneItems({ onlyStaged: true, workingDirectory: directory }, lumine.workspace);
-    expect(staged.destroyed).toBe(true);
-    expect(all.destroyed).toBe(true);
-    for (const item of [unstaged, commit, otherFile, otherAll]) expect(item.destroyed).toBe(false);
+    expect(staged.isDestroyed()).toBe(true);
+    expect(all.isDestroyed()).toBe(true);
+    for (const item of [unstaged, commit, otherFile, otherAll])
+      expect(item.isDestroyed()).toBe(false);
   });
 });
