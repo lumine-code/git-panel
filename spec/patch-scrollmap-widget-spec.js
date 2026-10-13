@@ -127,6 +127,17 @@ describe("patch scrollbar widget", () => {
     expect(widget.element.style.height).toBe(`${component.getScrollContainerClientHeight()}px`);
   }
 
+  function longLineScreenRows(editor) {
+    // Inspect an already projected line. getScreenLineCount() materializes
+    // the lazy tail and changes the scrollbar estimate after the map paints.
+    return editor
+      .screenRangeForBufferRange([
+        [1, 0],
+        [1, Infinity],
+      ])
+      .getRowCount();
+  }
+
   for (const layout of ["unified", "side-by-side"]) {
     it(`draws no markers for compact ${layout} views without headers`, async () => {
       subscriptions.add(consumeScrollmapWidget(Widget));
@@ -149,7 +160,7 @@ describe("patch scrollbar widget", () => {
       expect(widget.items.filter((item) => item.cls.includes("marker-git-file")).length).toBe(2);
       expect(widget.items.filter((item) => item.cls.includes("marker-git-hunk")).length).toBe(4);
       expect(widget.items.every((item) => item.position === undefined)).toBe(true);
-      expect(state.editor.getScreenLineCount()).toBeGreaterThan(state.editor.getLineCount());
+      expect(longLineScreenRows(state.editor)).toBeGreaterThan(1);
       assertPercentages(widget);
       const secondFile = widget.items.filter((item) => item.cls.includes("marker-git-file"))[1];
       expect(secondFile.prc).toBeGreaterThan(0);
@@ -188,6 +199,27 @@ describe("patch scrollbar widget", () => {
       expect(widget.items.filter((item) => item.cls.includes("marker-git-hunk")).length).toBe(2);
       expect(patch.getFilePatches()[0].getRenderStatus().isVisible()).toBe(false);
       assertPercentages(widget);
+    });
+
+    it(`repaints wrapped geometry without buffer edits or an element resize in ${layout}`, async () => {
+      subscriptions.add(consumeScrollmapWidget(Widget));
+      await mount(build([diff("first.txt"), diff("second.txt")]), layout);
+      const { editor } = view.getScrollmapState();
+      const element = editor.getElement();
+      const component = element.getComponent();
+      const text = editor.getText();
+      const width = element.getBoundingClientRect().width;
+      const wrappedRows = longLineScreenRows(editor);
+      const updates = widgets[0].setItems.calls.count();
+      // Settling character measurements changes wrapping at the same pixel
+      // width, so ResizeObserver and buffer change events cannot detect it.
+      spyOn(component, "getScrollContainerClientWidthInBaseCharacters").and.returnValue(20);
+      await paint();
+      expect(editor.getText()).toBe(text);
+      expect(element.getBoundingClientRect().width).toBe(width);
+      expect(longLineScreenRows(editor)).toBeGreaterThan(wrappedRows);
+      expect(widgets[0].setItems.calls.count()).toBeGreaterThan(updates);
+      assertPercentages(widgets[0]);
     });
   }
 
