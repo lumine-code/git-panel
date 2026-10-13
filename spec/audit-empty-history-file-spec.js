@@ -2,7 +2,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import DiscardHistory from "../lib/models/discard-history";
+import DiscardHistory from "../lib/models/discard-history.js";
 
 async function removeOwnedScratch(temporaryRoot, scratch) {
   const relative = path.relative(temporaryRoot, scratch);

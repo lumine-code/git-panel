@@ -1,7 +1,7 @@
 /** @babel */
 
-import Repository from "../lib/models/repository";
-import State from "../lib/models/repository-states/state";
+import Repository from "../lib/models/repository.js";
+import State from "../lib/models/repository-states/state.js";
 
 describe("Repository state lifecycle", () => {
   it("does not resolve a target constructor for a state that has been replaced", async () => {

@@ -1,6 +1,6 @@
 /** @babel */
 
-import GitShellOutStrategy from "../lib/git-shell-out-strategy";
+import GitShellOutStrategy from "../lib/git-shell-out-strategy.js";
 
 describe("Git repository endpoints", () => {
   let strategy;

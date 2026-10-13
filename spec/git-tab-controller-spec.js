@@ -1,9 +1,9 @@
 /** @babel */
-import { createViewModel } from "./helpers/etch";
+import { createViewModel } from "./helpers/etch.js";
 
 import path from "path";
 
-import GitTabController, { pathsForStageAll } from "../lib/controllers/git-tab-controller";
+import GitTabController, { pathsForStageAll } from "../lib/controllers/git-tab-controller.js";
 
 describe("GitTabController identity editor state", () => {
   const repository = {

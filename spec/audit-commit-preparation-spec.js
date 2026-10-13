@@ -1,24 +1,24 @@
 /** @babel */
-require("../lib/index");
+import "../lib/index.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
-import Repository from "../lib/models/repository";
-import GitTabController from "../lib/controllers/git-tab-controller";
-import CommitController from "../lib/controllers/commit-controller";
-import CommitView from "../lib/views/commit-view";
-import PatchItem from "../lib/items/patch-item";
-import GitPackage from "../lib/git-package";
-import PatchDocument from "../lib/models/patch-document";
-import Commit from "../lib/models/commit";
+import Repository from "../lib/models/repository.js";
+import GitTabController from "../lib/controllers/git-tab-controller.js";
+import CommitController from "../lib/controllers/commit-controller.js";
+import CommitView from "../lib/views/commit-view.js";
+import PatchItem from "../lib/items/patch-item.js";
+import GitPackage from "../lib/git-package.js";
+import PatchDocument from "../lib/models/patch-document.js";
+import Commit from "../lib/models/commit.js";
 import { Emitter } from "lumine";
-import { buildFilePatch } from "../lib/models/patch";
+import { buildFilePatch } from "../lib/models/patch/index.js";
 import {
   getPatchPaneItems,
   destroyPatchPaneItems,
   destroyEmptyPatchPaneItems,
-} from "../lib/helpers";
-import { createViewModel, flushViews } from "./helpers/etch";
+} from "../lib/helpers.js";
+import { createViewModel, flushViews } from "./helpers/etch.js";
 
 const deferred = () => {
   let resolve;

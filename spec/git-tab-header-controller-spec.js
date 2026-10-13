@@ -1,8 +1,8 @@
 /** @babel */
-import { createViewModel } from "./helpers/etch";
+import { createViewModel } from "./helpers/etch.js";
 
-import GitTabHeaderController from "../lib/controllers/git-tab-header-controller";
-import Author, { nullAuthor } from "../lib/models/author";
+import GitTabHeaderController from "../lib/controllers/git-tab-header-controller.js";
+import Author, { nullAuthor } from "../lib/models/author.js";
 
 function deferred() {
   let resolve;

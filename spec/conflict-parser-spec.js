@@ -5,10 +5,10 @@ import os from "os";
 import path from "path";
 import { Readable } from "stream";
 
-import Conflict from "../lib/models/conflicts/conflict";
-import { ConflictParser } from "../lib/models/conflicts/parser";
-import { EditorAdapter } from "../lib/models/conflicts/parser/adapter";
-import Repository, { hasMergeMarkers } from "../lib/models/repository";
+import Conflict from "../lib/models/conflicts/conflict.js";
+import { ConflictParser } from "../lib/models/conflicts/parser/index.js";
+import { EditorAdapter } from "../lib/models/conflicts/parser/adapter.js";
+import Repository, { hasMergeMarkers } from "../lib/models/repository.js";
 
 describe("scanning a file for merge markers", () => {
   const CHUNK_SIZE = 64 * 1024;

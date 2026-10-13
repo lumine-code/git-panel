@@ -1,8 +1,8 @@
 /** @babel */
 /** @jsx h */
-import { h, flushViews, createViewHost } from "./helpers/etch";
+import { h, flushViews, createViewHost } from "./helpers/etch.js";
 
-import LumineTextEditor from "../lib/lumine/lumine-text-editor";
+import LumineTextEditor from "../lib/lumine/lumine-text-editor.js";
 
 describe("LumineTextEditor", () => {
   let container, root;

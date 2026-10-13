@@ -4,14 +4,14 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { h, flushViews, createViewHost } from "./helpers/etch";
+import { h, flushViews, createViewHost } from "./helpers/etch.js";
 
-import EditorConflictController from "../lib/controllers/editor-conflict-controller";
-import GitTabController from "../lib/controllers/git-tab-controller";
-import GitShellOutStrategy from "../lib/git-shell-out-strategy";
-import Conflict from "../lib/models/conflicts/conflict";
-import ResolutionProgress from "../lib/models/conflicts/resolution-progress";
-import Repository from "../lib/models/repository";
+import EditorConflictController from "../lib/controllers/editor-conflict-controller.js";
+import GitTabController from "../lib/controllers/git-tab-controller.js";
+import GitShellOutStrategy from "../lib/git-shell-out-strategy.js";
+import Conflict from "../lib/models/conflicts/conflict.js";
+import ResolutionProgress from "../lib/models/conflicts/resolution-progress.js";
+import Repository from "../lib/models/repository.js";
 
 async function nextTurn() {
   await new Promise((resolve) => setImmediate(resolve));

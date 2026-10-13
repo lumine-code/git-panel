@@ -6,7 +6,7 @@ import {
   refreshRepositoryForPath,
   resolveRepositoryForDirectory,
   resolveRepositoryForPath,
-} from "../lib/repository-api";
+} from "../lib/repository-api.js";
 
 describe("repository-api", () => {
   it("reads a repository working directory through the Lumine API", () => {

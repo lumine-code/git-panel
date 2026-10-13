@@ -1,5 +1,5 @@
 /** @babel */
-import GitPackage from "../lib/git-package";
+import GitPackage from "../lib/git-package.js";
 
 async function until(predicate, maxTicks = 10000) {
   for (let i = 0; i < maxTicks; i++) {

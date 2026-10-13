@@ -1,10 +1,10 @@
 /** @babel */
 import path from "path";
 import { Disposable, Emitter } from "lumine";
-import MultiFilePatchView from "../lib/views/multi-file-patch-view";
-import { buildMultiFilePatch } from "../lib/models/patch";
-import { COLLAPSED } from "../lib/models/patch/patch";
-import { flushViews } from "./helpers/etch";
+import MultiFilePatchView from "../lib/views/multi-file-patch-view.js";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { COLLAPSED } from "../lib/models/patch/patch.js";
+import { flushViews } from "./helpers/etch.js";
 
 function diff(name, count = 4, mode = "100644") {
   return {
@@ -40,7 +40,9 @@ describe("shared side-by-side diff headers", () => {
 
   beforeEach(() => {
     publication = new Emitter();
-    stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    stylesheet = lumine.themes.requireStylesheet(
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
+    );
     cursorLineStyle = document.createElement("style");
     cursorLineStyle.textContent = `
       lumine-text-editor .line.cursor-line {

@@ -1,11 +1,11 @@
 /** @babel */
 import path from "path";
 import { CompositeDisposable, Disposable } from "lumine";
-import MultiFilePatchView from "../lib/views/multi-file-patch-view";
-import PaneItemHost from "../lib/items/pane-item-host";
-import { buildMultiFilePatch } from "../lib/models/patch";
-import { consumeScrollmapWidget } from "../lib/scrollmap-widget";
-import { flushViews } from "./helpers/etch";
+import MultiFilePatchView from "../lib/views/multi-file-patch-view.js";
+import PaneItemHost from "../lib/items/pane-item-host.js";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { consumeScrollmapWidget } from "../lib/scrollmap-widget.js";
+import { flushViews } from "./helpers/etch.js";
 
 function diff(filePath, starts = [1, 20]) {
   return {
@@ -32,7 +32,9 @@ describe("patch scrollbar widget", () => {
   beforeEach(() => {
     subscriptions = new CompositeDisposable();
     widgets = [];
-    stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    stylesheet = lumine.themes.requireStylesheet(
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
+    );
     container = document.createElement("div");
     container.style.cssText = "display: flex; width: 700px; height: 300px;";
     jasmine.attachToDOM(container);

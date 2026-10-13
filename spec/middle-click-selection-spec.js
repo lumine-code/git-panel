@@ -1,6 +1,6 @@
 /** @babel */
-import StagingView from "../lib/views/staging-view";
-import RecentCommitsView, { RecentCommitView } from "../lib/views/recent-commits-view";
+import StagingView from "../lib/views/staging-view.js";
+import RecentCommitsView, { RecentCommitView } from "../lib/views/recent-commits-view.js";
 
 describe("middle-click list selection", () => {
   it("selects unstaged and staged items without starting the normal mouse action", async () => {

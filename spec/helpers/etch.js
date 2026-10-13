@@ -1,6 +1,6 @@
 /** @babel */
 import etch from "@lumine-code/etch";
-import View, { h, mount } from "../../lib/etch/view";
+import View, { h, mount } from "../../lib/etch/view.js";
 
 export { h, View };
 

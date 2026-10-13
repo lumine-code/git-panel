@@ -1,7 +1,7 @@
 /** @babel */
-import GitShellOutStrategy from "../lib/git-shell-out-strategy";
-import createPipelineManager from "../lib/get-repo-pipeline-manager";
-import OperationStates from "../lib/models/operation-states";
+import GitShellOutStrategy from "../lib/git-shell-out-strategy.js";
+import createPipelineManager from "../lib/get-repo-pipeline-manager.js";
+import OperationStates from "../lib/models/operation-states.js";
 
 describe("shared Git operation outcomes", () => {
   it("reports queued operations from another surface's shared workflow", () => {

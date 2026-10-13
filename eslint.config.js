@@ -78,8 +78,7 @@ module.exports = [
   },
   js.configs.recommended,
   {
-    // The editor transpiles this package's `/** @babel */` sources, so lint the
-    // ESM + JSX it actually contains rather than the CommonJS it compiles to.
+    // The editor preserves native ESM and compiles this package's JSX.
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
@@ -94,11 +93,6 @@ module.exports = [
     settings: {
       n: {
         version: ">=24.0.0",
-        // For ESM sources eslint-plugin-n resolves without `mainFiles`, so a
-        // directory import like `./models/patch` reads as missing. The editor's
-        // babel preset compiles these modules to CommonJS, where they resolve
-        // through the directory's index — restore those semantics.
-        resolverConfig: { mainFiles: ["index"], mainFields: ["main"] },
       },
     },
     rules: {

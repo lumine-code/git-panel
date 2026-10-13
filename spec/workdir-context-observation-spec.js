@@ -1,7 +1,7 @@
 /** @babel */
 import { Disposable, Emitter } from "lumine";
-import WorkdirContext, { createRepoSym } from "../lib/models/workdir-context";
-import WorkdirContextPool from "../lib/models/workdir-context-pool";
+import WorkdirContext, { createRepoSym } from "../lib/models/workdir-context.js";
+import WorkdirContextPool from "../lib/models/workdir-context-pool.js";
 
 function deferred() {
   let resolve, reject;

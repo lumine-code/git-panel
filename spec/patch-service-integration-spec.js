@@ -1,9 +1,12 @@
 /** @babel */
+import { createRequire } from "node:module";
 import path from "path";
-import PatchView from "../lib/views/patch-view";
-import PatchDocument from "../lib/models/patch-document";
-import RefHolder from "../lib/models/ref-holder";
-import { buildMultiFilePatch } from "../lib/models/patch";
+import PatchView from "../lib/views/patch-view.js";
+import PatchDocument from "../lib/models/patch-document.js";
+import RefHolder from "../lib/models/ref-holder.js";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+
+const require = createRequire(import.meta.url);
 
 describe("patch renderer service integration", () => {
   it("publishes the renderer from Git Panel without exposing its module graph", async () => {
@@ -24,12 +27,12 @@ describe("patch renderer service integration", () => {
     for (const descriptor of [
       {
         kind: "file",
-        workingDirectory: __dirname,
+        workingDirectory: import.meta.dirname,
         relPath: path.join("nested", "a %2F.txt"),
         stagingStatus: "unstaged",
       },
-      { kind: "staged-all", workingDirectory: __dirname },
-      { kind: "commit", workingDirectory: __dirname, sha: "abc" },
+      { kind: "staged-all", workingDirectory: import.meta.dirname },
+      { kind: "commit", workingDirectory: import.meta.dirname, sha: "abc" },
     ]) {
       const document = PatchDocument.fromURI(service.buildPatchURI(descriptor));
       expect(document.kind).toBe(descriptor.kind);
@@ -41,7 +44,7 @@ describe("patch renderer service integration", () => {
       else expect(document.stagingStatus).toBe("staged");
     }
     expect(() =>
-      service.buildPatchURI({ kind: "commit", workingDirectory: __dirname }),
+      service.buildPatchURI({ kind: "commit", workingDirectory: import.meta.dirname }),
     ).toThrowError(TypeError);
     expect(service.models).toBeUndefined();
     expect(service.views).toBeUndefined();
@@ -52,7 +55,7 @@ describe("patch renderer service integration", () => {
     const holder = new RefHolder();
     const view = new PatchView({
       multiFilePatch: patch,
-      document: PatchDocument.file(__dirname, "example.txt", "unstaged"),
+      document: PatchDocument.file(import.meta.dirname, "example.txt", "unstaged"),
       title: "Unstaged Changes",
       stagingStatus: "unstaged",
       surfaceKind: "file",

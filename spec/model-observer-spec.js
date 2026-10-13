@@ -1,7 +1,7 @@
 /** @babel */
 import { Emitter } from "lumine";
 
-import ModelObserver from "../lib/models/model-observer";
+import ModelObserver from "../lib/models/model-observer.js";
 
 async function until(predicate, maxTicks = 10000) {
   for (let i = 0; i < maxTicks; i++) {

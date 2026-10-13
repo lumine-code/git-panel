@@ -1,6 +1,6 @@
 /** @babel */
-import PatchBuffer from "../lib/models/patch/patch-buffer";
-import { buildMultiFilePatch, buildFilePatch } from "../lib/models/patch";
+import PatchBuffer from "../lib/models/patch/patch-buffer.js";
+import { buildMultiFilePatch, buildFilePatch } from "../lib/models/patch/index.js";
 
 function diff(filePath = "example.txt", oldText = "before token", newText = "after token") {
   return {

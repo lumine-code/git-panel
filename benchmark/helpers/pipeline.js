@@ -1,6 +1,9 @@
 /** @babel */
+import { createRequire } from "node:module";
 import path from "path";
 import { TextBuffer, filterPatch } from "lumine";
+
+const require = createRequire(import.meta.url);
 
 export const milliseconds = (start) => Number(process.hrtime.bigint() - start) / 1e6;
 export const started = () => process.hrtime.bigint();
@@ -58,7 +61,8 @@ export function rawReplacement({ files = 1, pairs = 8, lineBytes = 0, tokens = 0
 export function profilePipeline(gitRoot) {
   const { parseDiff } = require(path.join(gitRoot, "lib", "parse-diff"));
   const { buildMultiFilePatch } = require(path.join(gitRoot, "lib", "models", "patch"));
-  const wordDiff = require(path.join(gitRoot, "lib", "models", "patch", "word-diff"));
+  const wordDiffModule = require(path.join(gitRoot, "lib", "models", "patch", "word-diff"));
+  const wordDiff = wordDiffModule.wordDiff || wordDiffModule;
   const loaded = require(path.join(gitRoot, "lib", "models", "patch", "multi-file-patch"));
   const MultiFilePatch = loaded.default || loaded;
   const originalWordDiff = wordDiff.populateWordDiffs;

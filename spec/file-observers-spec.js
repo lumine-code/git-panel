@@ -1,12 +1,12 @@
 /** @babel */
 import fs from "fs";
-import externalGit from "./helpers/external-git";
+import externalGit from "./helpers/external-git.js";
 import os from "os";
 import path from "path";
 import { Disposable } from "lumine";
-import FileSystemChangeObserver from "../lib/models/file-system-change-observer";
-import WorkspaceChangeObserver from "../lib/models/workspace-change-observer";
-import Repository from "../lib/models/repository";
+import FileSystemChangeObserver from "../lib/models/file-system-change-observer.js";
+import WorkspaceChangeObserver from "../lib/models/workspace-change-observer.js";
+import Repository from "../lib/models/repository.js";
 
 describe("file observation for repository state", () => {
   let directory, observer;

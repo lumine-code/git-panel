@@ -1,11 +1,11 @@
 /** @babel */
 import path from "path";
 import { Emitter } from "lumine";
-import PatchItem from "../lib/items/patch-item";
-import PatchDocument from "../lib/models/patch-document";
-import { buildFilePatch } from "../lib/models/patch";
-import { flushViews } from "./helpers/etch";
-import GitRootController from "../lib/controllers/git-root-controller";
+import PatchItem from "../lib/items/patch-item.js";
+import PatchDocument from "../lib/models/patch-document.js";
+import { buildFilePatch } from "../lib/models/patch/index.js";
+import { flushViews } from "./helpers/etch.js";
+import GitRootController from "../lib/controllers/git-root-controller.js";
 
 describe("native changed-file readiness and navigation", () => {
   let item, patch, emitter, readPatch, release;
@@ -130,8 +130,11 @@ describe("native changed-file readiness and navigation", () => {
 describe("current-file diff command guards", () => {
   it("opens the dispatch target's file repository while another repository is pinned", async () => {
     const controller = Object.create(GitRootController.prototype);
-    const workingDirectory = path.dirname(__filename);
-    const editor = { getPath: () => __filename, getCursorBufferPosition: () => ({ row: 4 }) };
+    const workingDirectory = path.dirname(import.meta.filename);
+    const editor = {
+      getPath: () => import.meta.filename,
+      getCursorBufferPosition: () => ({ row: 4 }),
+    };
     const coreRepository = {
       getWorkingDirectory: () => workingDirectory,
       posixRelativePath: () => "selected.js",
@@ -185,9 +188,12 @@ describe("current-file diff command guards", () => {
     let options;
     const notification = { dismiss: jasmine.createSpy("dismiss explanation") };
     controller.props = {
-      workspace: { getActiveTextEditor: () => ({ getPath: () => __filename }) },
+      workspace: { getActiveTextEditor: () => ({ getPath: () => import.meta.filename }) },
       repositories: {
-        getCommandContext: () => ({ editor: { getPath: () => __filename }, repository: null }),
+        getCommandContext: () => ({
+          editor: { getPath: () => import.meta.filename },
+          repository: null,
+        }),
         getForPath: () => null,
         resolveForPath: async () => null,
       },

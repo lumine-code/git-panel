@@ -2,7 +2,7 @@
 // The comprehensive URIPattern cases were converted from uri-pattern.test.js
 // (node:test/node:assert → Jasmine) and merged here; both exercise the pure
 // uri-pattern-core module.
-import { URIPattern, nonURIMatch } from "../lib/lumine/uri-pattern-core";
+import { URIPattern, nonURIMatch } from "../lib/lumine/uri-pattern-core.js";
 
 describe("URIPattern package adapter", () => {
   it("exposes the default matcher and named non-match export", () => {

@@ -1,5 +1,5 @@
 /** @babel */
-import FilePatchHeaderView from "../lib/views/file-patch-header-view";
+import FilePatchHeaderView from "../lib/views/file-patch-header-view.js";
 
 describe("file patch headers", () => {
   let view;

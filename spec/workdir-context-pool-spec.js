@@ -1,5 +1,5 @@
 /** @babel */
-import WorkdirContextPool from "../lib/models/workdir-context-pool";
+import WorkdirContextPool from "../lib/models/workdir-context-pool.js";
 
 describe("WorkdirContextPool", () => {
   const workdir = "C:\\workdir";

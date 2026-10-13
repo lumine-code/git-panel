@@ -1,6 +1,6 @@
 /** @babel */
 import { Emitter } from "lumine";
-import WorkdirObservation from "../lib/models/workdir-observation";
+import WorkdirObservation from "../lib/models/workdir-observation.js";
 
 describe("pane observation ownership", () => {
   let emitter, observations;

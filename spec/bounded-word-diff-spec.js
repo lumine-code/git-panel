@@ -1,6 +1,6 @@
 /** @babel */
-import { buildMultiFilePatch } from "../lib/models/patch";
-import { populateBoundedWordDiffs, WORD_DIFF_LIMITS } from "../lib/models/patch/word-diff";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { populateBoundedWordDiffs, WORD_DIFF_LIMITS } from "../lib/models/patch/word-diff.js";
 
 function replacement(oldLines, newLines) {
   return {

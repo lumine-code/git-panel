@@ -1,5 +1,5 @@
 /** @babel */
-import { consumeLinterEditors, addLinterEditor } from "../lib/linter-editors";
+import { consumeLinterEditors, addLinterEditor } from "../lib/linter-editors.js";
 
 // The commit box is not a pane item, so the linter never discovers it on its
 // own; this holder hands it over through the `linter.editors` service. Editors

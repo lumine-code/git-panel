@@ -1,9 +1,9 @@
 /** @babel */
 import path from "path";
 import { Disposable } from "lumine";
-import MultiFilePatchView from "../lib/views/multi-file-patch-view";
-import { buildMultiFilePatch } from "../lib/models/patch";
-import { flushViews } from "./helpers/etch";
+import MultiFilePatchView from "../lib/views/multi-file-patch-view.js";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { flushViews } from "./helpers/etch.js";
 
 function hunk(lines, start) {
   return {
@@ -34,7 +34,9 @@ describe("diff layout viewport anchors", () => {
   let stylesheet;
 
   beforeEach(() => {
-    stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    stylesheet = lumine.themes.requireStylesheet(
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
+    );
     container = document.createElement("div");
     container.style.cssText = "display: flex; width: 780px; height: 340px;";
     jasmine.attachToDOM(container);

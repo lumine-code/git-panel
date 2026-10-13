@@ -1,6 +1,6 @@
 /** @babel */
-import CompositeListSelection from "../lib/models/composite-list-selection";
-import StagingView from "../lib/views/staging-view";
+import CompositeListSelection from "../lib/models/composite-list-selection.js";
+import StagingView from "../lib/views/staging-view.js";
 
 describe("primary-click list selection", () => {
   const items = ["a", "b", "c", "d", "e"].map((name) => ({ filePath: `${name}.txt` }));

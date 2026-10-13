@@ -1,14 +1,17 @@
 /** @babel */
+import { createRequire } from "node:module";
 import path from "path";
 import { Emitter } from "lumine";
-import GitPackage from "../lib/git-package";
-import PatchItem from "../lib/items/patch-item";
-import PatchDocument from "../lib/models/patch-document";
-import Commit from "../lib/models/commit";
-import PaneItem from "../lib/lumine/pane-item";
-import { buildFilePatch, buildMultiFilePatch } from "../lib/models/patch";
-import StagingView from "../lib/views/staging-view";
-import { h, flushViews } from "./helpers/etch";
+import GitPackage from "../lib/git-package.js";
+import PatchItem from "../lib/items/patch-item.js";
+import PatchDocument from "../lib/models/patch-document.js";
+import Commit from "../lib/models/commit.js";
+import PaneItem from "../lib/lumine/pane-item.js";
+import { buildFilePatch, buildMultiFilePatch } from "../lib/models/patch/index.js";
+import StagingView from "../lib/views/staging-view.js";
+import { h, flushViews } from "./helpers/etch.js";
+
+const require = createRequire(import.meta.url);
 
 const navigationAdapter = require("../lib/navigation-adapter");
 
@@ -16,7 +19,7 @@ describe("pending patch pane item reuse", () => {
   let registration, emitter, repository, pool, pane, factory, readPatch;
   let patches, deferredReads, openedPromises, stylesheet, repositories, leases, commits;
   let surfaceDocument, readyGates;
-  const workingDirectory = path.join(__dirname, "pending-patch-workdir");
+  const workingDirectory = path.join(import.meta.dirname, "pending-patch-workdir");
 
   const uriFor = (relPath, stagingStatus = "unstaged", workdir = workingDirectory) =>
     PatchDocument.file(workdir, relPath, stagingStatus).getURI();
@@ -596,7 +599,7 @@ describe("pending patch pane item reuse", () => {
   for (const layout of ["unified", "side-by-side"]) {
     it(`resets selection and scroll while retaining ${layout} editors and the chosen layout`, async () => {
       stylesheet = lumine.themes.requireStylesheet(
-        path.join(__dirname, "..", "styles", "main.css"),
+        path.join(import.meta.dirname, "..", "styles", "main.css"),
       );
       longPatchFor("deep-one.txt");
       longPatchFor("deep-two.txt");
@@ -853,7 +856,7 @@ describe("pending patch pane item reuse", () => {
     const view = item.getHydratedView();
     const editor = view.refEditor.get();
     const oldLease = leases[0];
-    const otherWorkdir = path.join(__dirname, "another-pending-patch-workdir");
+    const otherWorkdir = path.join(import.meta.dirname, "another-pending-patch-workdir");
     const nextURI = uriFor("two.txt", "unstaged", otherWorkdir);
     const next = await open(nextURI);
     await flushViews(() => {});
@@ -887,8 +890,8 @@ describe("pending patch pane item reuse", () => {
         ? [pair.editors.old.get(), pair.editors.new.get()]
         : [view.refEditor.get()];
       const buffers = editors.map((editor) => editor.getBuffer());
-      const otherWorkdir = path.join(__dirname, "shared-patch-second-repo");
-      const emptyWorkdir = path.join(__dirname, "shared-patch-empty-repo");
+      const otherWorkdir = path.join(import.meta.dirname, "shared-patch-second-repo");
+      const emptyWorkdir = path.join(import.meta.dirname, "shared-patch-empty-repo");
       patches.set(`${emptyWorkdir}|staged-all`, buildMultiFilePatch([]));
       const documents = [
         PatchDocument.file(workingDirectory, "one.txt", "staged"),
@@ -966,7 +969,7 @@ describe("pending patch pane item reuse", () => {
     await controller.toggleRows(new Set([2]), "line");
     expect(repository.applyPatchToIndex).toHaveBeenCalledTimes(1);
 
-    const otherWorkdir = path.join(__dirname, "writable-second-repo");
+    const otherWorkdir = path.join(import.meta.dirname, "writable-second-repo");
     expect(await open(uriFor("other.txt", "unstaged", otherWorkdir))).toBe(item);
     await flushViews(() => {});
     expect(controller.props.readOnly).toBe(false);
@@ -978,7 +981,7 @@ describe("pending patch pane item reuse", () => {
   it("surfaces the current source after changing document kind and repository", async () => {
     const item = await initialItem();
     const view = item.getHydratedView();
-    const otherWorkdir = path.join(__dirname, "surface-second-repo");
+    const otherWorkdir = path.join(import.meta.dirname, "surface-second-repo");
     const documents = [
       PatchDocument.file(workingDirectory, "surface.txt", "staged"),
       PatchDocument.staged(otherWorkdir),
@@ -1029,7 +1032,7 @@ describe("pending patch pane item reuse", () => {
     const item = await initialItem();
     const view = item.getHydratedView();
     const oldLease = leases[0];
-    const otherWorkdir = path.join(__dirname, "failed-second-repo");
+    const otherWorkdir = path.join(import.meta.dirname, "failed-second-repo");
     const candidate = repositoryFor(otherWorkdir);
     const gate = deferRead("two.txt", false, otherWorkdir);
     const pending = open(uriFor("two.txt", "unstaged", otherWorkdir));
@@ -1052,7 +1055,7 @@ describe("pending patch pane item reuse", () => {
   it("releases a superseded repository's candidate lease and ignores its late patch", async () => {
     const item = await initialItem();
     const view = item.getHydratedView();
-    const otherWorkdir = path.join(__dirname, "superseded-second-repo");
+    const otherWorkdir = path.join(import.meta.dirname, "superseded-second-repo");
     const candidate = repositoryFor(otherWorkdir);
     const gate = deferRead("two.txt", false, otherWorkdir);
     const previous = open(uriFor("two.txt", "unstaged", otherWorkdir));
@@ -1071,7 +1074,7 @@ describe("pending patch pane item reuse", () => {
 
   it("releases both leases when closed while another repository is still preparing", async () => {
     const item = await initialItem();
-    const otherWorkdir = path.join(__dirname, "waiting-second-repo");
+    const otherWorkdir = path.join(import.meta.dirname, "waiting-second-repo");
     let resolve;
     const promise = new Promise((finish) => {
       resolve = finish;
@@ -1099,7 +1102,7 @@ describe("pending patch pane item reuse", () => {
     readPatch.calls.reset();
     emitter.emit("did-update");
     await waitForRead("one.txt");
-    const otherWorkdir = path.join(__dirname, "refresh-second-repo");
+    const otherWorkdir = path.join(import.meta.dirname, "refresh-second-repo");
     expect(await open(uriFor("other.txt", "unstaged", otherWorkdir))).toBe(item);
     refresh.resolve(patchFor("one.txt"));
     await flushViews(() => {});

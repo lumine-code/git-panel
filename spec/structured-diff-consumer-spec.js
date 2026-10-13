@@ -1,6 +1,6 @@
 /** @babel */
 
-import { buildFilePatch } from "../lib/models/patch";
+import { buildFilePatch } from "../lib/models/patch/index.js";
 
 describe("structured repository diffs", () => {
   function typechange(oldMode, newMode, lines) {

@@ -1,8 +1,8 @@
 /** @babel */
 
-import { nullCommit } from "../lib/models/commit";
-import Present from "../lib/models/repository-states/present";
-import { openCommitDetailItem } from "../lib/views/open-commit-dialog";
+import { nullCommit } from "../lib/models/commit.js";
+import Present from "../lib/models/repository-states/present.js";
+import { openCommitDetailItem } from "../lib/views/open-commit-dialog.js";
 
 describe("commit lookup", () => {
   it("represents an unknown revision as an absent commit", async () => {

@@ -1,9 +1,9 @@
 /** @babel */
 import path from "path";
 import { Disposable, Emitter } from "lumine";
-import MultiFilePatchView from "../lib/views/multi-file-patch-view";
-import { buildMultiFilePatch } from "../lib/models/patch";
-import { flushViews } from "./helpers/etch";
+import MultiFilePatchView from "../lib/views/multi-file-patch-view.js";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { flushViews } from "./helpers/etch.js";
 
 function diff(name, count = 1) {
   return {
@@ -38,7 +38,9 @@ describe("loading initially collapsed side-by-side files", () => {
 
   beforeEach(() => {
     publication = new Emitter();
-    stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    stylesheet = lumine.themes.requireStylesheet(
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
+    );
     container = document.createElement("div");
     container.style.cssText = "display: flex; width: 700px; height: 400px;";
     jasmine.attachToDOM(container);

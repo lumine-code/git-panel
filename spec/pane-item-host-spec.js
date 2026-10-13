@@ -1,6 +1,6 @@
 /** @babel */
 import { Emitter } from "lumine";
-import PaneItemHost from "../lib/items/pane-item-host";
+import PaneItemHost from "../lib/items/pane-item-host.js";
 
 function createView() {
   const emitter = new Emitter();

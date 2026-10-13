@@ -1,5 +1,5 @@
 /** @babel */
-import GitShellOutStrategy from "../lib/git-shell-out-strategy";
+import GitShellOutStrategy from "../lib/git-shell-out-strategy.js";
 
 describe("authoritative core remotes", () => {
   it("returns plain remote records from the shared refs snapshot", async () => {

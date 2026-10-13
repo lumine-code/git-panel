@@ -1,10 +1,10 @@
 /** @babel */
 import path from "path";
-import PatchDocument from "../lib/models/patch-document";
+import PatchDocument from "../lib/models/patch-document.js";
 
 describe("patch document identity", () => {
   it("round-trips every source kind through the same URI matcher", () => {
-    const workdir = path.join(__dirname, "zażółć + percent%2Fproject");
+    const workdir = path.join(import.meta.dirname, "zażółć + percent%2Fproject");
     const documents = [
       PatchDocument.file(workdir, path.join("nested", "a %2F + ż.txt"), "unstaged"),
       PatchDocument.file(workdir, "staged.txt", "staged"),
@@ -23,9 +23,9 @@ describe("patch document identity", () => {
   });
 
   it("derives titles, permissions and stage from the current source", () => {
-    const file = PatchDocument.file(__dirname, "a.txt", "unstaged");
-    const staged = PatchDocument.staged(__dirname);
-    const commit = PatchDocument.commit(__dirname, "abc");
+    const file = PatchDocument.file(import.meta.dirname, "a.txt", "unstaged");
+    const staged = PatchDocument.staged(import.meta.dirname);
+    const commit = PatchDocument.commit(import.meta.dirname, "abc");
     expect(file.getTitle()).toBe("Unstaged Changes: a.txt");
     expect(staged.getTitle()).toBe("Staged Changes");
     expect(commit.getTitle()).toBe("Commit: abc");
@@ -39,8 +39,12 @@ describe("patch document identity", () => {
 
   it("gives forward-slash and native nested paths the same canonical identity", () => {
     for (const stage of ["staged", "unstaged"]) {
-      const forwardSlash = PatchDocument.file(__dirname, "nested/a.txt", stage);
-      const nativePath = PatchDocument.file(__dirname, path.join("nested", "a.txt"), stage);
+      const forwardSlash = PatchDocument.file(import.meta.dirname, "nested/a.txt", stage);
+      const nativePath = PatchDocument.file(
+        import.meta.dirname,
+        path.join("nested", "a.txt"),
+        stage,
+      );
       expect(forwardSlash.relPath).toBe(path.join("nested", "a.txt"));
       expect(forwardSlash).toEqual(nativePath);
       expect(forwardSlash.getURI()).toBe(nativePath.getURI());
@@ -71,14 +75,14 @@ describe("patch document identity", () => {
   it("rejects invalid source descriptors at construction", () => {
     for (const create of [
       () => PatchDocument.file("", "a.txt", "unstaged"),
-      () => PatchDocument.file(__dirname, "", "staged"),
-      () => PatchDocument.file(__dirname, "a.txt", "unknown"),
-      () => PatchDocument.commit(__dirname, ""),
-      () => new PatchDocument({ kind: "unknown", workingDirectory: __dirname }),
+      () => PatchDocument.file(import.meta.dirname, "", "staged"),
+      () => PatchDocument.file(import.meta.dirname, "a.txt", "unknown"),
+      () => PatchDocument.commit(import.meta.dirname, ""),
+      () => new PatchDocument({ kind: "unknown", workingDirectory: import.meta.dirname }),
       () =>
         new PatchDocument({
           kind: "commit",
-          workingDirectory: __dirname,
+          workingDirectory: import.meta.dirname,
           sha: "abc",
           relPath: "a.txt",
         }),

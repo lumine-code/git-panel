@@ -1,6 +1,6 @@
 /** @babel */
-import { h, flushViews } from "./helpers/etch";
-import ObserveModel from "../lib/views/observe-model";
+import { h, flushViews } from "./helpers/etch.js";
+import ObserveModel from "../lib/views/observe-model.js";
 
 describe("ObserveModel publication", () => {
   let view;

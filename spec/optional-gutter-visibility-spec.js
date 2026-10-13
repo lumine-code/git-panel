@@ -1,9 +1,9 @@
 /** @babel */
-import Gutter from "../lib/lumine/gutter";
-import Decoration from "../lib/lumine/decoration";
-import { h } from "../lib/etch/view";
-import RefHolder from "../lib/models/ref-holder";
-import { flushViews } from "./helpers/etch";
+import Gutter from "../lib/lumine/gutter.js";
+import Decoration from "../lib/lumine/decoration.js";
+import { h } from "../lib/etch/view.js";
+import RefHolder from "../lib/models/ref-holder.js";
+import { flushViews } from "./helpers/etch.js";
 
 describe("optional native gutter visibility", () => {
   const editors = [];

@@ -1,11 +1,11 @@
 /** @babel */
 import { Emitter } from "lumine";
-import Present from "../lib/models/repository-states/present";
-import Commit from "../lib/models/commit";
-import PatchBuffer from "../lib/models/patch/patch-buffer";
-import PatchContainer from "../lib/containers/patch-container";
-import PatchDocument from "../lib/models/patch-document";
-import { flushViews } from "./helpers/etch";
+import Present from "../lib/models/repository-states/present.js";
+import Commit from "../lib/models/commit.js";
+import PatchBuffer from "../lib/models/patch/patch-buffer.js";
+import PatchContainer from "../lib/containers/patch-container.js";
+import PatchDocument from "../lib/models/patch-document.js";
+import { flushViews } from "./helpers/etch.js";
 
 const raw = (text = "after") => ({
   oldPath: "example.txt",
@@ -34,7 +34,7 @@ describe("repository snapshot cache ownership", () => {
     emitter = new Emitter();
     const repository = {
       emitter,
-      getWorkingDirectoryPath: () => __dirname,
+      getWorkingDirectoryPath: () => import.meta.dirname,
       getMergeMessage: () => Promise.resolve(null),
       git: {
         fetchCommitMessageTemplate: () => Promise.resolve(null),
@@ -116,7 +116,7 @@ describe("repository snapshot cache ownership", () => {
     });
     const props = {
       repository,
-      document: PatchDocument.file(__dirname, "example.txt", "unstaged"),
+      document: PatchDocument.file(import.meta.dirname, "example.txt", "unstaged"),
       surface: () => {},
 
       workspace: lumine.workspace,

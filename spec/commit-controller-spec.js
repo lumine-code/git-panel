@@ -1,6 +1,6 @@
 /** @babel */
 
-import CommitController from "../lib/controllers/commit-controller";
+import CommitController from "../lib/controllers/commit-controller.js";
 
 describe("CommitController existing editor activation", () => {
   it("routes the expanded commit editor through the workspace", async () => {

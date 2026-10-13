@@ -1,6 +1,6 @@
 /** @babel */
 import { Emitter } from "lumine";
-import { watchWorkspaceItem } from "../lib/watch-workspace-item";
+import { watchWorkspaceItem } from "../lib/watch-workspace-item.js";
 
 describe("watchWorkspaceItem", () => {
   it("updates URI matches when the active item changes resource", async () => {

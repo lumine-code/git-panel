@@ -2,7 +2,7 @@
 // Unit coverage for the discard-history blob choreography, with the git
 // primitives injected as fakes — no repository needed.
 import path from "path";
-import DiscardHistory from "../lib/models/discard-history";
+import DiscardHistory from "../lib/models/discard-history.js";
 
 describe("DiscardHistory", () => {
   function buildHistory({ createBlob, expandBlobToFile, mergeFile, workdir = "/workdir" } = {}) {

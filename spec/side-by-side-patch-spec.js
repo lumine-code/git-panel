@@ -1,8 +1,8 @@
 /** @babel */
 
-import { buildMultiFilePatch } from "../lib/models/patch";
-import buildSideBySidePatch from "../lib/models/patch/side-by-side";
-import { COLLAPSED } from "../lib/models/patch/patch";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import buildSideBySidePatch from "../lib/models/patch/side-by-side.js";
+import { COLLAPSED } from "../lib/models/patch/patch.js";
 
 function diff(path, hunks, overrides = {}) {
   return {

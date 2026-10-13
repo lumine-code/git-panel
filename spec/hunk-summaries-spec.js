@@ -1,6 +1,6 @@
 /** @babel */
-import { buildMultiFilePatch, buildFilePatch } from "../lib/models/patch";
-import { COLLAPSED } from "../lib/models/patch/patch";
+import { buildMultiFilePatch, buildFilePatch } from "../lib/models/patch/index.js";
+import { COLLAPSED } from "../lib/models/patch/patch.js";
 
 function hunk(oldStartLine, newStartLine, lines, heading = "") {
   return {

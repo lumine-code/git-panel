@@ -2,10 +2,10 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import Repository from "../lib/models/repository";
-import GitRootController from "../lib/controllers/git-root-controller";
-import GitTabController from "../lib/controllers/git-tab-controller";
-import { createViewModel } from "./helpers/etch";
+import Repository from "../lib/models/repository.js";
+import GitRootController from "../lib/controllers/git-root-controller.js";
+import GitTabController from "../lib/controllers/git-tab-controller.js";
+import { createViewModel } from "./helpers/etch.js";
 
 const deferred = () => {
   let resolve;

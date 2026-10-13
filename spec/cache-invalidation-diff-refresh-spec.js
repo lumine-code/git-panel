@@ -3,15 +3,15 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { Disposable } from "lumine";
-import PatchItem from "../lib/items/patch-item";
-import PatchDocument from "../lib/models/patch-document";
-import GitRootController from "../lib/controllers/git-root-controller";
-import GitShellOutStrategy from "../lib/git-shell-out-strategy";
-import Repository from "../lib/models/repository";
-import WorkdirContextPool from "../lib/models/workdir-context-pool";
-import { createRepoSym } from "../lib/models/workdir-context";
-import { Keys } from "../lib/models/repository-states/cache/keys";
-import { flushViews } from "./helpers/etch";
+import PatchItem from "../lib/items/patch-item.js";
+import PatchDocument from "../lib/models/patch-document.js";
+import GitRootController from "../lib/controllers/git-root-controller.js";
+import GitShellOutStrategy from "../lib/git-shell-out-strategy.js";
+import Repository from "../lib/models/repository.js";
+import WorkdirContextPool from "../lib/models/workdir-context-pool.js";
+import { createRepoSym } from "../lib/models/workdir-context.js";
+import { Keys } from "../lib/models/repository-states/cache/keys.js";
+import { flushViews } from "./helpers/etch.js";
 
 async function waitUntil(check) {
   const deadline = performance.now() + 10000;
@@ -61,7 +61,9 @@ describe("diff refreshes while the repository cache invalidates an in-flight pat
     await repository.getLoadPromise();
     pool = new WorkdirContextPool();
     pool.add(directory, { [createRepoSym]: () => repository });
-    stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    stylesheet = lumine.themes.requireStylesheet(
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
+    );
     container = document.createElement("div");
     container.style.cssText = "display: flex; width: 1000px; height: 340px;";
     jasmine.attachToDOM(container);

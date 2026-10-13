@@ -1,9 +1,9 @@
 /** @babel */
 import path from "path";
 
-import Hunk from "../lib/models/patch/hunk";
-import Patch from "../lib/models/patch/patch";
-import MultiFilePatchView from "../lib/views/multi-file-patch-view";
+import Hunk from "../lib/models/patch/hunk.js";
+import Patch from "../lib/models/patch/patch.js";
+import MultiFilePatchView from "../lib/views/multi-file-patch-view.js";
 
 function renderPatchRoot(maxLineNumberWidth) {
   const view = Object.create(MultiFilePatchView.prototype);
@@ -36,7 +36,7 @@ describe("file patch line-number gutters", () => {
 
   it("applies the calculated width instead of a fixed minimum", () => {
     const stylesheet = lumine.themes.requireStylesheet(
-      path.join(__dirname, "..", "styles", "main.css"),
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
     );
     const roots = [];
     const buildLineNumber = (contentWidth, side, text) => {

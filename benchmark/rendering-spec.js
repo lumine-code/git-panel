@@ -1,7 +1,7 @@
 /** @babel */
-require("../lib/index");
+import "../lib/index.js";
 import path from "path";
-import StagingView from "../lib/views/staging-view";
+import StagingView from "../lib/views/staging-view.js";
 
 const percentile = (values, fraction) => {
   const sorted = [...values].sort((a, b) => a - b);
@@ -13,7 +13,7 @@ describe("Git panel rendering performance", () => {
   for (const count of [100, 1000]) {
     it(`measures mounting and selection commits for ${count} changed files`, async () => {
       const stylesheet = lumine.themes.requireStylesheet(
-        path.join(__dirname, "..", "styles", "main.css"),
+        path.join(import.meta.dirname, "..", "styles", "main.css"),
       );
       const container = document.createElement("div");
       container.style.cssText = "width:400px;height:600px;overflow:auto";

@@ -1,11 +1,11 @@
 /** @babel */
 import path from "path";
 import { Disposable, Range } from "lumine";
-import PatchView from "../lib/views/patch-view";
-import PatchDocument from "../lib/models/patch-document";
-import RefHolder from "../lib/models/ref-holder";
-import { buildMultiFilePatch } from "../lib/models/patch";
-import { flushViews } from "./helpers/etch";
+import PatchView from "../lib/views/patch-view.js";
+import PatchDocument from "../lib/models/patch-document.js";
+import RefHolder from "../lib/models/ref-holder.js";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { flushViews } from "./helpers/etch.js";
 
 function diff(filePath, oldValue = "old value", newValue = "new value", context = []) {
   return {
@@ -63,7 +63,9 @@ describe("changes diff layout", () => {
   const patches = [];
 
   beforeEach(() => {
-    stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    stylesheet = lumine.themes.requireStylesheet(
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
+    );
     container = document.createElement("div");
     container.style.cssText = "display: flex; width: 1000px; height: 400px;";
     jasmine.attachToDOM(container);
@@ -71,7 +73,7 @@ describe("changes diff layout", () => {
     refEditor = new RefHolder();
     appliedPatches = [];
     repository = {
-      getWorkingDirectoryPath: () => path.dirname(__filename),
+      getWorkingDirectoryPath: () => path.dirname(import.meta.filename),
       applyPatchToIndex: jasmine.createSpy("apply index patch").and.callFake(async (patch) => {
         appliedPatches.push(patch.toString());
       }),
@@ -101,8 +103,12 @@ describe("changes diff layout", () => {
       multiFilePatch: patch,
       document:
         surface.kind === "file"
-          ? PatchDocument.file(path.dirname(__filename), "file-1.txt", surface.stagingStatus)
-          : PatchDocument.staged(path.dirname(__filename)),
+          ? PatchDocument.file(
+              path.dirname(import.meta.filename),
+              "file-1.txt",
+              surface.stagingStatus,
+            )
+          : PatchDocument.staged(path.dirname(import.meta.filename)),
       title: surface.title,
       stagingStatus: surface.stagingStatus,
       surfaceKind: surface.kind === "file" ? "file" : undefined,

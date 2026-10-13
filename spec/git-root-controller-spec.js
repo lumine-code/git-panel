@@ -1,9 +1,9 @@
 /** @babel */
-import { createViewModel } from "./helpers/etch";
+import { createViewModel } from "./helpers/etch.js";
 import path from "path";
 
-import GitRootController from "../lib/controllers/git-root-controller";
-import PatchDocument from "../lib/models/patch-document";
+import GitRootController from "../lib/controllers/git-root-controller.js";
+import PatchDocument from "../lib/models/patch-document.js";
 
 describe("GitRootController repository initialization", () => {
   function buildController({ activeEditorPath = null, currentDirectory = null } = {}) {
@@ -64,7 +64,7 @@ describe("GitRootController conflict recounting", () => {
 
   it("settles with the persisted marker count", async () => {
     const controller = buildRecountController();
-    const filePath = path.join(__dirname, "git-root-controller-spec.js");
+    const filePath = path.join(import.meta.dirname, "git-root-controller-spec.js");
 
     const count = await controller.refreshResolutionProgress(filePath);
 
@@ -77,7 +77,7 @@ describe("GitRootController conflict recounting", () => {
 
   it("settles safely when a formerly conflicted file has disappeared", async () => {
     const controller = buildRecountController();
-    const filePath = path.join(__dirname, "missing-conflict-file.txt");
+    const filePath = path.join(import.meta.dirname, "missing-conflict-file.txt");
 
     const count = await controller.refreshResolutionProgress(filePath);
 
@@ -91,7 +91,7 @@ describe("GitRootController conflict recounting", () => {
 });
 
 describe("GitRootController patch source navigation", () => {
-  const directory = path.join(__dirname, "source-repository");
+  const directory = path.join(import.meta.dirname, "source-repository");
   const documents = [
     PatchDocument.file(directory, "nested.txt", "staged"),
     PatchDocument.staged(directory),

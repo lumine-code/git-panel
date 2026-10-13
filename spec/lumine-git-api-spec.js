@@ -1,16 +1,19 @@
 /** @babel */
 
+import { createRequire } from "node:module";
 import fs from "fs";
-import externalGit from "./helpers/external-git";
+import externalGit from "./helpers/external-git.js";
 import os from "os";
 import path from "path";
 import { Disposable } from "lumine";
 
-import GitShellOutStrategy from "../lib/git-shell-out-strategy";
-import ModelObserver from "../lib/models/model-observer";
-import Repository from "../lib/models/repository";
-import WorkdirContext from "../lib/models/workdir-context";
-import { Keys } from "../lib/models/repository-states/cache/keys";
+import GitShellOutStrategy from "../lib/git-shell-out-strategy.js";
+import ModelObserver from "../lib/models/model-observer.js";
+import Repository from "../lib/models/repository.js";
+import WorkdirContext from "../lib/models/workdir-context.js";
+import { Keys } from "../lib/models/repository-states/cache/keys.js";
+
+const require = createRequire(import.meta.url);
 
 // A tick budget, not a wall-clock one: the specs run with the clock frozen, so
 // setImmediate turns are all there is to wait on. The condition is usually met
@@ -1098,7 +1101,7 @@ describe("Lumine Git transport", () => {
   });
 
   it("loads only native CSS stylesheets", async () => {
-    const packagePath = path.resolve(__dirname, "..");
+    const packagePath = path.resolve(import.meta.dirname, "..");
     const pack = lumine.packages.loadPackage(packagePath);
 
     try {

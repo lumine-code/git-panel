@@ -1,7 +1,7 @@
 /** @babel */
-import { createViewModel } from "./helpers/etch";
+import { createViewModel } from "./helpers/etch.js";
 
-import GitTabContainer from "../lib/containers/git-tab-container";
+import GitTabContainer from "../lib/containers/git-tab-container.js";
 
 describe("GitTabContainer repository data", () => {
   it("keeps a snapshot started during Loading marked as in progress", async () => {

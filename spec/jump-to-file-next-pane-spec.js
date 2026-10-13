@@ -1,13 +1,13 @@
 /** @babel */
 /** @jsx h */
 import path from "path";
-import openInNextPane from "../lib/open-in-next-pane";
-import GitRootController from "../lib/controllers/git-root-controller";
-import ChangesView from "../lib/views/changes-view";
-import PaneItemHost from "../lib/items/pane-item-host";
-import StagingView from "../lib/views/staging-view";
-import { buildMultiFilePatch } from "../lib/models/patch";
-import { h, flushViews, createViewHost, createViewModel } from "./helpers/etch";
+import openInNextPane from "../lib/open-in-next-pane.js";
+import GitRootController from "../lib/controllers/git-root-controller.js";
+import ChangesView from "../lib/views/changes-view.js";
+import PaneItemHost from "../lib/items/pane-item-host.js";
+import StagingView from "../lib/views/staging-view.js";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { h, flushViews, createViewHost, createViewModel } from "./helpers/etch.js";
 
 describe("jumping to a file in the next pane", () => {
   let anchorPane, anchorEditor, initialPanes, initialItems, view, patch, stylesheet, paneItem;
@@ -17,10 +17,13 @@ describe("jumping to a file in the next pane", () => {
     initialPanes = new Set(lumine.workspace.getPanes());
     initialItems = new Set(lumine.workspace.getPaneItems());
     anchorPane = lumine.workspace.getCenter().getActivePane();
-    anchorEditor = await lumine.workspace.open(path.join(__dirname, "patch-selection-spec.js"), {
-      pane: anchorPane,
-      pending: false,
-    });
+    anchorEditor = await lumine.workspace.open(
+      path.join(import.meta.dirname, "patch-selection-spec.js"),
+      {
+        pane: anchorPane,
+        pending: false,
+      },
+    );
   });
 
   afterEach(async () => {
@@ -40,7 +43,7 @@ describe("jumping to a file in the next pane", () => {
 
   function opener(name = "copy-diff-spec.js") {
     return (options) =>
-      lumine.workspace.open(path.join(__dirname, name), { ...options, pending: false });
+      lumine.workspace.open(path.join(import.meta.dirname, name), { ...options, pending: false });
   }
 
   function panes() {
@@ -169,12 +172,12 @@ describe("jumping to a file in the next pane", () => {
     const controller = Object.create(GitRootController.prototype);
     controller.props = {
       workspace: lumine.workspace,
-      repository: { getWorkingDirectoryPath: () => __dirname },
+      repository: { getWorkingDirectoryPath: () => import.meta.dirname },
     };
     const staging = createViewModel(StagingView, {
       commands: lumine.commands,
       workspace: lumine.workspace,
-      workingDirectoryPath: __dirname,
+      workingDirectoryPath: import.meta.dirname,
       unstagedChanges: filePaths.map((filePath) => ({ filePath })),
       stagedChanges: [],
       mergeConflicts: [],
@@ -211,7 +214,9 @@ describe("jumping to a file in the next pane", () => {
   });
 
   async function mount(layout) {
-    stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    stylesheet = lumine.themes.requireStylesheet(
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
+    );
     patch = buildMultiFilePatch([
       {
         oldPath: "patch-selection-spec.js",
@@ -239,7 +244,7 @@ describe("jumping to a file in the next pane", () => {
       readOnly: false,
       initialDiffView: layout,
       clipboard: { write: jasmine.createSpy("copy diff").and.resolveTo() },
-      repository: { getWorkingDirectoryPath: () => __dirname },
+      repository: { getWorkingDirectoryPath: () => import.meta.dirname },
       discardLines: jasmine.createSpy("discard rows").and.resolveTo(),
       workspace: lumine.workspace,
       commands: lumine.commands,

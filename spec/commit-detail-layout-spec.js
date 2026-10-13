@@ -1,10 +1,10 @@
 /** @babel */
 import path from "path";
 import { Disposable, Range } from "lumine";
-import PatchView from "../lib/views/patch-view";
-import PatchDocument from "../lib/models/patch-document";
-import { buildMultiFilePatch } from "../lib/models/patch";
-import { flushViews } from "./helpers/etch";
+import PatchView from "../lib/views/patch-view.js";
+import PatchDocument from "../lib/models/patch-document.js";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { flushViews } from "./helpers/etch.js";
 
 function diff(filePath, oldValue, newValue) {
   return {
@@ -33,7 +33,9 @@ describe("commit detail diff layout", () => {
   let stylesheet;
 
   beforeEach(async () => {
-    stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    stylesheet = lumine.themes.requireStylesheet(
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
+    );
     container = document.createElement("div");
     container.style.cssText = "display: flex; width: 1000px; height: 400px;";
     jasmine.attachToDOM(container);
@@ -46,7 +48,7 @@ describe("commit detail diff layout", () => {
       getAvatarUrl: () => null,
     };
     view = new PatchView({
-      document: PatchDocument.commit(__dirname, "1234567890"),
+      document: PatchDocument.commit(import.meta.dirname, "1234567890"),
       multiFilePatch: patch,
       surfaceKind: "commit",
       readOnly: true,

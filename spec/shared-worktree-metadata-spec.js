@@ -1,14 +1,14 @@
 /** @babel */
 import fs from "fs";
-import externalGit from "./helpers/external-git";
+import externalGit from "./helpers/external-git.js";
 import os from "os";
 import path from "path";
 import { Disposable } from "lumine";
-import Repository from "../lib/models/repository";
-import FileSystemChangeObserver from "../lib/models/file-system-change-observer";
-import WorkspaceChangeObserver, { FOCUS } from "../lib/models/workspace-change-observer";
-import GitShellOutStrategy from "../lib/git-shell-out-strategy";
-import { metadataDirectories, relativeMetadataPath } from "../lib/models/repository-metadata";
+import Repository from "../lib/models/repository.js";
+import FileSystemChangeObserver from "../lib/models/file-system-change-observer.js";
+import WorkspaceChangeObserver, { FOCUS } from "../lib/models/workspace-change-observer.js";
+import GitShellOutStrategy from "../lib/git-shell-out-strategy.js";
+import { metadataDirectories, relativeMetadataPath } from "../lib/models/repository-metadata.js";
 
 describe("Shared worktree metadata", () => {
   let fixture;

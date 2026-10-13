@@ -2,7 +2,7 @@
 
 import path from "path";
 
-import ResolutionProgress, { keyForPath } from "../lib/models/conflicts/resolution-progress";
+import ResolutionProgress, { keyForPath } from "../lib/models/conflicts/resolution-progress.js";
 
 describe("ResolutionProgress", () => {
   it("requires persisted and open-buffer contents to be marker-free", () => {

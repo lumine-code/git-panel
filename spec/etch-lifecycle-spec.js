@@ -1,6 +1,9 @@
 /** @babel */
+import { createRequire } from "node:module";
 import path from "path";
 import { TextBuffer } from "lumine";
+
+const require = createRequire(import.meta.url);
 
 describe("git-panel native Etch lifecycle", () => {
   let View, h, Editor, Commands, Command, RefHolder, MarkerLayer, Marker, Decoration;
@@ -353,7 +356,7 @@ describe("git-panel native Etch lifecycle", () => {
   });
 
   it("opens, closes and unloads fresh native pane generations repeatedly", async () => {
-    const packagePath = path.join(__dirname, "..");
+    const packagePath = path.join(import.meta.dirname, "..");
     const uri = "lumine-git://dock-item/git";
     const workspaceElement = lumine.views.getView(lumine.workspace);
     jasmine.attachToDOM(workspaceElement);

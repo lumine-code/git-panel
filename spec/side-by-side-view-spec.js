@@ -1,9 +1,9 @@
 /** @babel */
 import path from "path";
 import { Disposable, Emitter, Range } from "lumine";
-import MultiFilePatchView from "../lib/views/multi-file-patch-view";
-import { buildMultiFilePatch } from "../lib/models/patch";
-import { flushViews } from "./helpers/etch";
+import MultiFilePatchView from "../lib/views/multi-file-patch-view.js";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { flushViews } from "./helpers/etch.js";
 
 function hunk(lines, oldStartLine = 1, newStartLine = oldStartLine) {
   return {
@@ -51,7 +51,9 @@ describe("mounted side-by-side diff view", () => {
   beforeEach(() => {
     publication = new Emitter();
     nextSelection = null;
-    stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    stylesheet = lumine.themes.requireStylesheet(
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
+    );
     container = document.createElement("div");
     container.style.cssText = "display: flex; width: 1000px; height: 320px;";
     jasmine.attachToDOM(container);

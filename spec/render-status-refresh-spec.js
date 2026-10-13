@@ -1,9 +1,9 @@
 /** @babel */
-import { createViewModel } from "./helpers/etch";
-import PatchContainer from "../lib/containers/patch-container";
-import PatchDocument from "../lib/models/patch-document";
-import { buildFilePatch, buildMultiFilePatch } from "../lib/models/patch";
-import { COLLAPSED, DEFERRED, EXPANDED, REMOVED } from "../lib/models/patch/patch";
+import { createViewModel } from "./helpers/etch.js";
+import PatchContainer from "../lib/containers/patch-container.js";
+import PatchDocument from "../lib/models/patch-document.js";
+import { buildFilePatch, buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { COLLAPSED, DEFERRED, EXPANDED, REMOVED } from "../lib/models/patch/patch.js";
 
 const diff = (text = "after") => ({
   oldPath: "file.txt",
@@ -51,7 +51,7 @@ describe("render status across patch refreshes", () => {
   it("preserves an initially expanded changed-file patch", async () => {
     let options;
     const initialPatch = own(buildFilePatch([diff()], { largeDiffThreshold: 10 }));
-    const container = create(PatchDocument.file(__dirname, "file.txt", "unstaged"), {
+    const container = create(PatchDocument.file(import.meta.dirname, "file.txt", "unstaged"), {
       largeDiffThreshold: 0,
     });
     container.lastMultiFilePatch = initialPatch;
@@ -85,7 +85,9 @@ describe("render status across patch refreshes", () => {
       isLoading: () => false,
       isPartiallyStaged: () => false,
     };
-    const container = create(PatchDocument.file(__dirname, "file.txt", "unstaged"), { repository });
+    const container = create(PatchDocument.file(import.meta.dirname, "file.txt", "unstaged"), {
+      repository,
+    });
     const data = await container.fetchData(repository);
     container.prepareData(data);
     container.renderWithData(data);
@@ -112,7 +114,9 @@ describe("render status across patch refreshes", () => {
       isLoading: () => false,
       isPartiallyStaged: () => false,
     };
-    const container = create(PatchDocument.file(__dirname, "file.txt", "unstaged"), { repository });
+    const container = create(PatchDocument.file(import.meta.dirname, "file.txt", "unstaged"), {
+      repository,
+    });
     const initialData = await container.fetchData(repository);
     container.prepareData(initialData);
     container.renderWithData(initialData);
@@ -143,7 +147,7 @@ describe("render status across patch refreshes", () => {
 
   it("uses the live statuses from the current staged-all preview on its next refresh", async () => {
     let options;
-    const container = create(PatchDocument.staged(__dirname));
+    const container = create(PatchDocument.staged(import.meta.dirname));
     container.state.renderStatusOverrides = { "remembered.txt": COLLAPSED };
     container.lastMultiFilePatch = multiFilePatch(
       filePatch("expanded.txt", EXPANDED),
@@ -177,7 +181,7 @@ describe("render status across patch refreshes", () => {
       },
       isLoading: () => false,
     };
-    const container = create(PatchDocument.staged(__dirname), { repository });
+    const container = create(PatchDocument.staged(import.meta.dirname), { repository });
     const initialData = await container.fetchData(repository);
     container.prepareData(initialData);
     container.renderWithData(initialData);

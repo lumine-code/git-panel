@@ -1,5 +1,6 @@
 /** @babel */
-require("../lib/index");
+import { createRequire } from "node:module";
+import "../lib/index.js";
 import path from "path";
 import { Emitter } from "lumine";
 import {
@@ -18,7 +19,9 @@ import {
   disposable,
   normalEditorScheduling,
   ensureNormalEditors,
-} from "./helpers/pipeline";
+} from "./helpers/pipeline.js";
+
+const require = createRequire(import.meta.url);
 
 const cases = [
   { name: "expanded-10k-changed-lines", pairs: 5000 },
@@ -44,11 +47,11 @@ describe("complete Git diff pipeline benchmark", () => {
       const MultiFilePatchView = loadedView.default || loadedView;
       const { transaction } = require("../lib/etch/view");
       const publication = new Emitter();
-      const build = profilePipeline(path.join(__dirname, ".."));
+      const build = profilePipeline(path.join(import.meta.dirname, ".."));
       const tracker = trackBuffers();
       const legacyReleased = new Set();
       const stylesheet = lumine.themes.requireStylesheet(
-        path.join(__dirname, "..", "styles", "main.css"),
+        path.join(import.meta.dirname, "..", "styles", "main.css"),
       );
       const container = document.createElement("div");
       container.style.cssText = "width:950px;height:600px;overflow:auto";
@@ -188,7 +191,7 @@ describe("complete Git diff pipeline benchmark", () => {
           compositorMeasured: false,
           hasManagedOwnership,
           nativeSamples: frameSamples,
-          baselinePath: __dirname.includes("large-diff-baseline"),
+          baselinePath: import.meta.dirname.includes("large-diff-baseline"),
         });
         expect(container.querySelectorAll("lumine-text-editor").length).toBe(0);
         if (hasManagedOwnership) expect(buffersClosed.liveRetainedBuffers).toBe(0);

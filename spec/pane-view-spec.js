@@ -1,17 +1,17 @@
 /** @babel */
 import path from "path";
 
-import PatchItem from "../lib/items/patch-item";
-import PatchDocument from "../lib/models/patch-document";
-import GitTabItem from "../lib/items/git-tab-item";
-import GitCacheView from "../lib/views/git-cache-view";
-import GitTimingsView from "../lib/views/git-timings-view";
-import GitPackage from "../lib/git-package";
+import PatchItem from "../lib/items/patch-item.js";
+import PatchDocument from "../lib/models/patch-document.js";
+import GitTabItem from "../lib/items/git-tab-item.js";
+import GitCacheView from "../lib/views/git-cache-view.js";
+import GitTimingsView from "../lib/views/git-timings-view.js";
+import GitPackage from "../lib/git-package.js";
 
 describe("pane view styles", () => {
   it("matches text editor backgrounds for pane items and their loading hosts", () => {
     const stylesheet = lumine.themes.requireStylesheet(
-      path.join(__dirname, "..", "styles", "main.css"),
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
     );
     const elements = [
       "git-panel-PaneItemHost-git-patch",

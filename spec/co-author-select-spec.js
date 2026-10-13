@@ -1,10 +1,10 @@
 /** @babel */
 import path from "path";
-import CoAuthorSelect from "../lib/views/co-author-select";
-import CoAuthorForm from "../lib/views/co-author-form";
-import CommitView from "../lib/views/commit-view";
-import Author from "../lib/models/author";
-import { flushViews } from "./helpers/etch";
+import CoAuthorSelect from "../lib/views/co-author-select.js";
+import CoAuthorForm from "../lib/views/co-author-form.js";
+import CommitView from "../lib/views/commit-view.js";
+import Author from "../lib/models/author.js";
+import { flushViews } from "./helpers/etch.js";
 
 describe("the native co-author picker", () => {
   let picker;
@@ -56,7 +56,7 @@ describe("the native co-author picker", () => {
 
   it("opens a scrollable author menu without resizing the commit controls", async () => {
     const stylesheet = lumine.themes.requireStylesheet(
-      path.join(__dirname, "..", "styles", "main.css"),
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
     );
     const options = Array.from(
       { length: 80 },

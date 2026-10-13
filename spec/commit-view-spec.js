@@ -1,11 +1,14 @@
 /** @babel */
 /** @jsx h */
+import { createRequire } from "node:module";
 import path from "path";
 
-import { h, flushViews, createViewHost } from "./helpers/etch";
+import { h, flushViews, createViewHost } from "./helpers/etch.js";
 import { Disposable, TextBuffer } from "lumine";
 
-import CommitView from "../lib/views/commit-view";
+import CommitView from "../lib/views/commit-view.js";
+
+const require = createRequire(import.meta.url);
 
 describe("the commit view controls", () => {
   let container, root, messageBuffer, tooltipManager, config, currentBranch;
@@ -86,7 +89,7 @@ describe("the commit view controls", () => {
   it("does not scroll an empty commit editor past the end", async () => {
     const previousScrollPastEnd = lumine.config.get("editor.scrollPastEnd");
     const stylesheet = lumine.themes.requireStylesheet(
-      path.join(__dirname, "..", "styles", "main.css"),
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
     );
     container.style.width = "400px";
     container.style.setProperty("--editor-line-height", "24px");

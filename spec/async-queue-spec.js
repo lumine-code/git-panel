@@ -1,8 +1,8 @@
 /** @babel */
 // Ported from pulsar-edit/github test/async-queue.test.js (chai → Jasmine). The
 // upstream `assert.async.*` polling assertions become an inline `until` helper.
-import { autobind } from "../lib/helpers";
-import AsyncQueue from "../lib/async-queue";
+import { autobind } from "../lib/helpers.js";
+import AsyncQueue from "../lib/async-queue.js";
 
 // The Lumine spec runner freezes `setTimeout`, so poll on microtasks instead —
 // AsyncQueue schedules purely through promise chains, so yielding the microtask

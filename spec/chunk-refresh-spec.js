@@ -1,11 +1,11 @@
 /** @babel */
 import path from "path";
 import { Disposable, Emitter } from "lumine";
-import PatchContainer from "../lib/containers/patch-container";
-import PatchDocument from "../lib/models/patch-document";
-import RefHolder from "../lib/models/ref-holder";
-import { buildMultiFilePatch } from "../lib/models/patch";
-import { flushViews } from "./helpers/etch";
+import PatchContainer from "../lib/containers/patch-container.js";
+import PatchDocument from "../lib/models/patch-document.js";
+import RefHolder from "../lib/models/ref-holder.js";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { flushViews } from "./helpers/etch.js";
 
 function hunk(section, count = 90, width = 0) {
   const start = section * 300 + 1;
@@ -28,7 +28,9 @@ describe("mounted diff chunk refreshes", () => {
   const patches = [];
 
   beforeEach(() => {
-    stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    stylesheet = lumine.themes.requireStylesheet(
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
+    );
     container = document.createElement("div");
     container.style.cssText = "display: flex; width: 780px; height: 340px;";
     jasmine.attachToDOM(container);
@@ -38,7 +40,7 @@ describe("mounted diff chunk refreshes", () => {
     repository = {
       isLoading: () => false,
       onDidUpdate: (callback) => emitter.on("did-update", callback),
-      getWorkingDirectoryPath: () => path.dirname(__filename),
+      getWorkingDirectoryPath: () => path.dirname(import.meta.filename),
       getFilePatchForPath: jasmine.createSpy("read refreshed patch").and.callFake(() => source),
       isPartiallyStaged: () => false,
       hasDiscardHistory: () => false,
@@ -93,7 +95,7 @@ describe("mounted diff chunk refreshes", () => {
     source = build(hunks);
     view = new PatchContainer({
       repository,
-      document: PatchDocument.file(path.dirname(__filename), "example.txt", "unstaged"),
+      document: PatchDocument.file(path.dirname(import.meta.filename), "example.txt", "unstaged"),
 
       refEditor,
       refPatchController,

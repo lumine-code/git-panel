@@ -1,8 +1,8 @@
 /** @babel */
-import { createViewModel } from "./helpers/etch";
+import { createViewModel } from "./helpers/etch.js";
 
-import EditorConflictController from "../lib/controllers/editor-conflict-controller";
-import { BASE } from "../lib/models/conflicts/source";
+import EditorConflictController from "../lib/controllers/editor-conflict-controller.js";
+import { BASE } from "../lib/models/conflicts/source.js";
 
 class TestPoint {
   constructor(value) {

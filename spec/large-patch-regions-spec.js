@@ -1,9 +1,9 @@
 /** @babel */
 import { Range } from "lumine";
-import { populateBoundedWordDiffs } from "../lib/models/patch/word-diff";
-import MultiFilePatch from "../lib/models/patch/multi-file-patch";
-import PatchBuffer from "../lib/models/patch/patch-buffer";
-import MultiFilePatchView from "../lib/views/multi-file-patch-view";
+import { populateBoundedWordDiffs } from "../lib/models/patch/word-diff.js";
+import MultiFilePatch from "../lib/models/patch/multi-file-patch.js";
+import PatchBuffer from "../lib/models/patch/patch-buffer.js";
+import MultiFilePatchView from "../lib/views/multi-file-patch-view.js";
 
 const ROW_COUNT = 200000;
 const largeRows = () => Array.from({ length: ROW_COUNT }, (_, index) => index);

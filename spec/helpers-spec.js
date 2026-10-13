@@ -1,5 +1,5 @@
 /** @babel */
-import { mapWithConcurrency, withBusyMessage } from "../lib/helpers";
+import { mapWithConcurrency, withBusyMessage } from "../lib/helpers.js";
 
 // The spec runner installs its own clock, so these gate on explicit deferreds
 // rather than on elapsed time.

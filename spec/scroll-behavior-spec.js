@@ -1,8 +1,8 @@
 /** @babel */
-import { createViewModel } from "./helpers/etch";
+import { createViewModel } from "./helpers/etch.js";
 
-import MultiFilePatchView from "../lib/views/multi-file-patch-view";
-import StagingView from "../lib/views/staging-view";
+import MultiFilePatchView from "../lib/views/multi-file-patch-view.js";
+import StagingView from "../lib/views/staging-view.js";
 
 const disposable = () => ({ dispose() {} });
 

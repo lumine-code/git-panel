@@ -1,11 +1,11 @@
 /** @babel */
 /** @jsx h */
 
-import { h, flushViews, createViewHost, cloneVNode, childrenOf, View } from "./helpers/etch";
-import { buildFilePatch } from "../lib/models/patch";
-import MultiFilePatchView from "../lib/views/multi-file-patch-view";
-import LumineTextEditor from "../lib/lumine/lumine-text-editor";
-import RefHolder from "../lib/models/ref-holder";
+import { h, flushViews, createViewHost, cloneVNode, childrenOf, View } from "./helpers/etch.js";
+import { buildFilePatch } from "../lib/models/patch/index.js";
+import MultiFilePatchView from "../lib/views/multi-file-patch-view.js";
+import LumineTextEditor from "../lib/lumine/lumine-text-editor.js";
+import RefHolder from "../lib/models/ref-holder.js";
 
 function buildReplacement(oldText, newText, options) {
   return buildFilePatch(

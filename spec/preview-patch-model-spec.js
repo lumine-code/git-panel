@@ -1,7 +1,7 @@
 /** @babel */
-import { buildMultiFilePatch } from "../lib/models/patch";
-import buildSideBySidePatch from "../lib/models/patch/side-by-side";
-import * as wordDiff from "../lib/models/patch/word-diff";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import buildSideBySidePatch from "../lib/models/patch/side-by-side.js";
+import { wordDiff } from "../lib/models/patch/word-diff.js";
 
 function hunk(lines, oldStartLine = 10, newStartLine = 20) {
   return {

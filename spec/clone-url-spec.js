@@ -1,6 +1,6 @@
 /** @babel */
 // Converted from clone-url.test.js (node:test/node:assert → Jasmine).
-import { getRepositoryName } from "../lib/clone-url";
+import { getRepositoryName } from "../lib/clone-url.js";
 
 describe("getRepositoryName", () => {
   it("extracts repository names from absolute URLs", () => {

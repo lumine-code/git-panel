@@ -1,12 +1,12 @@
 /** @babel */
-require("../lib/index");
+import "../lib/index.js";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import Repository from "../lib/models/repository";
-import GitShellOutStrategy from "../lib/git-shell-out-strategy";
-import AsyncQueue from "../lib/async-queue";
-import yardstick from "../lib/yardstick";
+import Repository from "../lib/models/repository.js";
+import GitShellOutStrategy from "../lib/git-shell-out-strategy.js";
+import AsyncQueue from "../lib/async-queue.js";
+import yardstick from "../lib/yardstick.js";
 
 const ticks = async () => {
   for (let index = 0; index < 30; index++) await Promise.resolve();

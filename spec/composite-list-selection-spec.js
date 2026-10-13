@@ -1,5 +1,5 @@
 /** @babel */
-import CompositeListSelection from "../lib/models/composite-list-selection";
+import CompositeListSelection from "../lib/models/composite-list-selection.js";
 
 describe("CompositeListSelection", () => {
   function buildSelection() {

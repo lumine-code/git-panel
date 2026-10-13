@@ -1,7 +1,7 @@
 /** @babel */
-import StagingView from "../lib/views/staging-view";
-import FilePatchListItemView from "../lib/views/file-patch-list-item-view";
-import { flushViews } from "./helpers/etch";
+import StagingView from "../lib/views/staging-view.js";
+import FilePatchListItemView from "../lib/views/file-patch-list-item-view.js";
+import { flushViews } from "./helpers/etch.js";
 
 describe("native staging list updates", () => {
   let view;

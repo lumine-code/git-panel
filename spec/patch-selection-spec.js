@@ -1,15 +1,17 @@
 /** @babel */
 import path from "path";
 import { Range } from "lumine";
-import ChangesView from "../lib/views/changes-view";
-import { buildMultiFilePatch } from "../lib/models/patch";
-import { flushViews } from "./helpers/etch";
+import ChangesView from "../lib/views/changes-view.js";
+import { buildMultiFilePatch } from "../lib/models/patch/index.js";
+import { flushViews } from "./helpers/etch.js";
 
 describe("selection in mounted patch views", () => {
   let view, patch, container, stylesheet;
 
   beforeEach(() => {
-    stylesheet = lumine.themes.requireStylesheet(path.join(__dirname, "..", "styles", "main.css"));
+    stylesheet = lumine.themes.requireStylesheet(
+      path.join(import.meta.dirname, "..", "styles", "main.css"),
+    );
     container = document.createElement("div");
     container.style.cssText = `
       display: flex; width: 1000px; height: 500px;
@@ -79,7 +81,7 @@ describe("selection in mounted patch views", () => {
       readOnly: false,
       initialDiffView: layout,
       clipboard: { write: jasmine.createSpy("copy diff").and.resolveTo() },
-      repository: { getWorkingDirectoryPath: () => path.dirname(__filename) },
+      repository: { getWorkingDirectoryPath: () => path.dirname(import.meta.filename) },
       discardLines: jasmine.createSpy("discard rows").and.resolveTo(),
       workspace: lumine.workspace,
       commands: lumine.commands,

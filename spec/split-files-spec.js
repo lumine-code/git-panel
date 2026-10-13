@@ -1,15 +1,15 @@
 /** @babel */
 /** @jsx h */
 import path from "path";
-import { h, flushViews, createViewHost, createViewModel } from "./helpers/etch";
+import { h, flushViews, createViewHost, createViewModel } from "./helpers/etch.js";
 
-import GitRootController from "../lib/controllers/git-root-controller";
-import CompositeListSelection from "../lib/models/composite-list-selection";
-import StagingView from "../lib/views/staging-view";
-import menu from "../menus/main.json";
+import GitRootController from "../lib/controllers/git-root-controller.js";
+import CompositeListSelection from "../lib/models/composite-list-selection.js";
+import StagingView from "../lib/views/staging-view.js";
+import menu from "../menus/main.json" with { type: "json" };
 
 describe("splitting selected changed files", () => {
-  function buildController(workspace = lumine.workspace, repositoryPath = __dirname) {
+  function buildController(workspace = lumine.workspace, repositoryPath = import.meta.dirname) {
     const controller = Object.create(GitRootController.prototype);
     controller.props = {
       workspace,
@@ -53,7 +53,7 @@ describe("splitting selected changed files", () => {
       const view = createViewModel(StagingView, {
         commands: lumine.commands,
         workspace: lumine.workspace,
-        workingDirectoryPath: __dirname,
+        workingDirectoryPath: import.meta.dirname,
         unstagedChanges: [{ filePath: "selected.txt" }],
         stagedChanges: [],
         mergeConflicts: [],
@@ -108,7 +108,7 @@ describe("splitting selected changed files", () => {
       lumine.config.set("core.allowPendingPaneItems", true);
       anchorPane = lumine.workspace.getCenter().getActivePane();
       anchorEditor = await lumine.workspace.open(
-        path.join(__dirname, "git-root-controller-spec.js"),
+        path.join(import.meta.dirname, "git-root-controller-spec.js"),
         {
           pane: anchorPane,
         },
