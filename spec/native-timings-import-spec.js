@@ -1,3 +1,4 @@
+const requireCurrent = require("node:module").createRequire(__filename);
 beforeEach(() => {
   for (const method of ["openExternal", "openPath", "showItemInFolder", "openApplication"])
     spyOn(lumine.shell, method).and.resolveTo();
@@ -12,7 +13,7 @@ describe("Git timings selected File import", () => {
     if (lumine.packages.isPackageLoaded("git-panel"))
       await lumine.packages.unloadPackage("git-panel");
     await lumine.packages.activatePackage("git-panel");
-    const loaded = require("../lib/views/git-timings-view");
+    const loaded = requireCurrent("../lib/views/git-timings-view");
     const GitTimingsView = loaded.default || loaded;
     restored = spyOn(GitTimingsView, "restoreGroup").and.callThrough();
     handler = spyOn(GitTimingsView.prototype, "handleImportClick").and.callThrough();

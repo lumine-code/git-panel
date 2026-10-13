@@ -1,3 +1,4 @@
+const requireCurrent = require("node:module").createRequire(__filename);
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const os = require("node:os");
@@ -15,7 +16,7 @@ describe("Patch row action snapshot ownership", () => {
     repositories = [];
     adapters = [];
     patches = [];
-    service = require("../lib/index").provideDiff();
+    service = requireCurrent("../lib/index").provideDiff();
     for (const name of ["a", "b"]) {
       const cwd = path.join(directory, name);
       await fs.mkdir(cwd);
@@ -33,7 +34,7 @@ describe("Patch row action snapshot ownership", () => {
       await fs.writeFile(path.join(cwd, `${name}.txt`), "after\n");
       patches.push(service.buildPatch(await repository.getDiff({ paths: [`${name}.txt`] })));
     }
-    const loadedView = require("../lib/views/changes-view");
+    const loadedView = requireCurrent("../lib/views/changes-view");
     const ChangesView = loadedView.default || loadedView;
     view = new ChangesView({
       multiFilePatch: patches[0],

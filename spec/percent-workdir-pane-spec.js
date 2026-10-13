@@ -1,4 +1,5 @@
 /** @babel */
+const requireCurrent = require("node:module").createRequire(__filename);
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const os = require("node:os");
@@ -39,7 +40,7 @@ describe("Git pane URI working-directory spelling", () => {
     const workdir = path.join(scratch, directoryName);
     await fs.mkdir(workdir);
     coreRepository = await lumine.repositories.initialize(workdir, { initialBranch: "main" });
-    const loaded = require(path.join(pack.path, "lib/models/patch-document"));
+    const loaded = requireCurrent(path.join(pack.path, "lib/models/patch-document"));
     const PatchDocument = loaded.default || loaded;
     const uri = PatchDocument.staged(workdir).getURI();
     const item = await lumine.workspace.open(uri, { pending: false });

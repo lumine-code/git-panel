@@ -1,3 +1,4 @@
+const requireCurrent = require("node:module").createRequire(__filename);
 const { Disposable } = require("lumine");
 describe("Git Panel independent service edges", () => {
   let main, leases, editors, registrations;
@@ -41,7 +42,7 @@ describe("Git Panel independent service edges", () => {
         if (withdrawal !== "none") (withdrawal === "older" ? older : newer).lease.dispose();
         const expected = withdrawal === "newer" ? older : newer;
         if (service === "busy-signal") {
-          const { withBusyMessage } = require("../lib/helpers");
+          const { withBusyMessage } = requireCurrent("../lib/helpers");
           await withBusyMessage(main.busySignal, "owned operation", async () => {});
           expect(expected.api.create).toHaveBeenCalledTimes(1);
           expect(expected.provider.add).toHaveBeenCalledWith("owned operation");
@@ -51,9 +52,9 @@ describe("Git Panel independent service edges", () => {
           editors.push(editor);
           if (service === "autocomplete.watch-editor")
             registrations.push(
-              require("../lib/autocomplete-editors").addAutocompleteEditor(editor),
+              requireCurrent("../lib/autocomplete-editors").addAutocompleteEditor(editor),
             );
-          else registrations.push(require("../lib/linter-editors").addLinterEditor(editor));
+          else registrations.push(requireCurrent("../lib/linter-editors").addLinterEditor(editor));
           expect(expected.api).toHaveBeenCalled();
           expect(expected.api.calls.mostRecent()?.args[0]).toBe(editor);
           expect(expected.disposed).not.toHaveBeenCalled();

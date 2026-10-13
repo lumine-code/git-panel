@@ -1,4 +1,5 @@
 /** @babel */
+const requireCurrent = require("node:module").createRequire(__filename);
 const path = require("path");
 
 const PACKAGE_NAME = "git-panel";
@@ -14,7 +15,7 @@ describe("git-panel reactivation", () => {
       await lumine.packages.unloadPackage(PACKAGE_NAME);
     }
     await lumine.packages.startPackage(PACKAGE_PATH);
-    const gitPackageModule = require("../lib/git-package");
+    const gitPackageModule = requireCurrent("../lib/git-package");
     const GitPackage = gitPackageModule.default || gitPackageModule;
     invokeGitController = spyOn(GitPackage.prototype, "invokeGitController").and.resolveTo();
   });

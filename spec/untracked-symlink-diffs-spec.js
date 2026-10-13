@@ -1,4 +1,5 @@
 /** @babel */
+const requireCurrent = require("node:module").createRequire(__filename);
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const os = require("node:os");
@@ -12,7 +13,7 @@ describe("untracked symbolic-link diffs through Core", () => {
     spyOn(lumine.application, "openWindow").and.returnValue(Promise.resolve());
     await lumine.packages.activatePackage("git-panel");
     const pack = lumine.packages.getActivePackage("git-panel");
-    const loaded = require(path.join(pack.path, "lib/git-shell-out-strategy"));
+    const loaded = requireCurrent(path.join(pack.path, "lib/git-shell-out-strategy"));
     const Strategy = loaded.default || loaded;
     scratchParent = await fs.realpath(os.tmpdir());
     scratch = await fs.realpath(await fs.mkdtemp(path.join(scratchParent, "git-symlink-diffs-")));
