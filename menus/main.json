@@ -8,7 +8,9 @@
           "submenu": [
             {
               "label": "Git Panel",
-              "command": "git-panel:toggle-git-tab"
+              "command": "git-panel:toggle-git-tab",
+              "group": "panels",
+              "order": 10
             }
           ]
         }
