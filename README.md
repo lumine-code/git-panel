@@ -16,6 +16,8 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 
 The pending diff tab is shared by staged and unstaged files, all staged changes, and commits across repositories. Opening another patch replaces its document in place, keeping the native editors and layout and starting at the new document's first hunk. The current diff remains visible while the next one loads, and a newer selection supersedes an earlier load. Empty patches keep the same renderer ready for the next document; promoting the tab keeps it open separately.
 
+![Review an unstaged patch beside the Git staging panel.](.github/demo.png)
+
 ## Installation
 
 To install `git-panel` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/git-panel`.

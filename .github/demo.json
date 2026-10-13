@@ -1,0 +1,17 @@
+{
+  "title": "git-panel",
+  "description": "Review an unstaged patch beside the Git staging panel.",
+  "recordedOn": "2026-10-13",
+  "sourceRevision": "98d49263c447bdbec9a18c60d2f058a7bf5b4760",
+  "mode": "normal",
+  "fontSettings": "default",
+  "themeSourceRevision": "6564a9e21899b5541e9c8f8006f9be6d6d72e6ad",
+  "images": [
+    {
+      "file": "demo.png",
+      "label": "Review an unstaged patch beside the Git staging panel.",
+      "width": 1200,
+      "height": 600
+    }
+  ]
+}
