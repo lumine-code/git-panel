@@ -91,10 +91,7 @@ Commands available in `.git-panel-CommitView-coAuthorEditor`:
 Commands available in `.git-panel-RecentCommits`:
 
 - `git-panel:dive`: open commit detail view,
-- `git-panel:undo-last-commit`: undo the last commit.
-
-Commands available in `.git-panel-RecentCommit`:
-
+- `git-panel:undo-last-commit`: undo the last commit,
 - `git-panel:copy-commit-sha`: copy commit SHA to clipboard,
 - `git-panel:copy-commit-subject`: copy commit subject to clipboard,
 - `git-panel:checkout-to-commit`: check out the commit.

@@ -52,6 +52,9 @@
     "cmdorctrl-backspace": "git-panel:co-author-exclude"
   },
   ".git-panel-RecentCommits": {
+    "home": "core:move-to-top",
+    "end": "core:move-to-bottom",
+    "enter": "core:confirm",
     "left": "git-panel:dive",
     "backspace": "git-panel:undo-last-commit"
   },
