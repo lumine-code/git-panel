@@ -1,6 +1,44 @@
 {
   "menu": [
     {
+      "label": "Git",
+      "submenu": [
+        {
+          "label": "Create Repository",
+          "group": "repository",
+          "order": 40,
+          "submenu": [
+            {
+              "label": "Initialize Repository…",
+              "command": "git-panel:initialize"
+            },
+            {
+              "label": "Clone Repository…",
+              "command": "git-panel:clone"
+            }
+          ]
+        },
+        {
+          "label": "Toggle Git Panel",
+          "command": "git-panel:toggle-git-tab",
+          "group": "changes",
+          "order": 10
+        },
+        {
+          "label": "View Unstaged File Changes",
+          "command": "git-panel:view-unstaged-changes-for-current-file",
+          "group": "changes",
+          "order": 20
+        },
+        {
+          "label": "View Staged File Changes",
+          "command": "git-panel:view-staged-changes-for-current-file",
+          "group": "changes",
+          "order": 30
+        }
+      ]
+    },
+    {
       "label": "View",
       "submenu": [
         {
@@ -38,7 +76,7 @@
               "command": "git-panel:toggle-commit-preview"
             },
             {
-              "label": "Open Commit",
+              "label": "Open Commit…",
               "command": "git-panel:open-commit"
             },
             {
@@ -61,11 +99,11 @@
               "type": "separator"
             },
             {
-              "label": "Initialize Repository",
+              "label": "Initialize Repository…",
               "command": "git-panel:initialize"
             },
             {
-              "label": "Clone Repository",
+              "label": "Clone Repository…",
               "command": "git-panel:clone"
             }
           ]
