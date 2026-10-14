@@ -2,12 +2,12 @@
   "title": "git-panel",
   "description": "Review an unstaged patch beside the Git staging panel.",
   "recordedOn": "2026-10-14",
-  "sourceRevision": "4653468507f4e466747482fa5eb2df2d4c243cdf",
+  "sourceRevision": "bc4deb413accc384d51c130fbf1950a64c3f4e99",
   "themeSourceRevision": "1570897f5fae0d1919808824aa8c1d17374fbb9d",
   "mode": "normal",
   "fontSettings": "default",
   "scenario": "demo.js",
-  "recipeHash": "f0f401687ceac4fe69ff0f880036f6b5a79c49be7530559769a55b51d50246df",
+  "recipeHash": "b155e93d12bf1d6e745d3a8dc8baf075c4b992f88fca7fe9f45a15a8361ac6cb",
   "environment": {
     "platform": "win32",
     "arch": "x64",
@@ -23,17 +23,17 @@
   "cornerRadius": 10,
   "sources": {
     "editor": {
-      "revision": "6a4f19b60f6411d46d3f0ae0365d7fb9674c567c",
-      "dirty": false,
-      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      "revision": "ebd92b28056b7e5a658b1c7b348b397433cb7e40",
+      "dirty": true,
+      "workingTreeHash": "f1b6a7a7bd1cf8e1e0cace53401fb53b4c9d6dba8a762cc73d7cba44f277c9e6"
     },
     "package": {
-      "revision": "4653468507f4e466747482fa5eb2df2d4c243cdf",
+      "revision": "bc4deb413accc384d51c130fbf1950a64c3f4e99",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "git-panel": {
-      "revision": "4653468507f4e466747482fa5eb2df2d4c243cdf",
+      "revision": "bc4deb413accc384d51c130fbf1950a64c3f4e99",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
@@ -77,10 +77,17 @@
     },
     {
       "file": "demo-images.png",
-      "label": "Inspect old and new image versions in an unstaged patch.",
+      "label": "Drag the divider between old and new image versions in the unified patch view.",
       "width": 1200,
       "height": 600,
-      "sha256": "76525d97b46c340cb0929f1fd0f9b42e827e0587648895cb3868db3ddce6bf99"
+      "sha256": "937796fa2bcc985e36841d74cd19c77e082496e7422c915a0a738fae1071078d"
+    },
+    {
+      "file": "demo-images-side-by-side.png",
+      "label": "Inspect old and new image versions side by side.",
+      "width": 1200,
+      "height": 600,
+      "sha256": "ed728ea992e0925446e783ab6368ebc33c44a0998b25f48643f0627aead4f2a1"
     }
   ]
 }

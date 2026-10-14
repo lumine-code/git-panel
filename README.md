@@ -8,7 +8,7 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 
 - **Staging area**: stage, unstage, and discard changes per file, hunk, or selected line.
 - **Commits**: compose and amend commits, or undo the last commit while keeping its changes staged.
-- **Diff viewer**: inspect changes with hunk, line, and word-level highlighting; preview old and new PNG, JPEG, GIF, WebP, BMP, ICO, and AVIF images by dragging a divider in the unified layout or using two previews in the side-by-side layout; middle-click a unified image to switch between its old and new versions; copy a hunk or selected lines as a diff; switch between unified and side-by-side layouts with aligned soft wrapping, keeping the same diff location and selection.
+- **Diff viewer**: inspect changes with hunk, line, and word-level highlighting; preview old and new PNG, JPEG, GIF, WebP, BMP, ICO, and AVIF images by dragging a divider in the unified layout or using two previews in the side-by-side layout; fit images to the pane up to 100% zoom; middle-click a unified image to switch between its old and new versions; copy a hunk or selected lines as a diff; switch between unified and side-by-side layouts with aligned soft wrapping, keeping the same diff location and selection.
 - **Patch navigation**: browse files and hunks in Navigation Panel, including collapsed diffs, and follow file and hunk markers on the scrollbar in both layouts.
 - **Shared rendering**: provide native diff layouts to other packages through the git-panel.diff service.
 - **Conflict resolution**: resolve merge conflicts with in-editor controls.
@@ -18,7 +18,9 @@ The pending diff tab is shared by staged and unstaged files, all staged changes,
 
 ![Review an unstaged patch beside the Git staging panel.](.github/demo.png)
 
-![Inspect old and new image versions in an unstaged patch.](.github/demo-images.png)
+![Drag the divider between old and new image versions in the unified patch view.](.github/demo-images.png)
+
+![Inspect old and new image versions side by side.](.github/demo-images-side-by-side.png)
 
 ## Installation
 
