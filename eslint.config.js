@@ -74,7 +74,7 @@ const runtimeModules = ["lumine"];
 module.exports = [
   {
     // The local dev sandbox is not linted.
-    ignores: ["node_modules/**", ".dev/**"],
+    ignores: ["node_modules/**", ".dev/**", "demo/**"],
   },
   js.configs.recommended,
   {
