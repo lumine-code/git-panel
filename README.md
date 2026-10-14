@@ -18,6 +18,8 @@ The pending diff tab is shared by staged and unstaged files, all staged changes,
 
 ![Review an unstaged patch beside the Git staging panel.](.github/demo.png)
 
+![Inspect old and new image versions in an unstaged patch.](.github/demo-images.png)
+
 ## Installation
 
 To install `git-panel` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/git-panel`.
