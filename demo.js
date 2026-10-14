@@ -56,11 +56,13 @@ module.exports = {
           fixture(".artwork/signal-new.png"),
           fixture("Version Control/signal.png"),
         );
-        const coreRepository = lumine.repositories
-          .getRepositories()
-          .find((repository) => repository.getWorkingDirectory() === project);
-        if (!coreRepository) throw new Error("Demo repository is not registered");
-        await coreRepository.refreshStatusSnapshot();
+        const lease = await lumine.repositories.add(project, { persist: false });
+        if (!lease) throw new Error("Demo repository is not registered");
+        try {
+          await lease.repository.refreshStatusSnapshot();
+        } finally {
+          lease.dispose();
+        }
         const uri = panel.provideDiff().buildPatchURI({
           kind: "file",
           workingDirectory: project,
