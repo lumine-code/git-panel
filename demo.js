@@ -44,6 +44,41 @@ module.exports = {
         return Boolean(document.body.innerText.includes("Unstaged Changes"));
       },
     },
+    {
+      id: "image-versions",
+      file: "demo-images.png",
+      caption: "Inspect old and new image versions in an unstaged patch.",
+      timeout: 60000,
+      async run({ lumine, state, fixture, project, waitFor }) {
+        const panel = lumine.packages.getActivePackage("git-panel").mainModule;
+        await panel.getActiveRepository().stageFiles(["Version Control/signal.js"]);
+        require("node:fs").copyFileSync(
+          fixture(".artwork/signal-new.png"),
+          fixture("Version Control/signal.png"),
+        );
+        const coreRepository = lumine.repositories
+          .getRepositories()
+          .find((repository) => repository.getWorkingDirectory() === project);
+        if (!coreRepository) throw new Error("Demo repository is not registered");
+        await coreRepository.refreshStatusSnapshot();
+        const uri = panel.provideDiff().buildPatchURI({
+          kind: "file",
+          workingDirectory: project,
+          relPath: "Version Control/signal.png",
+          stagingStatus: "unstaged",
+        });
+        state.imagePatch = await lumine.workspace.open(uri, { pending: true });
+        await waitFor(() => this.ready(), "both image versions decoded");
+      },
+      ready() {
+        const previews = Array.from(document.querySelectorAll(".git-panel-ImagePatchView img"));
+        return (
+          previews.length === 2 &&
+          previews.every((image) => image.complete && image.naturalWidth === 640) &&
+          document.body.innerText.includes("Working Tree")
+        );
+      },
+    },
   ],
   async cleanup() {},
 };
