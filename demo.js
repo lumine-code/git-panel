@@ -1,4 +1,29 @@
 // Authentic package usage. Run with lumine/script/demo.js; fixtures stay in demo/.
+function selectDiffView(layout) {
+  const button = document.querySelector(
+    `.git-panel-DiffViewToggle button[data-diff-view="${layout}"]`,
+  );
+  if (!button) throw new Error(`Missing ${layout} layout control`);
+  button.click();
+}
+
+function imageVersionsReady(layout) {
+  const preview = document.querySelector(".git-panel-ImagePatchView");
+  const images = Array.from(preview?.querySelectorAll("img") || []);
+  const divider = preview?.querySelector('[role="slider"]');
+  return (
+    Boolean(
+      document.querySelector(
+        `.git-panel-DiffViewToggle button[data-diff-view="${layout}"].selected`,
+      ),
+    ) &&
+    images.length === 2 &&
+    images.every((image) => image.complete && image.naturalWidth === 640) &&
+    document.body.innerText.includes("Working Tree") &&
+    (layout === "unified" ? divider?.getAttribute("aria-valuenow") === "50" : !divider)
+  );
+}
+
 module.exports = {
   version: 1,
   dependencies: ["language-javascript", "tree-view"],
@@ -47,7 +72,7 @@ module.exports = {
     {
       id: "image-versions",
       file: "demo-images.png",
-      caption: "Inspect old and new image versions in an unstaged patch.",
+      caption: "Drag the divider between old and new image versions in the unified patch view.",
       timeout: 60000,
       async run({ lumine, state, fixture, project, waitFor }) {
         const panel = lumine.packages.getActivePackage("git-panel").mainModule;
@@ -70,15 +95,24 @@ module.exports = {
           stagingStatus: "unstaged",
         });
         state.imagePatch = await lumine.workspace.open(uri, { pending: true });
+        selectDiffView("unified");
         await waitFor(() => this.ready(), "both image versions decoded");
       },
       ready() {
-        const previews = Array.from(document.querySelectorAll(".git-panel-ImagePatchView img"));
-        return (
-          previews.length === 2 &&
-          previews.every((image) => image.complete && image.naturalWidth === 640) &&
-          document.body.innerText.includes("Working Tree")
-        );
+        return imageVersionsReady("unified");
+      },
+    },
+    {
+      id: "image-versions-side-by-side",
+      file: "demo-images-side-by-side.png",
+      caption: "Inspect old and new image versions side by side.",
+      timeout: 60000,
+      async run({ waitFor }) {
+        selectDiffView("side-by-side");
+        await waitFor(() => this.ready(), "both side-by-side image versions decoded");
+      },
+      ready() {
+        return imageVersionsReady("side-by-side");
       },
     },
   ],

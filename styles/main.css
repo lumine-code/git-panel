@@ -1947,16 +1947,112 @@ pre.git-panel-Message-description {
 .git-panel-ImagePatchView-preview img {
   display: block;
   max-width: 100%;
-  max-height: 360px;
   width: auto;
   height: auto;
   object-fit: contain;
+}
+.git-panel-ImagePatchView-preview--ready {
+  min-height: 0;
 }
 .git-panel-ImagePatchView-preview p {
   margin: 0;
   padding: var(--ui-spacing);
   color: var(--text-color-subtle);
   text-align: center;
+}
+.git-panel-ImagePatchView--unified {
+  display: block;
+}
+.git-panel-ImagePatchView-comparison {
+  border: 1px solid var(--base-border-color);
+  border-radius: var(--ui-border-radius);
+  overflow: hidden;
+}
+.git-panel-ImagePatchView-captions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--ui-spacing);
+  padding: var(--ui-spacing);
+  color: var(--text-color-subtle);
+  border-bottom: 1px solid var(--base-border-color);
+}
+.git-panel-ImagePatchView-captions strong {
+  color: var(--text-color);
+}
+.git-panel-ImagePatchView-viewport {
+  display: flex;
+  justify-content: center;
+  padding: var(--ui-spacing);
+}
+.git-panel-ImagePatchView-stage {
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+}
+.git-panel-ImagePatchView-stage,
+.git-panel-ImagePatchView-oldLayer {
+  background-color: var(--syntax-background-color);
+  background-image: conic-gradient(
+    color-mix(in srgb, var(--syntax-text-color) 8%, transparent) 25%,
+    transparent 0 50%,
+    color-mix(in srgb, var(--syntax-text-color) 8%, transparent) 0 75%,
+    transparent 0
+  );
+  background-size: 16px 16px;
+}
+.git-panel-ImagePatchView-newLayer,
+.git-panel-ImagePatchView-oldLayer {
+  position: absolute;
+  inset: 0;
+}
+.git-panel-ImagePatchView-stage img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: contain;
+}
+.git-panel-ImagePatchView-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  transform: translateX(-50%);
+  cursor: ew-resize;
+  touch-action: none;
+  user-select: none;
+  outline: none;
+}
+.git-panel-ImagePatchView-divider::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 11px;
+  width: 2px;
+  background-color: var(--accent-indicator-color);
+}
+.git-panel-ImagePatchView-divider::after {
+  content: "↔";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 24px;
+  padding: 4px 0;
+  transform: translateY(-50%);
+  text-align: center;
+  color: var(--text-color-highlight);
+  background-color: var(--syntax-background-color);
+  border: 1px solid var(--accent-indicator-color);
+  border-radius: var(--ui-border-radius);
+}
+.git-panel-ImagePatchView-divider:focus-visible::after {
+  outline: 2px solid var(--accent-indicator-color);
+  outline-offset: 2px;
+}
+.git-panel-ImagePatchView-status {
+  padding: var(--ui-spacing);
+  color: var(--text-color-subtle);
 }
 .git-panel-FilePatchView-metaContainer {
   border: 1px solid var(--base-border-color);

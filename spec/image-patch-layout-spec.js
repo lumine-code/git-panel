@@ -13,6 +13,17 @@ const imageBytes = Buffer.from(
   "base64",
 );
 
+const shorterImageBytes = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAKAAAABaCAYAAAA/xl1SAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEBSURBVHhe7dIhAQAgAMAwwlKJmGQATwBuJmauP+baByrjDfCTAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQlAFJGZCUAUkZkJQBSRmQ1AWzkNq/EtPcGgAAAABJRU5ErkJggg==",
+  "base64",
+);
+
+// A 1-bit 640 × 1000 PNG exercises fitting tall images without a fixed height cap.
+const largeImageBytes = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAoAAAAPoAQAAAABmZnINAAAAZElEQVR42u3BAQEAAACCIP+vbkhAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8Gg8dwABRPNwIgAAAABJRU5ErkJggg==",
+  "base64",
+);
+
 function imageDiff(filePath = "image.png", overrides = {}) {
   return {
     oldPath: filePath,
@@ -224,17 +235,36 @@ describe("image previews in mounted patch layouts", () => {
       const block = fileBlock(filePatch).element;
       expect(block.querySelector(".git-panel-FilePatchView-header")).not.toBeNull();
       expect(block.querySelector(".git-panel-ImagePatchView")).toBe(previews()[0]);
-      const [oldSide, newSide] = previews()[0].querySelectorAll("figure");
-      expect([oldSide.dataset.side, newSide.dataset.side]).toEqual(["old", "new"]);
-      expect(oldSide.textContent).toContain("Index");
-      expect(newSide.textContent).toContain("Working Tree");
-      expect(oldSide.getBoundingClientRect().right).toBeLessThanOrEqual(
-        newSide.getBoundingClientRect().left,
-      );
+      if (layout === "side-by-side") {
+        const [oldSide, newSide] = previews()[0].querySelectorAll("figure");
+        expect([oldSide.dataset.side, newSide.dataset.side]).toEqual(["old", "new"]);
+        expect(oldSide.textContent).toContain("Index");
+        expect(newSide.textContent).toContain("Working Tree");
+        expect(oldSide.getBoundingClientRect().right).toBeLessThanOrEqual(
+          newSide.getBoundingClientRect().left,
+        );
+        expect(previews()[0].querySelector('input[type="range"]')).toBeNull();
+        expect(previews()[0].querySelector('[role="slider"]')).toBeNull();
+      } else {
+        expect(previews()[0].querySelector(".git-panel-ImagePatchView-comparison")).not.toBeNull();
+        expect(previews()[0].querySelectorAll("figure.git-panel-ImagePatchView-side").length).toBe(
+          0,
+        );
+        expect(previews()[0].querySelector('input[type="range"]')).toBeNull();
+        expect(
+          previews()[0].querySelector('.git-panel-ImagePatchView-divider[role="slider"]'),
+        ).not.toBeNull();
+        expect(previews()[0].textContent).toContain("Index");
+        expect(previews()[0].textContent).toContain("Working Tree");
+      }
       for (const img of previews()[0].querySelectorAll("img")) {
         expect(img.src.startsWith("blob:")).toBe(true);
         expect(img.naturalWidth).toBe(160);
         expect(img.naturalHeight).toBe(260);
+        if (layout === "unified") {
+          expect(img.getBoundingClientRect().width).toBeLessThanOrEqual(img.naturalWidth + 0.01);
+          expect(img.getBoundingClientRect().height).toBeLessThanOrEqual(img.naturalHeight + 0.01);
+        }
       }
       const stageButton = block.querySelector('[title="Stage File"]');
       expect(stageButton).not.toBeNull();
@@ -289,15 +319,21 @@ describe("image previews in mounted patch layouts", () => {
       const [added, deleted, renamed] = previews();
       expect(previews().length).toBe(3);
       expect(added.querySelector('[data-side="old"] img')).toBeNull();
-      expect(added.querySelector('[data-side="old"]').textContent).toContain(
-        "File absent in this version",
-      );
+      expect(added.textContent).toContain("File absent in this version");
       expect(deleted.querySelector('[data-side="new"] img')).toBeNull();
-      expect(deleted.querySelector('[data-side="new"]').textContent).toContain(
-        "File absent in this version",
-      );
+      expect(deleted.textContent).toContain("File absent in this version");
       expect(renamed.querySelector('[data-side="old"] img').alt).toBe("Old: old-name.png");
       expect(renamed.querySelector('[data-side="new"] img').alt).toBe("New: new-name.png");
+      expect(added.querySelector('input[type="range"]')).toBeNull();
+      expect(deleted.querySelector('input[type="range"]')).toBeNull();
+      expect(added.querySelector('[role="slider"]')).toBeNull();
+      expect(deleted.querySelector('[role="slider"]')).toBeNull();
+      if (layout === "unified") {
+        expect(added.querySelectorAll("figure").length).toBe(1);
+        expect(deleted.querySelectorAll("figure").length).toBe(1);
+      }
+      expect(renamed.querySelector('[role="slider"]') !== null).toBe(layout === "unified");
+      expect(renamed.querySelector('input[type="range"]')).toBeNull();
       expect(reads()).toEqual([
         ["added.png", { type: "worktree" }],
         ["deleted.png", { type: "index" }],
@@ -390,9 +426,314 @@ describe("image previews in mounted patch layouts", () => {
       await loaded();
       expect(previews().length).toBe(1);
       expect(view.state.diffView).toBe(nextLayout);
+      expect(previews()[0].querySelector(".git-panel-ImagePatchView-comparison") !== null).toBe(
+        nextLayout === "unified",
+      );
+      expect(previews()[0].querySelector('[role="slider"]') !== null).toBe(
+        nextLayout === "unified",
+      );
+      expect(previews()[0].querySelector('input[type="range"]')).toBeNull();
       expect(repository.readFileAtEndpoint).toHaveBeenCalledTimes(6);
       expect(urls().every((url) => !refreshedURLs.includes(url))).toBe(true);
       expect(snapshot.getBuffer().isEmpty()).toBe(true);
     });
   }
+
+  it("shows a single unified image when its other version is unavailable", async () => {
+    repository.readFileAtEndpoint.and.callFake(async (_filePath, endpoint) =>
+      endpoint.type === "index" ? null : imageBytes,
+    );
+    await mount(build([imageDiff()]), "unified");
+    await loaded(1);
+    const preview = previews()[0];
+    expect(preview.querySelector('[data-side="old"] img')).toBeNull();
+    expect(preview.querySelector('[data-side="new"] img')).not.toBeNull();
+    expect(preview.textContent).toContain("Image unavailable");
+    expect(preview.querySelector('input[type="range"]')).toBeNull();
+    expect(preview.querySelector('[role="slider"]')).toBeNull();
+    expect(preview.querySelectorAll("figure").length).toBe(1);
+    expect(repository.readFileAtEndpoint).toHaveBeenCalledTimes(2);
+  });
+
+  it("shows a single unified image when a rename has an unsupported old format", async () => {
+    const patch = build([imageDiff("old.bin", { newPath: "new.png", status: "renamed" })]);
+    await mount(patch, "unified");
+    await loaded(1);
+    const preview = previews()[0];
+    expect(preview.querySelector('[data-side="old"] img')).toBeNull();
+    expect(preview.querySelector('[data-side="new"] img').alt).toBe("New: new.png");
+    expect(preview.textContent).toContain("This version is not a supported image");
+    expect(preview.querySelector('input[type="range"]')).toBeNull();
+    expect(preview.querySelector('[role="slider"]')).toBeNull();
+    expect(preview.querySelectorAll("figure").length).toBe(1);
+    expect(reads()).toEqual([["new.png", { type: "worktree" }]]);
+  });
+
+  it("fits large unequal unified images to the viewport at one scale capped at their natural size", async () => {
+    repository.readFileAtEndpoint.and.callFake(async (_filePath, endpoint) =>
+      endpoint.type === "index" ? largeImageBytes : shorterImageBytes,
+    );
+    await mount(build([imageDiff()]), "unified");
+    await loaded();
+    const preview = previews()[0];
+    const comparison = preview.querySelector(".git-panel-ImagePatchView-comparison");
+    const stage = preview.querySelector(".git-panel-ImagePatchView-stage");
+    const oldLayer = preview.querySelector(".git-panel-ImagePatchView-oldLayer");
+    const oldImage = preview.querySelector('[data-side="old"] img');
+    const newImage = preview.querySelector('[data-side="new"] img');
+    expect(comparison).not.toBeNull();
+    const oldBounds = oldImage.getBoundingClientRect();
+    const newBounds = newImage.getBoundingClientRect();
+    const stageBounds = stage.getBoundingClientRect();
+    expect(oldImage.naturalHeight).toBe(1000);
+    expect(newImage.naturalHeight).toBe(90);
+    expect(oldBounds.left).toBeCloseTo(newBounds.left, 0);
+    expect(oldBounds.top).toBeCloseTo(newBounds.top, 0);
+    expect(oldBounds.left).toBeCloseTo(stageBounds.left, 0);
+    expect(oldBounds.top).toBeCloseTo(stageBounds.top, 0);
+    expect(stageBounds.width).toBeCloseTo(oldBounds.width, 0);
+    expect(stageBounds.height).toBeCloseTo(oldBounds.height, 0);
+    expect(oldLayer.getBoundingClientRect().height).toBeCloseTo(stageBounds.height, 0);
+    expect(oldBounds.width / 640).toBeCloseTo(newBounds.width / 160, 2);
+    expect(oldBounds.width / oldBounds.height).toBeCloseTo(640 / 1000, 2);
+    expect(newBounds.width / newBounds.height).toBeCloseTo(160 / 90, 2);
+    expect(stageBounds.height).toBeGreaterThan(360);
+    const viewport = preview.querySelector(".git-panel-ImagePatchView-viewport");
+    const panel = view.element.querySelector(".git-panel-FilePatchView-container");
+    const remainingHeight =
+      panel.getBoundingClientRect().bottom - viewport.getBoundingClientRect().top;
+    expect(stageBounds.height).toBeGreaterThan(remainingHeight * 0.8);
+    expect(stageBounds.width).toBeLessThanOrEqual(viewport.clientWidth);
+
+    container.style.cssText = "display: flex; width: 1400px; height: 1400px;";
+    await paint();
+    await globalThis.waitForFrames(
+      () => stage.getBoundingClientRect().height > stageBounds.height + 100,
+      { description: "image canvas to expand with the patch viewport" },
+    );
+    await loaded();
+    const expandedHeight = stage.getBoundingClientRect().height;
+    expect(expandedHeight).toBeCloseTo(1000, 0);
+    expect(stage.getBoundingClientRect().width).toBeCloseTo(640, 0);
+    expect(oldImage.getBoundingClientRect().height).toBeLessThanOrEqual(
+      oldImage.naturalHeight + 0.01,
+    );
+    expect(newImage.getBoundingClientRect().height).toBeLessThanOrEqual(
+      newImage.naturalHeight + 0.01,
+    );
+    expect(
+      oldImage.getBoundingClientRect().width / oldImage.getBoundingClientRect().height,
+    ).toBeCloseTo(640 / 1000, 2);
+    expect(
+      newImage.getBoundingClientRect().width / newImage.getBoundingClientRect().height,
+    ).toBeCloseTo(160 / 90, 2);
+
+    container.style.cssText = "display: flex; width: 300px; height: 320px;";
+    await paint();
+    await globalThis.waitForFrames(
+      () => stage.getBoundingClientRect().height < expandedHeight - 150,
+      { description: "image canvas to fit the smaller patch viewport" },
+    );
+    await loaded();
+    const resized = stage.getBoundingClientRect();
+    expect(resized.width).toBeLessThanOrEqual(viewport.clientWidth);
+    expect(resized.bottom).toBeLessThanOrEqual(panel.getBoundingClientRect().bottom + 1);
+    expect(
+      oldImage.getBoundingClientRect().width / oldImage.getBoundingClientRect().height,
+    ).toBeCloseTo(640 / 1000, 2);
+    expect(
+      newImage.getBoundingClientRect().width / newImage.getBoundingClientRect().height,
+    ).toBeCloseTo(160 / 90, 2);
+    expect(repository.readFileAtEndpoint).toHaveBeenCalledTimes(2);
+    expect(view.props.toggleRows).not.toHaveBeenCalled();
+  });
+
+  it("drags the unified divider directly and retains accessible keyboard controls", async () => {
+    await mount(build([imageDiff()]), "unified");
+    await loaded();
+    const preview = previews()[0];
+    const stage = preview.querySelector(".git-panel-ImagePatchView-stage");
+    const divider = preview.querySelector('.git-panel-ImagePatchView-divider[role="slider"]');
+    const oldLayer = preview.querySelector(".git-panel-ImagePatchView-oldLayer");
+    expect(divider).not.toBeNull();
+    expect(preview.querySelector('input[type="range"]')).toBeNull();
+    expect(divider.tabIndex).toBe(0);
+    expect(divider.classList.contains("native-key-bindings")).toBe(false);
+    expect(divider.getAttribute("aria-valuemin")).toBe("0");
+    expect(divider.getAttribute("aria-valuemax")).toBe("100");
+    expect(divider.getAttribute("aria-valuenow")).toBe("50");
+    expect(divider.getAttribute("aria-valuetext")).toContain("50%");
+    let captured = false;
+    // Synthetic PointerEvents cannot acquire browser capture, so spy on that boundary.
+    spyOn(divider, "setPointerCapture").and.callFake(() => {
+      captured = true;
+    });
+    spyOn(divider, "hasPointerCapture").and.callFake(() => captured);
+    spyOn(divider, "releasePointerCapture").and.callFake(() => {
+      captured = false;
+    });
+    const bounds = stage.getBoundingClientRect();
+    const event = (type, fraction, options = {}) =>
+      new PointerEvent(type, {
+        pointerId: 7,
+        pointerType: "mouse",
+        isPrimary: true,
+        button: 0,
+        buttons: 1,
+        clientX: bounds.left + bounds.width * fraction,
+        clientY: bounds.top + bounds.height / 2,
+        bubbles: true,
+        cancelable: true,
+        ...options,
+      });
+    const down = event("pointerdown", 0.5);
+    await flushViews(() => divider.dispatchEvent(down));
+    expect(down.defaultPrevented).toBe(true);
+    expect(divider.setPointerCapture).toHaveBeenCalledOnceWith(7);
+    expect(document.activeElement).toBe(divider);
+    await flushViews(() => divider.dispatchEvent(event("pointermove", 0.75)));
+    expect(Number(divider.getAttribute("aria-valuenow"))).toBeCloseTo(75, 0);
+    expect(parseFloat(oldLayer.style.clipPath.match(/inset\(\S+\s+([\d.]+)%/)[1])).toBeCloseTo(
+      25,
+      0,
+    );
+    await flushViews(() => divider.dispatchEvent(event("pointermove", 1.2)));
+    expect(divider.getAttribute("aria-valuenow")).toBe("100");
+    expect(oldLayer.style.clipPath).toContain("0%");
+    await flushViews(() => divider.dispatchEvent(event("pointermove", -0.2)));
+    expect(divider.getAttribute("aria-valuenow")).toBe("0");
+    expect(oldLayer.style.clipPath).toContain("100%");
+    await flushViews(() => divider.dispatchEvent(event("pointerup", -0.2, { buttons: 0 })));
+    expect(divider.releasePointerCapture).toHaveBeenCalledOnceWith(7);
+    await flushViews(() => divider.dispatchEvent(event("pointermove", 0.8, { buttons: 0 })));
+    expect(divider.getAttribute("aria-valuenow")).toBe("0");
+
+    for (const [key, value] of [
+      ["ArrowRight", 1],
+      ["Home", 0],
+      ["End", 100],
+      ["PageDown", 90],
+      ["PageUp", 100],
+      ["ArrowLeft", 99],
+    ]) {
+      const keyboard = new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true });
+      await flushViews(() => divider.dispatchEvent(keyboard));
+      expect(keyboard.defaultPrevented).toBe(true);
+      expect(divider.getAttribute("aria-valuenow")).toBe(String(value));
+      expect(divider.getAttribute("aria-valuetext")).toContain(`${value}%`);
+    }
+    for (const shiftKey of [false, true]) {
+      const tab = new KeyboardEvent("keydown", {
+        key: "Tab",
+        shiftKey,
+        bubbles: true,
+        cancelable: true,
+      });
+      await flushViews(() => divider.dispatchEvent(tab));
+      expect(tab.defaultPrevented).toBe(false);
+      expect(divider.getAttribute("aria-valuenow")).toBe("99");
+    }
+    expect(repository.readFileAtEndpoint).toHaveBeenCalledTimes(2);
+    expect(view.props.toggleRows).not.toHaveBeenCalled();
+  });
+
+  it("releases active pointer capture when image sources refresh or the layout changes", async () => {
+    const patch = build([imageDiff()]);
+    await mount(patch, "unified");
+    await loaded();
+    const beginDrag = async (pointerId) => {
+      const divider = previews()[0].querySelector('[role="slider"]');
+      const stage = previews()[0].querySelector(".git-panel-ImagePatchView-stage");
+      const bounds = stage.getBoundingClientRect();
+      let captured = false;
+      const captureSpy = (method, callback) => {
+        const spy = jasmine.isSpy(divider[method]) ? divider[method] : spyOn(divider, method);
+        spy.calls.reset();
+        spy.and.callFake(callback);
+      };
+      captureSpy("setPointerCapture", () => {
+        captured = true;
+      });
+      captureSpy("hasPointerCapture", () => captured);
+      captureSpy("releasePointerCapture", () => {
+        captured = false;
+      });
+      await flushViews(() =>
+        divider.dispatchEvent(
+          new PointerEvent("pointerdown", {
+            pointerId,
+            pointerType: "mouse",
+            button: 0,
+            buttons: 1,
+            clientX: bounds.left + bounds.width / 4,
+            clientY: bounds.top + bounds.height / 2,
+            bubbles: true,
+            cancelable: true,
+          }),
+        ),
+      );
+      expect(divider.setPointerCapture).toHaveBeenCalledOnceWith(pointerId);
+      expect(divider.getAttribute("aria-valuenow")).toBe("25");
+      return divider;
+    };
+    const firstDivider = await beginDrag(9);
+    const originalURLs = urls();
+    const snapshot = own(patch.clone());
+    await flushViews(() => view.update({ ...view.props, multiFilePatch: snapshot }));
+    await loaded();
+    expect(firstDivider.releasePointerCapture).toHaveBeenCalledOnceWith(9);
+    expect(firstDivider.hasPointerCapture(9)).toBe(false);
+    expect(previews()[0].querySelector('[role="slider"]').getAttribute("aria-valuenow")).toBe("25");
+    expect(urls().every((url) => !originalURLs.includes(url))).toBe(true);
+
+    const nextDivider = await beginDrag(10);
+    await flushViews(() => view.didChangeDiffView("side-by-side"));
+    await loaded();
+    expect(nextDivider.releasePointerCapture).toHaveBeenCalledOnceWith(10);
+    expect(nextDivider.isConnected).toBe(false);
+    expect(previews()[0].querySelector('[role="slider"]')).toBeNull();
+    expect(
+      repository.readFileAtEndpoint.calls
+        .allArgs()
+        .slice(0, 4)
+        .every(([, , { signal }]) => signal.aborted),
+    ).toBe(true);
+    expect(repository.readFileAtEndpoint).toHaveBeenCalledTimes(6);
+  });
+
+  it("toggles full old and new on middle click without starting autoscroll or reacting to left clicks", async () => {
+    await mount(build([imageDiff()]), "unified");
+    await loaded();
+    const preview = previews()[0];
+    const divider = preview.querySelector('[role="slider"]');
+    const image = preview.querySelector('[data-side="new"] img');
+    const oldLayer = preview.querySelector(".git-panel-ImagePatchView-oldLayer");
+    const click = (button) =>
+      new MouseEvent("mousedown", {
+        button,
+        buttons: button === 1 ? 4 : 1,
+        bubbles: true,
+        cancelable: true,
+      });
+    await flushViews(() => image.dispatchEvent(click(0)));
+    expect(divider.getAttribute("aria-valuenow")).toBe("50");
+    for (const [value, clipped] of [
+      ["100", "0%"],
+      ["0", "100%"],
+    ]) {
+      const middle = click(1);
+      await flushViews(() => image.dispatchEvent(middle));
+      expect(middle.defaultPrevented).toBe(true);
+      expect(divider.getAttribute("aria-valuenow")).toBe(value);
+      expect(oldLayer.style.clipPath).toContain(clipped);
+      const auxiliary = new MouseEvent("auxclick", { button: 1, bubbles: true, cancelable: true });
+      await flushViews(() => image.dispatchEvent(auxiliary));
+      expect(auxiliary.defaultPrevented).toBe(true);
+      expect(divider.getAttribute("aria-valuenow")).toBe(value);
+    }
+    await flushViews(() => image.dispatchEvent(click(0)));
+    expect(divider.getAttribute("aria-valuenow")).toBe("0");
+    expect(repository.readFileAtEndpoint).toHaveBeenCalledTimes(2);
+    expect(view.props.toggleRows).not.toHaveBeenCalled();
+  });
 });

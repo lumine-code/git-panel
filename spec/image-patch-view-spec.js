@@ -37,7 +37,13 @@ describe("old and new image previews", () => {
     document = PatchDocument.file(workdir, "image.png", "unstaged"),
     extra = {},
   ) {
-    view = new ImagePatchView({ repository, filePatch, document, ...extra });
+    view = new ImagePatchView({
+      repository,
+      filePatch,
+      document,
+      layout: "side-by-side",
+      ...extra,
+    });
     jasmine.attachToDOM(view.element);
     return flushViews(() => view.loading);
   }
@@ -231,5 +237,131 @@ describe("old and new image previews", () => {
     await view.destroy();
     expect(revokeURL).toHaveBeenCalledWith(newURL);
     expect(view.urls.size).toBe(0);
+  });
+
+  it("uses one image stage with a focusable, labelled divider in unified", async () => {
+    await mount(file(), undefined, { layout: "unified" });
+    expect(view.element.querySelectorAll("figure").length).toBe(0);
+    expect(view.element.querySelectorAll(".git-panel-ImagePatchView-stage").length).toBe(1);
+    expect(view.element.querySelectorAll("img").length).toBe(2);
+    const slider = view.element.querySelector('[role="slider"]');
+    expect(slider.getAttribute("aria-label")).toBe("Old and new image boundary");
+    expect([
+      slider.getAttribute("aria-valuemin"),
+      slider.getAttribute("aria-valuemax"),
+      slider.getAttribute("aria-valuenow"),
+      slider.getAttribute("tabindex"),
+    ]).toEqual(["0", "100", "50", "0"]);
+    expect(view.element.querySelector('input[type="range"]')).toBeNull();
+    const oldLayer = view.element.querySelector(".git-panel-ImagePatchView-oldLayer");
+    expect(oldLayer.style.clipPath).toBe("inset(0px 50% 0px 0px)");
+    for (const [key, position] of [
+      ["Home", 0],
+      ["PageUp", 10],
+      ["End", 100],
+    ]) {
+      await flushViews(() =>
+        slider.dispatchEvent(
+          new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }),
+        ),
+      );
+      expect(view.state.position).toBe(position);
+      expect(slider.getAttribute("aria-valuetext")).toBe(
+        `${position}% old, ${100 - position}% new`,
+      );
+      expect(oldLayer.style.clipPath).toBe(`inset(0px ${100 - position}% 0px 0px)`);
+      expect(view.element.querySelector(".git-panel-ImagePatchView-divider").style.left).toBe(
+        `${position}%`,
+      );
+    }
+    await flushViews(() => view.setPosition(49.5));
+    expect(slider.getAttribute("aria-valuetext")).toBe("50% old, 50% new");
+  });
+
+  it("can change layouts while preserving decoded bytes and the chosen boundary", async () => {
+    await mount(file(), undefined, { layout: "unified" });
+    const urls = Array.from(view.urls);
+    await flushViews(() => view.setPosition(30));
+    await flushViews(() => view.update({ ...view.props, layout: "side-by-side" }));
+    expect(view.element.querySelectorAll("figure").length).toBe(2);
+    expect(view.element.querySelector('[role="slider"]')).toBeNull();
+    await flushViews(() => view.update({ ...view.props, layout: "unified" }));
+    expect(view.element.querySelector('[role="slider"]').getAttribute("aria-valuenow")).toBe("30");
+    expect(repository.readFileAtEndpoint.calls.count()).toBe(2);
+    expect(Array.from(view.urls)).toEqual(urls);
+  });
+
+  it("preserves the chosen unified boundary when the same image refreshes", async () => {
+    await mount(file(), undefined, { layout: "unified" });
+    await flushViews(() => view.setPosition(73));
+    await flushViews(() => view.update({ ...view.props, filePatch: file() }));
+    await flushViews(() => view.loading);
+    expect(view.element.querySelector('[role="slider"]').getAttribute("aria-valuenow")).toBe("73");
+    expect(repository.readFileAtEndpoint.calls.count()).toBe(4);
+  });
+
+  it("releases captured dragging when a layout update removes the divider", async () => {
+    await mount(file(), undefined, { layout: "unified" });
+    const handle = view.element.querySelector('[role="slider"]');
+    const bounds = view.element
+      .querySelector(".git-panel-ImagePatchView-stage")
+      .getBoundingClientRect();
+    let captured = false;
+    spyOn(handle, "setPointerCapture").and.callFake(() => {
+      captured = true;
+    });
+    spyOn(handle, "hasPointerCapture").and.callFake(() => captured);
+    const release = spyOn(handle, "releasePointerCapture").and.callFake(() => {
+      captured = false;
+    });
+    await flushViews(() =>
+      handle.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          pointerId: 4,
+          button: 0,
+          clientX: bounds.left + bounds.width / 2,
+          bubbles: true,
+          cancelable: true,
+        }),
+      ),
+    );
+    expect(captured).toBeTrue();
+    await flushViews(() => view.update({ ...view.props, layout: "side-by-side" }));
+    expect(release).toHaveBeenCalledWith(4);
+    expect(view.dragPointerId).toBeNull();
+    await flushViews(() => view.update({ ...view.props, layout: "unified" }));
+    const nextHandle = view.element.querySelector('[role="slider"]');
+    await flushViews(() =>
+      nextHandle.dispatchEvent(
+        new PointerEvent("pointermove", { pointerId: 4, clientX: bounds.right, bubbles: true }),
+      ),
+    );
+    expect(view.state.position).toBe(50);
+  });
+
+  it("shows the single existing image for unified additions and deletions", async () => {
+    for (const overrides of [
+      { oldPath: null, oldMode: null, status: "added" },
+      { newPath: null, newMode: null, status: "deleted" },
+    ]) {
+      await mount(file(overrides), undefined, { layout: "unified" });
+      expect(view.element.querySelectorAll("img").length).toBe(1);
+      expect(view.element.querySelectorAll("figure").length).toBe(1);
+      expect(view.element.querySelector('[role="slider"]')).toBeNull();
+      expect(view.element.textContent).toContain("File absent in this version");
+      await view.destroy();
+    }
+  });
+
+  it("releases a corrupt image's URL before showing the available unified side", async () => {
+    repository.readFileAtEndpoint.and.callFake((name, endpoint) =>
+      Promise.resolve(endpoint.type === "index" ? Buffer.from("not a valid PNG") : png),
+    );
+    await mount(file(), undefined, { layout: "unified" });
+    expect(view.element.querySelector('[role="slider"]')).toBeNull();
+    expect(view.element.querySelectorAll("img").length).toBe(1);
+    expect(view.element.textContent).toContain("Old: Unable to preview image");
+    expect(view.urls.size).toBe(1);
+    expect(revokeURL.calls.count()).toBe(1);
   });
 });
