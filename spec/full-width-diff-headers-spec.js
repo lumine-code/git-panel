@@ -103,6 +103,31 @@ describe("full-width diff controls", () => {
     return Array.from(view.element.querySelectorAll("lumine-text-editor"));
   }
 
+  for (const platform of ["win32", "linux", "darwin"]) {
+    it(`reserves Ctrl-click for the macOS context gesture in full-width controls (${platform})`, async () => {
+      await mount("unified");
+      const target = document.createElement("div");
+      target.className = "git-panel-HunkHeaderView";
+      records()[0].element.appendChild(target);
+      const focus = spyOn(view.refEditor.get().getElement(), "focus");
+      const descriptor = Object.getOwnPropertyDescriptor(process, "platform");
+      Object.defineProperty(process, "platform", { ...descriptor, value: platform });
+      try {
+        const event = new MouseEvent("mousedown", {
+          button: 0,
+          ctrlKey: true,
+          bubbles: true,
+          cancelable: true,
+        });
+        target.dispatchEvent(event);
+        expect(event.defaultPrevented).toBe(platform !== "darwin");
+        expect(focus.calls.count()).toBe(platform === "darwin" ? 0 : 1);
+      } finally {
+        Object.defineProperty(process, "platform", descriptor);
+      }
+    });
+  }
+
   function records() {
     return view.state.diffView === "unified"
       ? Array.from(view.fullWidthHeaders.records, (record) => ({

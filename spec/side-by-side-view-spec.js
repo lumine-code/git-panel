@@ -200,6 +200,70 @@ describe("mounted side-by-side diff view", () => {
     expect(Array.from(view.props.selectedRows)).toEqual([1, 5]);
   });
 
+  for (const mode of ["unified", "side-by-side"]) {
+    for (const platform of ["win32", "linux", "darwin"]) {
+      it(`adds and removes disjoint ranges with the primary click modifier in ${mode} on ${platform}`, async () => {
+        await mount();
+        await layout(mode);
+        const first = new Range([1, 0], [1, Infinity]);
+        const last = new Range([5, 0], [5, Infinity]);
+        view.handleSelectionEvent({ button: 0 }, first);
+        const descriptor = Object.getOwnPropertyDescriptor(process, "platform");
+        Object.defineProperty(process, "platform", { ...descriptor, value: platform });
+        try {
+          const primary = {
+            button: 0,
+            ctrlKey: platform !== "darwin",
+            metaKey: platform === "darwin",
+          };
+          view.handleSelectionEvent(primary, last);
+          expect(Array.from(nextSelection.selectedRows)).toEqual([1, 5]);
+          view.handleSelectionEvent(primary, last);
+          expect(Array.from(nextSelection.selectedRows)).toEqual([1]);
+          if (platform === "darwin") {
+            expect(view.handleSelectionEvent({ button: 0, ctrlKey: true }, last)).toBe(false);
+            expect(Array.from(nextSelection.selectedRows)).toEqual([1]);
+          }
+        } finally {
+          Object.defineProperty(process, "platform", descriptor);
+        }
+      });
+    }
+  }
+
+  for (const platform of ["win32", "linux", "darwin"]) {
+    it(`uses primary-click for independent side-by-side gutter ranges on ${platform}`, async () => {
+      await mount(diff([hunk(["+one", "+two", "+three"])]));
+      await layout("side-by-side");
+      pair().didMouseDownOnLineNumber("new", {
+        bufferRow: 0,
+        domEvent: new MouseEvent("mousedown", { button: 0 }),
+      });
+      const descriptor = Object.getOwnPropertyDescriptor(process, "platform");
+      Object.defineProperty(process, "platform", { ...descriptor, value: platform });
+      try {
+        pair().didMouseDownOnLineNumber("new", {
+          bufferRow: 2,
+          domEvent: new MouseEvent("mousedown", {
+            button: 0,
+            ctrlKey: platform !== "darwin",
+            metaKey: platform === "darwin",
+          }),
+        });
+        expect(Array.from(nextSelection.selectedRows)).toEqual([0, 2]);
+        if (platform === "darwin") {
+          pair().didMouseDownOnLineNumber("new", {
+            bufferRow: 1,
+            domEvent: new MouseEvent("mousedown", { button: 0, ctrlKey: true }),
+          });
+          expect(Array.from(nextSelection.selectedRows)).toEqual([0, 2]);
+        }
+      } finally {
+        Object.defineProperty(process, "platform", descriptor);
+      }
+    });
+  }
+
   it("navigates hunks and switches hunk or line selection through the registered commands", async () => {
     const patch = await mount();
     const [first, second] = patch.getFilePatches()[0].getHunks();
