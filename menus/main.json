@@ -61,11 +61,11 @@
           "label": "Git Panel",
           "submenu": [
             {
-              "label": "Toggle Git Tab",
+              "label": "Toggle Git Panel",
               "command": "git-panel:toggle-git-tab"
             },
             {
-              "label": "Focus Git Tab",
+              "label": "Toggle Git Panel Focus",
               "command": "git-panel:toggle-focus"
             },
             {
@@ -117,11 +117,11 @@
         "type": "separator"
       },
       {
-        "label": "Jump to File",
+        "label": "Open Selected Files",
         "command": "git-panel:jump-to-file"
       },
       {
-        "label": "Jump to File in Next Pane",
+        "label": "Open Selected Files in Next Pane",
         "command": "git-panel:jump-to-file-in-next-pane"
       },
       {
@@ -180,7 +180,7 @@
         "type": "separator"
       },
       {
-        "label": "Checkout to Commit",
+        "label": "Check Out Commit",
         "command": "git-panel:checkout-to-commit"
       },
       {
@@ -200,7 +200,7 @@
         "type": "separator"
       },
       {
-        "label": "Amend",
+        "label": "Amend Last Commit",
         "command": "git-panel:amend-last-commit"
       },
       {
@@ -212,12 +212,12 @@
         "type": "separator"
       },
       {
-        "label": "Jump to File",
+        "label": "Open File",
         "command": "git-panel:jump-to-file",
         "after": ["core:confirm"]
       },
       {
-        "label": "Jump to File in Next Pane",
+        "label": "Open File in Next Pane",
         "command": "git-panel:jump-to-file-in-next-pane",
         "after": ["git-panel:jump-to-file"]
       },
@@ -235,12 +235,12 @@
         "type": "separator"
       },
       {
-        "label": "Jump to File",
+        "label": "Open File",
         "command": "git-panel:jump-to-file",
         "after": ["core:confirm"]
       },
       {
-        "label": "Jump to File in Next Pane",
+        "label": "Open File in Next Pane",
         "command": "git-panel:jump-to-file-in-next-pane",
         "after": ["git-panel:jump-to-file"]
       },
