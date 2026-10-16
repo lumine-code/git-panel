@@ -83,6 +83,16 @@ describe("the commit view controls", () => {
     expect(lumine.commands.canDispatch(target, "git-panel:commit")).toBe(false);
   });
 
+  it("invalidates global commit availability only when its Boolean result changes", async () => {
+    messageBuffer.setText("first");
+    await renderCommitView({ stagedChangesExist: true });
+    const invalidate = spyOn(lumine.commands, "invalidateAvailability").and.callThrough();
+    messageBuffer.setText("second valid message");
+    expect(invalidate).not.toHaveBeenCalled();
+    messageBuffer.setText("# comment");
+    expect(invalidate).toHaveBeenCalledTimes(1);
+  });
+
   it("allows a first commit while refusing to amend an unborn HEAD", async () => {
     jasmine.attachToDOM(lumine.workspace.getElement());
     messageBuffer.setText("first commit");
