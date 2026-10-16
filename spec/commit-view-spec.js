@@ -40,7 +40,7 @@ describe("the commit view controls", () => {
     container.remove();
   });
 
-  async function renderCommitView() {
+  async function renderCommitView(overrides = {}) {
     await flushViews(async () => {
       root.update(
         <CommitView
@@ -62,12 +62,41 @@ describe("the commit view controls", () => {
           toggleExpandedCommitMessageEditor={() => {}}
           deactivateCommitBox={false}
           userStore={{}}
+          {...overrides}
           selectedCoAuthors={[]}
           updateSelectedCoAuthors={() => {}}
         />,
       );
     });
   }
+
+  it("uses cached message validity during availability queries and observes edits", async () => {
+    jasmine.attachToDOM(lumine.workspace.getElement());
+    messageBuffer.setText("message");
+    await renderCommitView({ stagedChangesExist: true });
+    const read = spyOn(messageBuffer, "getText").and.callThrough();
+    const target = lumine.workspace.getElement();
+    for (let i = 0; i < 5; i++)
+      expect(lumine.commands.canDispatch(target, "git-panel:commit")).toBe(true);
+    expect(read).not.toHaveBeenCalled();
+    messageBuffer.setText("# comment only");
+    expect(lumine.commands.canDispatch(target, "git-panel:commit")).toBe(false);
+  });
+
+  it("allows a first commit while refusing to amend an unborn HEAD", async () => {
+    jasmine.attachToDOM(lumine.workspace.getElement());
+    messageBuffer.setText("first commit");
+    await renderCommitView({
+      stagedChangesExist: true,
+      lastCommit: { isPresent: () => true, isUnbornRef: () => true },
+    });
+    expect(lumine.commands.canDispatch(lumine.workspace.getElement(), "git-panel:commit")).toBe(
+      true,
+    );
+    expect(
+      lumine.commands.canDispatch(lumine.workspace.getElement(), "git-panel:amend-last-commit"),
+    ).toBe(false);
+  });
 
   it("overlays the character count immediately before the expand button", async () => {
     await renderCommitView();
