@@ -17,10 +17,8 @@ describe("git-panel lazy bootstrap", () => {
       const api = require(${JSON.stringify(eventKit)});
       let runtimeLoads = 0, activations = 0, invocations = 0, connected = null, retireOnConnect = false;
       class Runtime {
-        activate(state, context) {
+        activate(context) {
           assert.equal(context.entryPointsRegistered, true);
-          assert.equal(state.marker, 'saved');
-          assert.equal(state.activeRepositoryPath, null);
           this.activated = true;
           activations++;
         }
@@ -61,11 +59,11 @@ describe("git-panel lazy bootstrap", () => {
       assert.equal(main.config, undefined);
       assert.equal(main.restoreState, undefined);
       main.initialize();
-      main.activate({marker: 'saved'});
+      main.activate({});
       const service = main.provideGitPanel(); const lease = main.consumeBusySignal({ marker: true });
       assert.equal(runtimeLoads, 0);
       assert.equal(registrations, 1);
-      assert.equal(main.serialize().activeRepositoryPath, 'current'); assert.equal(main.serialize().contextLocked, true);
+      assert.equal(main.serialize, undefined);
       assert.equal(commands['git-panel:toggle-commit-preview'].description.length > 0, true);
       lease.dispose();
       commands['git-panel:toggle-commit-preview'].didDispatch();
@@ -77,7 +75,7 @@ describe("git-panel lazy bootstrap", () => {
       (async () => {
         await main.deactivate();
         assert.equal(registrations, 0);
-        main.activate({marker: 'saved'});
+        main.activate({});
         assert.equal(runtimeLoads, 1);
         assert.equal(activations, 2);
         await main.deactivate();

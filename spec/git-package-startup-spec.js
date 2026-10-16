@@ -201,7 +201,7 @@ describe("GitPackage startup repository selection", () => {
     expect(packageInstance.repositories.getRepositories).not.toHaveBeenCalled();
   });
 
-  it("keeps the startup gate closed until the restored context update settles", async () => {
+  it("keeps the startup gate closed until the core context update settles", async () => {
     let finishUpdate;
     const packageInstance = {
       activated: true,
@@ -219,17 +219,12 @@ describe("GitPackage startup repository selection", () => {
       return 1;
     });
 
-    GitPackage.prototype.scheduleStartupActiveContextUpdate.call(packageInstance, {
-      usePath: "C:\\workdir",
-      lock: true,
-    });
+    GitPackage.prototype.scheduleStartupActiveContextUpdate.call(packageInstance);
 
     await until(() => packageInstance.scheduleActiveContextUpdate.calls.any());
     expect(packageInstance.startupContextPending).toBe(true);
-    expect(packageInstance.scheduleActiveContextUpdate).toHaveBeenCalledWith({
-      usePath: "C:\\workdir",
-      waitForRepository: true,
-    });
+    expect(packageInstance.scheduleActiveContextUpdate).toHaveBeenCalledWith();
+    expect(packageInstance.repositories.setActiveRepositoryForPath).not.toHaveBeenCalled();
 
     finishUpdate();
     await until(() => !packageInstance.startupContextPending);
