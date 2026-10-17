@@ -72,7 +72,8 @@ describe("Git tab initial repository loading", () => {
     const status = view.element.querySelector(".git-panel-Git-loading");
     expect(status).not.toBeNull();
     expect(status.getAttribute("role")).toBe("status");
-    expect(status.textContent.trim()).toBe("Loading repository…");
+    expect(status.getAttribute("aria-label")).toBe("Loading repository…");
+    expect(status.querySelector(".git-panel-Loader .git-panel-Spinner")).not.toBeNull();
     expect(view.element.getAttribute("aria-busy")).toBe("true");
     expect(view.element.querySelector(".git-panel-StagingView")).toBeNull();
     expect(view.element.querySelector(".git-panel-CommitView")).toBeNull();
