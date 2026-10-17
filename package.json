@@ -10,7 +10,8 @@
     "lib",
     "menus",
     "spec",
-    "styles"
+    "styles",
+    "THIRD_PARTY_NOTICES"
   ],
   "version": "1.0.0",
   "description": "A forge-agnostic Git integration panel.",
