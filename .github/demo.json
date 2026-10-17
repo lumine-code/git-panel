@@ -2,8 +2,8 @@
   "title": "git-panel",
   "description": "Review an unstaged patch beside the Git staging panel.",
   "recordedOn": "2026-10-17",
-  "sourceRevision": "9bfdbb719c8e7b5706ab6c8c122c54f47600b70e",
-  "themeSourceRevision": "f79aab805380a70f59bded2d628373342644e1e5",
+  "sourceRevision": "274f8451ad176b7b29a1e73c84e8aded89f725e6",
+  "themeSourceRevision": "9e9320170ef7426dfbee67f53b02cce39502e3a4",
   "mode": "normal",
   "fontSettings": "default",
   "scenario": "demo.js",
@@ -24,17 +24,17 @@
   "privacy": { "version": 1, "location": "neutral", "textChecked": true },
   "sources": {
     "editor": {
-      "revision": "2ff74551c73c12d261e2ed530490ab9d77fddaec",
+      "revision": "3a4edd28389983ae91d11be3006ff8fa4e3e358e",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "package": {
-      "revision": "9bfdbb719c8e7b5706ab6c8c122c54f47600b70e",
+      "revision": "274f8451ad176b7b29a1e73c84e8aded89f725e6",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "git-panel": {
-      "revision": "9bfdbb719c8e7b5706ab6c8c122c54f47600b70e",
+      "revision": "274f8451ad176b7b29a1e73c84e8aded89f725e6",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
@@ -44,7 +44,7 @@
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "one-theme": {
-      "revision": "f79aab805380a70f59bded2d628373342644e1e5",
+      "revision": "9e9320170ef7426dfbee67f53b02cce39502e3a4",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
@@ -74,21 +74,21 @@
       "label": "Review an unstaged patch beside the Git staging panel.",
       "width": 1200,
       "height": 600,
-      "sha256": "f5076471c2706794005d4258b3c1b9cee25e973284222127aba2c7b89ad332e2"
+      "sha256": "698bd20e6ee020f868108cde66baf44d1e3036f49a5b29ee9ff704734ff2286e"
     },
     {
       "file": "demo-images.png",
       "label": "Drag the divider between old and new image versions in the unified patch view.",
       "width": 1200,
       "height": 600,
-      "sha256": "06cc49b15a2d92cddba6ecc30f0b9adfde7335f31fe4d387d19099d4b0f7a85e"
+      "sha256": "112360c03d9a48e70dab33248d67933e0f1afb8de91a4f3ad0419b6cd33e8c5e"
     },
     {
       "file": "demo-images-side-by-side.png",
       "label": "Inspect old and new image versions side by side.",
       "width": 1200,
       "height": 600,
-      "sha256": "737e0bd742ccb8ca88905bac4e8b924c0eac14499f2f5288b0cf1b99924f13ac"
+      "sha256": "c76ca1c92a6e93ce5cfeb6170bdd4ee45c967db4e41c4bb8f1d49bec59606e63"
     }
   ]
 }
