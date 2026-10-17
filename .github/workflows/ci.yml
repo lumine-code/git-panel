@@ -121,6 +121,8 @@ jobs:
         run: |
           mkdir -p "$TEMP"
           node script/install-spec-packages.js --package ../git-panel --home "$LUMINE_HOME" --github-env "$GITHUB_ENV"
+          # The main process serves package assets from the installation home.
+          node -e "const fs = require('node:fs'), path = require('node:path'); fs.symlinkSync(path.resolve('../git-panel'), path.join(process.env.LUMINE_HOME, 'packages', 'git-panel'), process.platform === 'win32' ? 'junction' : 'dir');"
       - name: Run the Jasmine spec suite on Linux
         if: runner.os == 'Linux'
         working-directory: lumine

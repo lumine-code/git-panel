@@ -1151,7 +1151,7 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   height: inherit;
   content: "";
   background-color: currentColor;
-  mask: url("../img/git.svg") center / 60% no-repeat;
+  mask: url("lumine://git-panel/img/git.svg") center / 60% no-repeat;
 }
 .git-panel-Spinner::after {
   content: "";
