@@ -536,8 +536,7 @@ lumine-text-editor .git-panel-ConflictOursBlock {
   background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 35%, transparent);
 }
 lumine-text-editor .git-panel-ConflictOursBlock .btn {
-  color: white;
-  border-color: hsla(0, 0%, 0%, 0.15);
+  color: lch(from var(--git-panel-conflict-ours) calc((49.44 - l) * infinity) 0 0);
   border: none;
   background: var(--git-panel-conflict-ours);
 }
@@ -557,10 +556,9 @@ lumine-text-editor .git-panel-ConflictTheirsBlock {
   background-color: color-mix(in srgb, var(--syntax-color-renamed) 35%, transparent);
 }
 lumine-text-editor .git-panel-ConflictTheirsBlock .btn {
-  color: white;
-  border-color: hsla(0, 0%, 0%, 0.15);
+  color: lch(from var(--syntax-color-renamed) calc((49.44 - l) * infinity) 0 0);
   border: none;
-  background: color-mix(in srgb, var(--syntax-color-renamed) 100%, transparent);
+  background: var(--syntax-color-renamed);
 }
 lumine-text-editor .git-panel-ConflictBase {
   margin-right: var(--ui-spacing);
@@ -578,8 +576,7 @@ lumine-text-editor .git-panel-ConflictBaseBlock {
   background-color: color-mix(in srgb, var(--git-panel-conflict-base) 35%, transparent);
 }
 lumine-text-editor .git-panel-ConflictBaseBlock .btn {
-  color: white;
-  border-color: hsla(0, 0%, 0%, 0.15);
+  color: lch(from var(--git-panel-conflict-base) calc((49.44 - l) * infinity) 0 0);
   border: none;
   background: var(--git-panel-conflict-base);
 }
@@ -599,10 +596,9 @@ lumine-text-editor .git-panel-ConflictModifiedBlock {
   background-color: color-mix(in srgb, var(--syntax-color-modified) 35%, transparent);
 }
 lumine-text-editor .git-panel-ConflictModifiedBlock .btn {
-  color: white;
-  border-color: hsla(0, 0%, 0%, 0.15);
+  color: lch(from var(--syntax-color-modified) calc((49.44 - l) * infinity) 0 0);
   border: none;
-  background: color-mix(in srgb, var(--syntax-color-modified) 100%, transparent);
+  background: var(--syntax-color-modified);
 }
 lumine-text-editor .git-panel-ConflictSeparator {
   margin-right: var(--ui-spacing);
@@ -2432,5 +2428,16 @@ pre.git-panel-Message-description {
   .marker.current {
     z-index: 18;
     opacity: 1;
+  }
+}
+
+/* Respect reduced motion while retaining visible status indicators. */
+@media (prefers-reduced-motion: reduce) {
+  .git-panel-Spinner::after {
+    animation: none;
+  }
+  .git-panel-RecentCommit-avatar,
+  .git-panel-CommitView-editor {
+    transition: none;
   }
 }

@@ -17,6 +17,35 @@ describe("git panel theme roles", () => {
     stylesheet.dispose();
   });
 
+  it("keeps conflict actions readable when their individual backgrounds change", () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 1;
+    const context = canvas.getContext("2d");
+    for (const [side, variable] of [
+      ["Ours", "--git-panel-conflict-ours"],
+      ["Theirs", "--syntax-color-renamed"],
+      ["Base", "--git-panel-conflict-base"],
+      ["Modified", "--syntax-color-modified"],
+    ]) {
+      container.innerHTML = `<lumine-text-editor><div class="git-panel-Conflict${side}Block"><button class="btn">Use changes</button></div></lumine-text-editor>`;
+      const button = container.querySelector("button");
+      for (const [background, foreground] of [
+        ["#eeeeee", 0],
+        ["#111111", 255],
+      ]) {
+        container.style.setProperty(variable, background);
+        context.fillStyle = getComputedStyle(button).color;
+        context.fillRect(0, 0, 1, 1);
+        expect(Array.from(context.getImageData(0, 0, 1, 1).data)).toEqual([
+          foreground,
+          foreground,
+          foreground,
+          255,
+        ]);
+      }
+    }
+  });
+
   it("colors the Git loading mark and its ring from the current theme accent", () => {
     container.innerHTML =
       '<div class="git-panel-Loader"><span class="git-panel-Spinner"></span></div>';
