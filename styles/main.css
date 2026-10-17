@@ -222,13 +222,18 @@
   border: none;
   background-color: var(--syntax-background-color);
   cursor: default;
-  opacity: 0.3;
-}
-.git-panel-CommitView-editor .git-panel-CommitView-hardwrap:hover {
+  color: var(--syntax-text-color);
   opacity: 1;
 }
+.git-panel-CommitView-editor .git-panel-CommitView-hardwrap:hover {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 8%, var(--syntax-background-color));
+}
 .git-panel-CommitView-editor .git-panel-CommitView-hardwrap:active {
-  opacity: 0.5;
+  background-color: color-mix(
+    in srgb,
+    var(--syntax-text-color) 14%,
+    var(--syntax-background-color)
+  );
 }
 .git-panel-CommitView-editor.hidden {
   display: none;
@@ -251,14 +256,19 @@
   border: none;
   background-color: var(--syntax-background-color);
   cursor: default;
-  opacity: 0.3;
+  color: var(--syntax-text-color);
+  opacity: 1;
   z-index: 1;
 }
 .git-panel-CommitView-coAuthorToggle:hover {
-  opacity: 1;
+  background-color: color-mix(in srgb, var(--syntax-text-color) 8%, var(--syntax-background-color));
 }
 .git-panel-CommitView-coAuthorToggle:active {
-  opacity: 0.5;
+  background-color: color-mix(
+    in srgb,
+    var(--syntax-text-color) 14%,
+    var(--syntax-background-color)
+  );
 }
 .git-panel-CommitView-coAuthorToggle.focused {
   opacity: 1;
@@ -266,7 +276,7 @@
 .git-panel-CommitView-coAuthorToggleIcon {
   width: 12px;
   height: 7px;
-  fill: var(--text-color);
+  fill: currentColor;
 }
 .git-panel-CommitView-coAuthorToggleIcon.focused {
   fill: var(--accent-indicator-color);
@@ -403,13 +413,18 @@
   border: none;
   background-color: var(--syntax-background-color);
   cursor: default;
-  opacity: 0.3;
-}
-.git-panel-CommitView-expandButton:hover {
+  color: var(--syntax-text-color);
   opacity: 1;
 }
+.git-panel-CommitView-expandButton:hover {
+  background-color: color-mix(in srgb, var(--syntax-text-color) 8%, var(--syntax-background-color));
+}
 .git-panel-CommitView-expandButton:active {
-  opacity: 0.5;
+  background-color: color-mix(
+    in srgb,
+    var(--syntax-text-color) 14%,
+    var(--syntax-background-color)
+  );
 }
 .git-panel-CommitView-expandButton:before {
   margin: 0;
@@ -470,7 +485,7 @@
   width: 100%;
   line-height: inherit;
   background-color: transparent;
-  opacity: 0.5;
+  color: var(--text-color-subtle);
 }
 .git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton::before {
   margin-right: calc(var(--ui-spacing) / 2);
@@ -478,11 +493,16 @@
 .git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton::after {
   content: "Toggle expanded commit message";
 }
+.git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton:hover {
+  color: var(--text-color-highlight);
+  background-color: var(--background-color-highlight);
+}
 .git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton:active {
-  opacity: 0.3;
+  color: var(--text-color-selected);
+  background-color: var(--background-color-selected);
 }
 .git-panel-CommitView .hard-wrap-icons {
-  fill: var(--text-color);
+  fill: currentColor;
 }
 
 /* conflicting-editor.css */
@@ -529,11 +549,15 @@ lumine-text-editor .git-panel-ConflictOursBanner {
   background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 15%, transparent);
 }
 lumine-text-editor .git-panel-ConflictOursBanner.git-panel-ConflictUnmodifiedBanner span {
-  color: color-mix(in srgb, var(--git-panel-conflict-ours) 66%, transparent) !important;
+  color: var(--syntax-text-color) !important;
 }
 lumine-text-editor .git-panel-ConflictOursBlock {
-  color: color-mix(in srgb, var(--syntax-text-color) 66%, transparent);
-  background-color: color-mix(in srgb, var(--git-panel-conflict-ours) 35%, transparent);
+  color: var(--syntax-text-color);
+  background-color: color-mix(
+    in srgb,
+    var(--git-panel-conflict-ours) 12%,
+    var(--syntax-background-color)
+  );
 }
 lumine-text-editor .git-panel-ConflictOursBlock .btn {
   color: lch(from var(--git-panel-conflict-ours) calc((49.44 - l) * infinity) 0 0);
@@ -549,11 +573,15 @@ lumine-text-editor .git-panel-ConflictTheirsBanner {
   background-color: color-mix(in srgb, var(--syntax-color-renamed) 15%, transparent);
 }
 lumine-text-editor .git-panel-ConflictTheirsBanner.git-panel-ConflictUnmodifiedBanner span {
-  color: color-mix(in srgb, var(--syntax-color-renamed) 66%, transparent) !important;
+  color: var(--syntax-text-color) !important;
 }
 lumine-text-editor .git-panel-ConflictTheirsBlock {
-  color: color-mix(in srgb, var(--syntax-text-color) 66%, transparent);
-  background-color: color-mix(in srgb, var(--syntax-color-renamed) 35%, transparent);
+  color: var(--syntax-text-color);
+  background-color: color-mix(
+    in srgb,
+    var(--syntax-color-renamed) 12%,
+    var(--syntax-background-color)
+  );
 }
 lumine-text-editor .git-panel-ConflictTheirsBlock .btn {
   color: lch(from var(--syntax-color-renamed) calc((49.44 - l) * infinity) 0 0);
@@ -569,11 +597,15 @@ lumine-text-editor .git-panel-ConflictBaseBanner {
   background-color: color-mix(in srgb, var(--git-panel-conflict-base) 15%, transparent);
 }
 lumine-text-editor .git-panel-ConflictBaseBanner.git-panel-ConflictUnmodifiedBanner span {
-  color: color-mix(in srgb, var(--git-panel-conflict-base) 66%, transparent) !important;
+  color: var(--syntax-text-color) !important;
 }
 lumine-text-editor .git-panel-ConflictBaseBlock {
-  color: color-mix(in srgb, var(--syntax-text-color) 66%, transparent);
-  background-color: color-mix(in srgb, var(--git-panel-conflict-base) 35%, transparent);
+  color: var(--syntax-text-color);
+  background-color: color-mix(
+    in srgb,
+    var(--git-panel-conflict-base) 12%,
+    var(--syntax-background-color)
+  );
 }
 lumine-text-editor .git-panel-ConflictBaseBlock .btn {
   color: lch(from var(--git-panel-conflict-base) calc((49.44 - l) * infinity) 0 0);
@@ -589,11 +621,15 @@ lumine-text-editor .git-panel-ConflictModifiedBanner {
   background-color: color-mix(in srgb, var(--syntax-color-modified) 15%, transparent);
 }
 lumine-text-editor .git-panel-ConflictModifiedBanner.git-panel-ConflictUnmodifiedBanner span {
-  color: color-mix(in srgb, var(--syntax-color-modified) 66%, transparent) !important;
+  color: var(--syntax-text-color) !important;
 }
 lumine-text-editor .git-panel-ConflictModifiedBlock {
-  color: color-mix(in srgb, var(--syntax-text-color) 66%, transparent);
-  background-color: color-mix(in srgb, var(--syntax-color-modified) 35%, transparent);
+  color: var(--syntax-text-color);
+  background-color: color-mix(
+    in srgb,
+    var(--syntax-color-modified) 12%,
+    var(--syntax-background-color)
+  );
 }
 lumine-text-editor .git-panel-ConflictModifiedBlock .btn {
   color: lch(from var(--syntax-color-modified) calc((49.44 - l) * infinity) 0 0);
@@ -605,7 +641,7 @@ lumine-text-editor .git-panel-ConflictSeparator {
   background-color: color-mix(in srgb, var(--git-panel-conflict-base) 15%, transparent);
 }
 lumine-text-editor .git-panel-ConflictSeparator span {
-  color: color-mix(in srgb, var(--git-panel-conflict-base) 66%, transparent) !important;
+  color: var(--syntax-text-color) !important;
 }
 lumine-text-editor .git-panel-ResolvedLines {
   background-color: color-mix(in srgb, var(--syntax-color-added) 15%, transparent);
@@ -2382,7 +2418,11 @@ pre.git-panel-Message-description {
 .git-panel-FilePatchView:focus-within
   .git-panel-HunkHeaderView--isSelected
   :is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton):hover {
-  background-color: color-mix(in srgb, var(--accent-background-color) 96%, white);
+  background-color: color-mix(
+    in srgb,
+    var(--accent-background-color) 96%,
+    lch(from var(--accent-foreground-color) calc((49.44 - l) * infinity) 0 0)
+  );
 }
 .git-panel-FilePatchView:focus-within
   .git-panel-HunkHeaderView--isSelected
@@ -2393,7 +2433,11 @@ pre.git-panel-Message-description {
 .git-panel-FilePatchView:focus-within
   .git-panel-HunkHeaderView--isSelected
   :is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton):active {
-  background-color: color-mix(in srgb, var(--accent-background-color) 96%, black);
+  background-color: color-mix(
+    in srgb,
+    var(--accent-background-color) 92%,
+    lch(from var(--accent-foreground-color) calc((49.44 - l) * infinity) 0 0)
+  );
 }
 
 /* lumine-text-editor.css */

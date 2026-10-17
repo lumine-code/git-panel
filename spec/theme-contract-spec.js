@@ -17,6 +17,23 @@ describe("git panel theme roles", () => {
     stylesheet.dispose();
   });
 
+  it("keeps commit controls opaque on their syntax surface and expanded UI surface", () => {
+    container.style.cssText +=
+      "; --syntax-text-color: rgb(220,230,240); --syntax-background-color: rgb(20,30,40); --text-color-subtle: rgb(90,100,110); pointer-events: none;";
+    container.innerHTML =
+      '<div class="git-panel-CommitView"><div class="git-panel-CommitView-editor"><button class="git-panel-CommitView-hardwrap"><svg class="hard-wrap-icons"></svg></button><button class="git-panel-CommitView-coAuthorToggle"><svg class="git-panel-CommitView-coAuthorToggleIcon"></svg></button><button class="git-panel-CommitView-expandButton">Expand</button></div></div>';
+    for (const button of container.querySelectorAll("button")) {
+      expect(getComputedStyle(button).opacity).toBe("1");
+      expect(getComputedStyle(button).color).toBe("rgb(220, 230, 240)");
+    }
+    for (const icon of container.querySelectorAll("svg"))
+      expect(getComputedStyle(icon).fill).toBe("rgb(220, 230, 240)");
+    container.querySelector(".git-panel-CommitView-editor").classList.add("is-expanded");
+    expect(
+      getComputedStyle(container.querySelector(".git-panel-CommitView-expandButton")).color,
+    ).toBe("rgb(90, 100, 110)");
+  });
+
   it("keeps conflict actions readable when their individual backgrounds change", () => {
     const canvas = document.createElement("canvas");
     canvas.width = canvas.height = 1;
