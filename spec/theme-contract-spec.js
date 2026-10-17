@@ -17,6 +17,22 @@ describe("git panel theme roles", () => {
     stylesheet.dispose();
   });
 
+  it("colors the Git loading mark and its ring from the current theme accent", () => {
+    container.innerHTML =
+      '<div class="git-panel-Loader"><span class="git-panel-Spinner"></span></div>';
+    const spinner = container.querySelector(".git-panel-Spinner");
+    const mark = () => getComputedStyle(spinner, "::before");
+    const ring = () => getComputedStyle(spinner, "::after");
+
+    expect(mark().maskImage).toContain("/img/git.svg");
+    expect(mark().backgroundColor).toBe("rgb(10, 20, 30)");
+    expect(ring().borderRightColor).toBe("rgb(10, 20, 30)");
+
+    container.style.setProperty("--accent-indicator-color", "rgb(80, 100, 120)");
+    expect(mark().backgroundColor).toBe("rgb(80, 100, 120)");
+    expect(ring().borderRightColor).toBe("rgb(80, 100, 120)");
+  });
+
   it("keeps selected button colors distinct from focused list options", () => {
     container.innerHTML =
       '<button class="git-panel-StagingView-headerButton selected">Stage</button><div class="git-panel-RepositoryHome-owner"><div class="Select__option Select__option--is-focused">Owner</div></div>';

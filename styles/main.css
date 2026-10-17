@@ -1133,7 +1133,7 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   align-items: center;
   justify-content: center;
   font-size: 32px;
-  color: var(--git-panel-color-purple);
+  color: var(--accent-indicator-color);
 }
 .tooltip .git-panel-Loader {
   color: inherit;
@@ -1149,13 +1149,9 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   display: inline-block;
   width: inherit;
   height: inherit;
-  content: "\f008";
-  font-family: "Octicons Regular";
-  font-weight: normal;
-  font-style: normal;
-  line-height: 2;
-  text-align: center;
-  -webkit-font-smoothing: antialiased;
+  content: "";
+  background-color: currentColor;
+  mask: url("../img/git.svg") center / 60% no-repeat;
 }
 .git-panel-Spinner::after {
   content: "";
