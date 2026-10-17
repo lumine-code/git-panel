@@ -62,7 +62,7 @@ License: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
 License URL: https://creativecommons.org/licenses/by/3.0/
 Legal code source: https://creativecommons.org/licenses/by/3.0/legalcode.txt
 
-Git Logo by Jason Long is licensed under the Creative Commons Attribution 3.0 Unported License. The SVG file is retained unchanged. The loading indicator uses its shape as an alpha mask and renders it in the current theme's accent color; the shape is unchanged. No endorsement is implied.
+Git Logo by Jason Long is licensed under the Creative Commons Attribution 3.0 Unported License. The SVG file is retained unchanged. The loading indicator and tab icon use its shape as an alpha mask, rendered in the theme's accent color and the tab's text color respectively; the shape is unchanged. No endorsement is implied.
 
 Creative Commons Legal Code
 
