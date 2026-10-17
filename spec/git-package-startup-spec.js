@@ -12,6 +12,16 @@ async function until(predicate, maxTicks = 10000) {
 }
 
 describe("GitPackage startup repository selection", () => {
+  function scheduleStartup(packageInstance) {
+    let startup;
+    spyOn(global, "setImmediate").and.callFake((callback) => {
+      startup = Promise.resolve().then(callback);
+      return 1;
+    });
+    GitPackage.prototype.scheduleStartupActiveContextUpdate.call(packageInstance);
+    return startup;
+  }
+
   function observationSwitch() {
     let resume;
     const nextContext = { getWorkingDirectory: () => "next-repository" };
@@ -204,6 +214,7 @@ describe("GitPackage startup repository selection", () => {
   it("keeps the startup gate closed until the core context update settles", async () => {
     let finishUpdate;
     const packageInstance = {
+      activationGeneration: {},
       activated: true,
       workspace: { isDestroyed: () => false },
       repositories: {
@@ -212,22 +223,125 @@ describe("GitPackage startup repository selection", () => {
       scheduleActiveContextUpdate: jasmine
         .createSpy()
         .and.returnValue(new Promise((resolve) => (finishUpdate = resolve))),
+      scheduleRerender: jasmine.createSpy("render"),
       startupContextPending: true,
     };
-    spyOn(global, "setImmediate").and.callFake((callback) => {
-      Promise.resolve().then(callback);
-      return 1;
-    });
+    spyOn(lumine.window, "whenLoaded").and.returnValue(Promise.resolve());
 
-    GitPackage.prototype.scheduleStartupActiveContextUpdate.call(packageInstance);
+    const startup = scheduleStartup(packageInstance);
 
     await until(() => packageInstance.scheduleActiveContextUpdate.calls.any());
     expect(packageInstance.startupContextPending).toBe(true);
+    expect(packageInstance.scheduleRerender).not.toHaveBeenCalled();
     expect(packageInstance.scheduleActiveContextUpdate).toHaveBeenCalledWith();
     expect(packageInstance.repositories.setActiveRepositoryForPath).not.toHaveBeenCalled();
 
     finishUpdate();
-    await until(() => !packageInstance.startupContextPending);
+    await startup;
+    expect(packageInstance.startupContextPending).toBe(false);
+    expect(packageInstance.scheduleRerender).toHaveBeenCalledTimes(1);
+  });
+
+  it("waits for workspace restoration before resolving the startup context", async () => {
+    let finishWindowLoad;
+    const packageInstance = {
+      activationGeneration: {},
+      activated: true,
+      workspace: { isDestroyed: () => false },
+      scheduleActiveContextUpdate: jasmine.createSpy("update").and.resolveTo(),
+      scheduleRerender: jasmine.createSpy("render"),
+      startupContextPending: true,
+    };
+    spyOn(lumine.window, "whenLoaded").and.returnValue(
+      new Promise((resolve) => (finishWindowLoad = resolve)),
+    );
+
+    const startup = scheduleStartup(packageInstance);
+    await until(() => lumine.window.whenLoaded.calls.any());
+
+    expect(packageInstance.scheduleActiveContextUpdate).not.toHaveBeenCalled();
+    expect(packageInstance.startupContextPending).toBe(true);
+    expect(packageInstance.scheduleRerender).not.toHaveBeenCalled();
+
+    finishWindowLoad();
+    await startup;
+
+    expect(packageInstance.scheduleActiveContextUpdate).toHaveBeenCalledOnceWith();
+    expect(packageInstance.startupContextPending).toBe(false);
+    expect(packageInstance.scheduleRerender).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not release a newer activation's startup gate when window restoration finishes", async () => {
+    let finishWindowLoad;
+    const packageInstance = {
+      activationGeneration: {},
+      activated: true,
+      workspace: { isDestroyed: () => false },
+      scheduleActiveContextUpdate: jasmine.createSpy("update"),
+      scheduleRerender: jasmine.createSpy("render"),
+      startupContextPending: true,
+    };
+    spyOn(lumine.window, "whenLoaded").and.returnValue(
+      new Promise((resolve) => (finishWindowLoad = resolve)),
+    );
+
+    const startup = scheduleStartup(packageInstance);
+    await until(() => lumine.window.whenLoaded.calls.any());
+    packageInstance.activationGeneration = {};
+    finishWindowLoad();
+    await startup;
+
+    expect(packageInstance.scheduleActiveContextUpdate).not.toHaveBeenCalled();
+    expect(packageInstance.startupContextPending).toBe(true);
+    expect(packageInstance.scheduleRerender).not.toHaveBeenCalled();
+  });
+
+  it("selects a genuinely non-Git project while the startup view is loading", async () => {
+    const rootPath = "C:\\workspace";
+    const emptyContext = { getRepository: () => ({ isPresent: () => false }) };
+    const packageInstance = {
+      activationGeneration: {},
+      activationDisposed: false,
+      project: {
+        getPaths: () => [rootPath],
+        getDirectories: () => [{ contains: () => true, getPath: () => rootPath }],
+      },
+      repositories: {
+        getForPath: () => null,
+        resolveForPath: () => Promise.resolve(null),
+        getActiveRepositoryContext: () => ({ repository: null, workingDirectory: rootPath }),
+      },
+      workdirCache: { find: () => Promise.resolve(null) },
+      contextPool: {
+        add: jasmine.createSpy("add"),
+        getContext: () => emptyContext,
+      },
+      startupContextPending: true,
+      activeContext: { getRepository: () => ({ isUndetermined: () => true }) },
+    };
+
+    const next = await GitPackage.prototype.getNextContext.call(packageInstance);
+
+    expect(next).toBe(emptyContext);
+  });
+
+  it("settles an empty workspace instead of retaining the initial loading guess", async () => {
+    const guessedContext = { getRepository: () => ({ isUndetermined: () => true }) };
+    const packageInstance = {
+      activationGeneration: {},
+      activationDisposed: false,
+      project: { getPaths: () => [] },
+      repositories: {
+        getActiveRepositoryContext: () => ({ repository: null, workingDirectory: null }),
+      },
+      startupContextPending: true,
+      activeContext: guessedContext,
+    };
+
+    const next = await GitPackage.prototype.getNextContext.call(packageInstance);
+
+    expect(next).not.toBe(guessedContext);
+    expect(next.getRepository().isAbsent()).toBe(true);
   });
 
   it("does not create contexts when path discovery finishes after deactivation", async () => {

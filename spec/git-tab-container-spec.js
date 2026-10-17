@@ -4,6 +4,86 @@ import { createViewModel } from "./helpers/etch.js";
 import GitTabContainer from "../lib/containers/git-tab-container.js";
 
 describe("GitTabContainer repository data", () => {
+  function renderData(container, data) {
+    const observer = container.render().children[0];
+    return observer.props.children(data).props;
+  }
+
+  function snapshot(repository) {
+    return {
+      repository,
+      fetchInProgress: false,
+      recentCommits: [],
+      hasMoreRecentCommits: false,
+      unstagedChanges: [{ filePath: "changed.txt" }],
+    };
+  }
+
+  it("waits for the first snapshot even when the repository model is already loaded", () => {
+    const repository = { isDestroyed: () => false };
+    const container = createViewModel(GitTabContainer, { repository });
+
+    const props = renderData(container, null);
+
+    expect(props.repository).toBe(repository);
+    expect(props.fetchInProgress).toBe(true);
+    expect(props.unstagedChanges).toEqual([]);
+    expect(renderData(container, snapshot(repository)).fetchInProgress).toBe(false);
+  });
+
+  it("keeps a complete snapshot behind the workspace restoration gate", async () => {
+    const repository = { isDestroyed: () => false };
+    const container = createViewModel(GitTabContainer, {
+      repository,
+      startupContextPending: true,
+    });
+    const data = snapshot(repository);
+
+    expect(renderData(container, data).fetchInProgress).toBe(true);
+    await container.update({ repository, startupContextPending: false });
+    expect(renderData(container, data).fetchInProgress).toBe(false);
+  });
+
+  it("discards an observer snapshot from the destroyed startup guess", async () => {
+    let destroyed = false;
+    const guess = { isDestroyed: () => destroyed };
+    const repository = { isDestroyed: () => false };
+    const container = createViewModel(GitTabContainer, { repository: guess });
+    const guessData = snapshot(guess);
+    renderData(container, guessData);
+
+    destroyed = true;
+    await container.update({ repository });
+    const props = renderData(container, guessData);
+
+    expect(props.repository).toBe(repository);
+    expect(props.fetchInProgress).toBe(true);
+    expect(props.unstagedChanges).toEqual([]);
+    expect(props.isSwitchingRepository).toBe(false);
+    expect(container.lastData).toBeNull();
+  });
+
+  it("retains an accepted repository snapshot while the next repository loads", async () => {
+    const previous = { isDestroyed: () => false };
+    const repository = { isDestroyed: () => false };
+    const container = createViewModel(GitTabContainer, { repository: previous });
+    const previousData = snapshot(previous);
+    renderData(container, previousData);
+    await container.update({ repository });
+
+    for (const data of [previousData, null]) {
+      const props = renderData(container, data);
+      expect(props.repository).toBe(previous);
+      expect(props.unstagedChanges).toBe(previousData.unstagedChanges);
+      expect(props.fetchInProgress).toBe(false);
+      expect(props.isSwitchingRepository).toBe(true);
+    }
+
+    const props = renderData(container, snapshot(repository));
+    expect(props.repository).toBe(repository);
+    expect(props.isSwitchingRepository).toBe(false);
+  });
+
   it("keeps a snapshot started during Loading marked as in progress", async () => {
     let loading = true;
     let finishIdentityRead;

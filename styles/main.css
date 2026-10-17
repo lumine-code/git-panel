@@ -1071,6 +1071,13 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
 .git-panel-Git.is-loading {
   color: var(--text-color-subtle);
 }
+.git-panel-Git-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ui-spacing);
+}
 .git-panel-Git.is-switching-repository {
   pointer-events: none;
 }
