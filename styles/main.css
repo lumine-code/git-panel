@@ -1085,7 +1085,7 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   margin-bottom: calc(var(--ui-spacing) * 3);
 }
 .git-panel-GitIdentity-text {
-  width: 90%;
+  width: 100%;
   margin-bottom: calc(var(--ui-spacing) * 2);
 }
 .git-panel-GitIdentity-text .git-panel-LumineTextEditor-container {
