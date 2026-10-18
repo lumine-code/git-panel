@@ -1,9 +1,18 @@
 /** @babel */
 
-import Repository from "../lib/models/repository.js";
-import State from "../lib/models/repository-states/state.js";
+import { createRequire } from "node:module";
+
+const requireCurrent = createRequire(import.meta.url);
 
 describe("Repository state lifecycle", () => {
+  let Repository;
+  let State;
+
+  beforeEach(() => {
+    Repository = requireCurrent("../lib/models/repository.js").default;
+    State = requireCurrent("../lib/models/repository-states/state.js").default;
+  });
+
   it("does not resolve a target constructor for a state that has been replaced", async () => {
     const repository = { state: {}, transition: jasmine.createSpy("transition") };
     const state = new State(repository);
