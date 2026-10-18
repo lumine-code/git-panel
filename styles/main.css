@@ -552,12 +552,13 @@ lumine-text-editor .git-panel-ConflictOursBanner.git-panel-ConflictUnmodifiedBan
   color: var(--syntax-text-color) !important;
 }
 lumine-text-editor .git-panel-ConflictOursBlock {
-  color: var(--syntax-text-color);
-  background-color: color-mix(
+  --git-panel-conflict-header-background: color-mix(
     in srgb,
-    var(--git-panel-conflict-ours) 12%,
+    var(--git-panel-conflict-ours) 35%,
     var(--syntax-background-color)
   );
+  color: lch(from var(--git-panel-conflict-header-background) calc((49.44 - l) * infinity) 0 0);
+  background-color: var(--git-panel-conflict-header-background);
 }
 lumine-text-editor .git-panel-ConflictOursBlock .btn {
   color: lch(from var(--git-panel-conflict-ours) calc((49.44 - l) * infinity) 0 0);
@@ -576,12 +577,13 @@ lumine-text-editor .git-panel-ConflictTheirsBanner.git-panel-ConflictUnmodifiedB
   color: var(--syntax-text-color) !important;
 }
 lumine-text-editor .git-panel-ConflictTheirsBlock {
-  color: var(--syntax-text-color);
-  background-color: color-mix(
+  --git-panel-conflict-header-background: color-mix(
     in srgb,
-    var(--syntax-color-renamed) 12%,
+    var(--syntax-color-renamed) 35%,
     var(--syntax-background-color)
   );
+  color: lch(from var(--git-panel-conflict-header-background) calc((49.44 - l) * infinity) 0 0);
+  background-color: var(--git-panel-conflict-header-background);
 }
 lumine-text-editor .git-panel-ConflictTheirsBlock .btn {
   color: lch(from var(--syntax-color-renamed) calc((49.44 - l) * infinity) 0 0);
@@ -600,12 +602,13 @@ lumine-text-editor .git-panel-ConflictBaseBanner.git-panel-ConflictUnmodifiedBan
   color: var(--syntax-text-color) !important;
 }
 lumine-text-editor .git-panel-ConflictBaseBlock {
-  color: var(--syntax-text-color);
-  background-color: color-mix(
+  --git-panel-conflict-header-background: color-mix(
     in srgb,
-    var(--git-panel-conflict-base) 12%,
+    var(--git-panel-conflict-base) 35%,
     var(--syntax-background-color)
   );
+  color: lch(from var(--git-panel-conflict-header-background) calc((49.44 - l) * infinity) 0 0);
+  background-color: var(--git-panel-conflict-header-background);
 }
 lumine-text-editor .git-panel-ConflictBaseBlock .btn {
   color: lch(from var(--git-panel-conflict-base) calc((49.44 - l) * infinity) 0 0);
@@ -624,12 +627,13 @@ lumine-text-editor .git-panel-ConflictModifiedBanner.git-panel-ConflictUnmodifie
   color: var(--syntax-text-color) !important;
 }
 lumine-text-editor .git-panel-ConflictModifiedBlock {
-  color: var(--syntax-text-color);
-  background-color: color-mix(
+  --git-panel-conflict-header-background: color-mix(
     in srgb,
-    var(--syntax-color-modified) 12%,
+    var(--syntax-color-modified) 35%,
     var(--syntax-background-color)
   );
+  color: lch(from var(--git-panel-conflict-header-background) calc((49.44 - l) * infinity) 0 0);
+  background-color: var(--git-panel-conflict-header-background);
 }
 lumine-text-editor .git-panel-ConflictModifiedBlock .btn {
   color: lch(from var(--syntax-color-modified) calc((49.44 - l) * infinity) 0 0);
