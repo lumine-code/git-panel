@@ -17,6 +17,25 @@ describe("git panel theme roles", () => {
     stylesheet.dispose();
   });
 
+  it("keeps patch controls on UI surfaces and preview text on its syntax surface", () => {
+    container.style.cssText +=
+      "; --text-color: rgb(220,230,240); --text-color-highlight: rgb(230,240,250); --base-background-color: rgb(10,20,30); --panel-heading-background-color: rgb(20,30,40); --syntax-background-color: rgb(240,240,240); --syntax-text-color: rgb(30,30,30);";
+    container.innerHTML =
+      '<div class="git-panel-FilePatchView-header">Header</div><div class="git-panel-FilePatchView-meta">Metadata</div><div class="git-panel-ImagePatchView"><div class="git-panel-ImagePatchView-divider"></div><div class="git-panel-ImagePatchView-preview"><p>No image</p></div></div>';
+    const style = (selector, pseudo) => getComputedStyle(container.querySelector(selector), pseudo);
+    expect(style(".git-panel-FilePatchView-header").backgroundColor).toBe("rgb(20, 30, 40)");
+    expect(style(".git-panel-FilePatchView-header").color).toBe("rgb(220, 230, 240)");
+    for (const selector of [".git-panel-FilePatchView-meta", ".git-panel-ImagePatchView"]) {
+      expect(style(selector).backgroundColor).toBe("rgb(10, 20, 30)");
+      expect(style(selector).color).toBe("rgb(220, 230, 240)");
+    }
+    expect(style(".git-panel-ImagePatchView-divider", "::after").backgroundColor).toBe(
+      "rgb(10, 20, 30)",
+    );
+    expect(style(".git-panel-ImagePatchView-preview").backgroundColor).toBe("rgb(240, 240, 240)");
+    expect(style(".git-panel-ImagePatchView-preview p").color).toBe("rgb(30, 30, 30)");
+  });
+
   it("keeps commit controls opaque on their syntax surface and expanded UI surface", () => {
     container.style.cssText +=
       "; --syntax-text-color: rgb(220,230,240); --syntax-background-color: rgb(20,30,40); --text-color-subtle: rgb(90,100,110); pointer-events: none;";
