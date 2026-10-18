@@ -140,6 +140,7 @@ describe("mounted diff snapshots from repository updates", () => {
     const component = element.getComponent();
     const row = mode === "side-by-side" ? 80 : 160;
     element.setScrollTop(component.pixelPositionBeforeBlocksForRow(row) + 7);
+    await settle();
     element.setScrollLeft(180);
     await settle();
   }
