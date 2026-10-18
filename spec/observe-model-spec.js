@@ -1,5 +1,6 @@
 /** @babel */
 import { h, flushViews } from "./helpers/etch.js";
+import { Disposable } from "lumine";
 import ObserveModel from "../lib/views/observe-model.js";
 
 describe("ObserveModel publication", () => {
@@ -40,6 +41,28 @@ describe("ObserveModel publication", () => {
     await flushViews(() => view.publishModelData());
     expect(prepareData).not.toHaveBeenCalled();
     expect(view.element.textContent).toBe("empty");
+  });
+
+  it("refreshes seeded data on mount only when requested", async () => {
+    const model = { onDidUpdate: () => new Disposable() };
+    const initialData = { value: "cached" };
+    const fetchData = jasmine.createSpy("read current data").and.resolveTo({ value: "fresh" });
+    const props = {
+      model,
+      initialData,
+      fetchData,
+      children: (snapshot) => h("span", {}, snapshot ? snapshot.value : "empty"),
+    };
+    view = new ObserveModel(props);
+    expect(view.element.textContent).toBe("cached");
+    expect(fetchData).not.toHaveBeenCalled();
+    await view.destroy();
+
+    view = new ObserveModel({ ...props, refreshInitialData: true });
+    expect(view.element.textContent).toBe("cached");
+    expect(fetchData).toHaveBeenCalledOnceWith(model);
+    await flushViews(async () => {});
+    expect(view.element.textContent).toBe("fresh");
   });
 
   it("ignores model publication after destruction", () => {

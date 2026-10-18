@@ -6,7 +6,7 @@ import GitTabContainer from "../lib/containers/git-tab-container.js";
 describe("GitTabContainer repository data", () => {
   function renderData(container, data) {
     const observer = container.render().children[0];
-    return observer.props.children(data).props;
+    return observer.props.children(data === undefined ? observer.props.initialData : data).props;
   }
 
   function snapshot(repository) {
@@ -42,6 +42,68 @@ describe("GitTabContainer repository data", () => {
     expect(renderData(container, data).fetchInProgress).toBe(true);
     await container.update({ repository, startupContextPending: false });
     expect(renderData(container, data).fetchInProgress).toBe(false);
+  });
+
+  it("reuses a complete snapshot when the dock item is recreated and accepts fresh data", async () => {
+    const repository = { isDestroyed: () => false };
+    const repositoryDataCache = new WeakMap();
+    const original = createViewModel(GitTabContainer, { repository, repositoryDataCache });
+    const data = snapshot(repository);
+    renderData(original, data);
+    await original.destroy();
+
+    const reopened = createViewModel(GitTabContainer, { repository, repositoryDataCache });
+    const cached = renderData(reopened);
+
+    expect(cached.repository).toBe(repository);
+    expect(cached.fetchInProgress).toBe(false);
+    expect(cached.unstagedChanges).toBe(data.unstagedChanges);
+    expect(cached.isSwitchingRepository).toBe(false);
+    const fresh = { ...data, unstagedChanges: [] };
+    expect(renderData(reopened, fresh).unstagedChanges).toEqual([]);
+    expect(repositoryDataCache.get(repository)).toBe(fresh);
+  });
+
+  it("discards the cached snapshot when its observer invalidates the current repository", () => {
+    const repository = { isDestroyed: () => false };
+    const repositoryDataCache = new WeakMap([[repository, snapshot(repository)]]);
+    const container = createViewModel(GitTabContainer, { repository, repositoryDataCache });
+    expect(renderData(container).fetchInProgress).toBe(false);
+
+    const invalidated = renderData(container, null);
+
+    expect(invalidated.fetchInProgress).toBe(true);
+    expect(invalidated.unstagedChanges).toEqual([]);
+    expect(container.lastData).toBeNull();
+    expect(repositoryDataCache.has(repository)).toBe(false);
+  });
+
+  it("does not reuse a provisional snapshot when the dock item is recreated", () => {
+    const repository = { isDestroyed: () => false };
+    const repositoryDataCache = new WeakMap();
+    const original = createViewModel(GitTabContainer, { repository, repositoryDataCache });
+    renderData(original, { ...snapshot(repository), fetchInProgress: true });
+
+    const reopened = createViewModel(GitTabContainer, { repository, repositoryDataCache });
+    expect(renderData(reopened, null).fetchInProgress).toBe(true);
+    expect(repositoryDataCache.has(repository)).toBe(false);
+  });
+
+  it("does not use a cached snapshot for a different or destroyed repository", () => {
+    let destroyed = false;
+    const previous = { isDestroyed: () => destroyed };
+    const repository = { isDestroyed: () => false };
+    const repositoryDataCache = new WeakMap([[previous, snapshot(previous)]]);
+    const different = createViewModel(GitTabContainer, { repository, repositoryDataCache });
+    expect(renderData(different, null).fetchInProgress).toBe(true);
+
+    destroyed = true;
+    const reopened = createViewModel(GitTabContainer, {
+      repository: previous,
+      repositoryDataCache,
+    });
+    expect(renderData(reopened, null).fetchInProgress).toBe(true);
+    expect(reopened.lastData).toBeNull();
   });
 
   it("discards an observer snapshot from the destroyed startup guess", async () => {

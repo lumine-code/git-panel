@@ -3,11 +3,13 @@ import path from "node:path";
 import { Disposable } from "lumine";
 
 import GitTabView from "../lib/views/git-tab-view.js";
+import GitTabContainer from "../lib/containers/git-tab-container.js";
 import RefHolder from "../lib/models/ref-holder.js";
 import { nullAuthor } from "../lib/models/author.js";
 import { nullBranch } from "../lib/models/branch.js";
 import { nullCommit } from "../lib/models/commit.js";
 import { nullOperationStates } from "../lib/models/operation-states.js";
+import ResolutionProgress from "../lib/models/conflicts/resolution-progress.js";
 import { flushViews } from "./helpers/etch.js";
 
 describe("Git tab initial repository loading", () => {
@@ -31,6 +33,34 @@ describe("Git tab initial repository loading", () => {
       getCommitMessage: () => "",
       setCommitMessage: () => {},
       getOperationStates: () => nullOperationStates,
+    };
+  }
+
+  function containerProps(getUnstagedChanges) {
+    return {
+      repository: {
+        ...repository(),
+        getConfig: async () => "Configured identity",
+        getAuthors: async () => [],
+        getRecentCommits: async () => [],
+        getLastCommit: async () => nullCommit,
+        getCurrentBranch: async () => nullBranch,
+        isMerging: async () => false,
+        isRebasing: async () => false,
+        hasDiscardHistory: () => false,
+        getUnstagedChanges,
+        getStagedChanges: async () => [],
+        getMergeConflicts: async () => [],
+      },
+      repositoryDataCache: new WeakMap(),
+      commands: lumine.commands,
+      workspace: lumine.workspace,
+      config: lumine.config,
+      grammars: lumine.grammars,
+      tooltips: lumine.tooltips,
+      notificationManager: lumine.notifications,
+      project: lumine.project,
+      resolutionProgress: new ResolutionProgress(),
     };
   }
 
@@ -134,6 +164,72 @@ describe("Git tab initial repository loading", () => {
     actions[1].click();
     expect(view.props.openInitializeDialog).toHaveBeenCalledOnceWith(null);
     expect(view.props.openCloneDialog).toHaveBeenCalledTimes(1);
+  });
+
+  it("reopens with the accepted content while refreshing changes made with the panel closed", async () => {
+    let finishChanges;
+    const getUnstagedChanges = jasmine
+      .createSpy("read changes")
+      .and.callFake(() => new Promise((resolve) => (finishChanges = resolve)));
+    const props = containerProps(getUnstagedChanges);
+    view = new GitTabContainer(props);
+    jasmine.attachToDOM(view.element);
+    expect(view.element.querySelector(".git-panel-Git-loading")).not.toBeNull();
+
+    await flushViews(() => finishChanges([{ filePath: "ready.txt", status: "modified" }]));
+    expect(view.element.querySelector(".git-panel-Git-loading")).toBeNull();
+    await view.destroy();
+
+    view = new GitTabContainer(props);
+    jasmine.attachToDOM(view.element);
+    expect(getUnstagedChanges).toHaveBeenCalledTimes(2);
+    expect(view.element.querySelector(".git-panel-Git-loading")).toBeNull();
+    expect(view.element.querySelector(".git-panel-FilePatchListView-path").textContent).toBe(
+      "ready.txt",
+    );
+    await flushViews(() => finishChanges([{ filePath: "updated.txt", status: "modified" }]));
+    expect(view.element.querySelector(".git-panel-Git-loading")).toBeNull();
+    expect(view.element.querySelector(".git-panel-FilePatchListView-path").textContent).toBe(
+      "updated.txt",
+    );
+  });
+
+  it("removes cached actions when a reopened repository is no longer available", async () => {
+    const getUnstagedChanges = jasmine
+      .createSpy("read changes")
+      .and.resolveTo([{ filePath: "ready.txt", status: "modified" }]);
+    const props = containerProps(getUnstagedChanges);
+    view = new GitTabContainer(props);
+    jasmine.attachToDOM(view.element);
+    await flushViews(async () => {});
+    expect(view.element.querySelector(".git-panel-FilePatchListView-path").textContent).toBe(
+      "ready.txt",
+    );
+    await view.destroy();
+
+    let rejectRead;
+    getUnstagedChanges.and.callFake(() => new Promise((resolve, reject) => (rejectRead = reject)));
+    view = new GitTabContainer(props);
+    jasmine.attachToDOM(view.element);
+    expect(view.element.querySelector(".git-panel-Git-loading")).toBeNull();
+
+    await flushViews(() =>
+      rejectRead(
+        Object.assign(new Error("Working directory disappeared"), {
+          code: "ERR_GIT_REPOSITORY_UNAVAILABLE",
+        }),
+      ),
+    );
+    expect(view.element.querySelector(".git-panel-Git-loading")).not.toBeNull();
+    expect(view.element.querySelector(".git-panel-StagingView")).toBeNull();
+    expect(view.element.querySelector(".git-panel-FilePatchListView-path")).toBeNull();
+    expect(props.repositoryDataCache.has(props.repository)).toBe(false);
+    await view.destroy();
+
+    view = new GitTabContainer(props);
+    jasmine.attachToDOM(view.element);
+    expect(view.element.querySelector(".git-panel-Git-loading")).not.toBeNull();
+    expect(view.element.querySelector(".git-panel-FilePatchListView-path")).toBeNull();
   });
 
   jasmine.itWithDocumentFocus(
