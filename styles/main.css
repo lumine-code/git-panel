@@ -1092,8 +1092,15 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   margin: var(--ui-spacing) 0;
   height: inherit;
 }
+.git-panel-GitIdentity-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(var(--ui-spacing) / 2);
+  max-width: 100%;
+}
 .git-panel-GitIdentity-buttons .btn {
-  margin: calc(var(--ui-spacing) / 2);
+  margin: 0;
 }
 
 /* git-tab.css */

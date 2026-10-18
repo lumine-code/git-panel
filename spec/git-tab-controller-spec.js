@@ -57,6 +57,63 @@ describe("GitTabController identity editor state", () => {
 
     expect(nextState).toBeNull();
   });
+
+  function identityController() {
+    const controller = Object.create(GitTabController.prototype);
+    controller.props = {
+      repository: {
+        setConfig: jasmine.createSpy("setConfig").and.resolveTo(),
+        unsetConfig: jasmine.createSpy("unsetConfig").and.resolveTo(),
+      },
+      notificationManager: { addError: jasmine.createSpy("addError") },
+    };
+    controller.usernameBuffer = { getText: () => "Author" };
+    controller.emailBuffer = { getText: () => "author@example.com" };
+    controller.closeIdentityEditor = jasmine.createSpy("closeIdentityEditor");
+    return controller;
+  }
+
+  it("closes the form only after both identity values have been saved", async () => {
+    const controller = identityController();
+    let finishEmail;
+    controller.props.repository.setConfig.and.callFake((key) =>
+      key === "user.email" ? new Promise((resolve) => (finishEmail = resolve)) : Promise.resolve(),
+    );
+
+    const saving = controller.setIdentity({ global: true });
+    await Promise.resolve();
+    expect(controller.closeIdentityEditor).not.toHaveBeenCalled();
+    finishEmail();
+    await saving;
+
+    expect(controller.props.repository.setConfig.calls.allArgs()).toEqual([
+      ["user.name", "Author", { global: true }],
+      ["user.email", "author@example.com", { global: true }],
+    ]);
+    expect(controller.closeIdentityEditor).toHaveBeenCalledTimes(1);
+    expect(controller.props.notificationManager.addError).not.toHaveBeenCalled();
+  });
+
+  for (const failedKey of ["user.name", "user.email"]) {
+    it(`keeps the form open and reports a failed ${failedKey} write so it can be retried`, async () => {
+      const controller = identityController();
+      controller.props.repository.setConfig.and.callFake((key) =>
+        key === failedKey ? Promise.reject(new Error("Permission denied")) : Promise.resolve(),
+      );
+
+      await expectAsync(controller.setIdentity({ global: true })).toBeResolved();
+
+      expect(controller.closeIdentityEditor).not.toHaveBeenCalled();
+      expect(controller.props.notificationManager.addError).toHaveBeenCalledOnceWith(
+        "Unable to save Git identity",
+        { detail: "Permission denied", dismissable: true },
+      );
+
+      controller.props.repository.setConfig.and.resolveTo();
+      await controller.setIdentity({ global: true });
+      expect(controller.closeIdentityEditor).toHaveBeenCalledTimes(1);
+    });
+  }
 });
 
 describe("GitTabController conflict staging", () => {
