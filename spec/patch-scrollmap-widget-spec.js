@@ -156,6 +156,7 @@ describe("patch scrollbar widget", () => {
       await paint();
       const widget = widgets[0];
       const state = view.getScrollmapState();
+      expect(widget.update).not.toHaveBeenCalled();
       expect(widget.element.parentElement).toBe(state.editor.getElement());
       expect(widget.items.filter((item) => item.cls.includes("marker-git-file")).length).toBe(2);
       expect(widget.items.filter((item) => item.cls.includes("marker-git-hunk")).length).toBe(4);
