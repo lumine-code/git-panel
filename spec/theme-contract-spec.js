@@ -36,17 +36,27 @@ describe("git panel theme roles", () => {
     expect(style(".git-panel-ImagePatchView-preview p").color).toBe("rgb(30, 30, 30)");
   });
 
-  it("keeps commit controls opaque on their syntax surface and expanded UI surface", () => {
+  it("keeps commit overlay controls and counter subtle on their syntax surface", () => {
     container.style.cssText +=
       "; --syntax-text-color: rgb(220,230,240); --syntax-background-color: rgb(20,30,40); --text-color-subtle: rgb(90,100,110); pointer-events: none;";
     container.innerHTML =
-      '<div class="git-panel-CommitView"><div class="git-panel-CommitView-editor"><button class="git-panel-CommitView-hardwrap"><svg class="hard-wrap-icons"></svg></button><button class="git-panel-CommitView-coAuthorToggle"><svg class="git-panel-CommitView-coAuthorToggleIcon"></svg></button><button class="git-panel-CommitView-expandButton">Expand</button></div></div>';
+      '<div class="git-panel-CommitView"><div class="git-panel-CommitView-editor"><button class="git-panel-CommitView-hardwrap"><svg class="hard-wrap-icons"></svg></button><button class="git-panel-CommitView-coAuthorToggle"><svg class="git-panel-CommitView-coAuthorToggleIcon"></svg></button><button class="git-panel-CommitView-expandButton">Expand</button><span class="git-panel-CommitView-remaining-characters">72</span></div></div>';
     for (const button of container.querySelectorAll("button")) {
       expect(getComputedStyle(button).opacity).toBe("1");
-      expect(getComputedStyle(button).color).toBe("rgb(220, 230, 240)");
+      expect(getComputedStyle(button).color).toBe("rgb(90, 100, 110)");
+      expect(getComputedStyle(button).backgroundColor).toBe("rgb(20, 30, 40)");
     }
-    for (const icon of container.querySelectorAll("svg"))
-      expect(getComputedStyle(icon).fill).toBe("rgb(220, 230, 240)");
+    expect(getComputedStyle(container.querySelector(".hard-wrap-icons")).fill).toBe(
+      "rgb(90, 100, 110)",
+    );
+    expect(
+      getComputedStyle(container.querySelector(".git-panel-CommitView-coAuthorToggleIcon")).stroke,
+    ).toBe("rgb(90, 100, 110)");
+    const counter = getComputedStyle(
+      container.querySelector(".git-panel-CommitView-remaining-characters"),
+    );
+    expect(counter.color).toBe("rgb(90, 100, 110)");
+    expect(counter.backgroundColor).toBe("rgb(20, 30, 40)");
     container.querySelector(".git-panel-CommitView-editor").classList.add("is-expanded");
     expect(
       getComputedStyle(container.querySelector(".git-panel-CommitView-expandButton")).color,
@@ -99,6 +109,7 @@ describe("git panel theme roles", () => {
   });
 
   it("loads the Git logo through the running package's asset protocol", async () => {
+    lumine.packages.loadPackage(path.resolve(__dirname, ".."));
     container.innerHTML =
       '<div class="git-panel-Loader"><span class="git-panel-Spinner"></span></div>';
     const spinner = container.querySelector(".git-panel-Spinner");
@@ -125,7 +136,7 @@ describe("git panel theme roles", () => {
     expect(option.backgroundColor).toBe("rgb(40, 50, 60)");
   });
 
-  it("keeps a diagnostic character counter on its UI input surface under a mixed theme pair", () => {
+  it("keeps a diagnostic character counter on its syntax surface under a mixed theme pair", () => {
     container.style.setProperty("--input-background-color", "rgb(10,20,30)");
     container.style.setProperty("--syntax-background-color", "rgb(230,240,250)");
     container.style.setProperty("--text-color-warning", "rgb(180,190,200)");
@@ -133,7 +144,7 @@ describe("git panel theme roles", () => {
       '<span class="git-panel-CommitView-remaining-characters is-warning">10</span>';
     const counter = getComputedStyle(container.firstElementChild);
     expect(counter.color).toBe("rgb(180, 190, 200)");
-    expect(counter.backgroundColor).toBe("rgb(10, 20, 30)");
+    expect(counter.backgroundColor).toBe("rgb(230, 240, 250)");
   });
 
   it("uses the indicator accent for focus borders and the accent pair for focused commit rows", () => {

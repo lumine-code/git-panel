@@ -66,7 +66,12 @@ module.exports = {
         }
       },
       ready() {
-        return Boolean(document.body.innerText.includes("Unstaged Changes"));
+        const logo = document.querySelector(".app-icon img");
+        return Boolean(
+          document.body.innerText.includes("Unstaged Changes") &&
+          logo?.complete &&
+          logo.naturalWidth > 0,
+        );
       },
     },
     {

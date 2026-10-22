@@ -108,7 +108,7 @@ describe("the commit view controls", () => {
     ).toBe(false);
   });
 
-  it("overlays the character count immediately before the expand button", async () => {
+  it("keeps the character count immediately before the expand button in the message toolbar", async () => {
     await renderCommitView();
 
     const editor = container.querySelector(".git-panel-CommitView-editor");
@@ -123,6 +123,18 @@ describe("the commit view controls", () => {
     expect(bar.querySelector(".git-panel-CommitView-remaining-characters")).toBeNull();
     const visibleControls = [...bar.children].filter((element) => !element.hidden);
     expect(visibleControls.at(-1)).toBe(bar.querySelector(".git-panel-CommitView-commit"));
+  });
+
+  it("shows the hard-wrap control when a message gains a body and hides it when cleared", async () => {
+    await renderCommitView();
+    const button = container.querySelector(".git-panel-CommitView-hardwrap");
+    expect(button.children.length).toBe(0);
+
+    await flushViews(() => messageBuffer.setText("Subject\n\nMessage body."));
+    expect(button.querySelector("svg")).not.toBeNull();
+
+    await flushViews(() => messageBuffer.setText(""));
+    expect(button.children.length).toBe(0);
   });
 
   it("does not scroll an empty commit editor past the end", async () => {

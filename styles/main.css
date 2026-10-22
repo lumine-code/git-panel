@@ -196,10 +196,7 @@
   background-color: var(--syntax-background-color);
   overflow: hidden;
 }
-/* The wrapper is the box, not the editor: it also holds the hardwrap and
-   co-author buttons, positioned against its edges. So it draws the input
-   chrome itself rather than marking the editor `[input]` — same look, none
-   of the overlay reshuffling. */
+/* Keep the input chrome around both the message and its compact toolbar. */
 .git-panel-CommitView-editor {
   transition: border-color 0.15s ease;
 }
@@ -208,38 +205,65 @@
   box-shadow: 0 0 0 1px var(--accent-indicator-color);
 }
 .git-panel-CommitView-editorControls {
-  position: absolute;
-  right: 0;
-  bottom: 0;
+  position: relative;
   display: flex;
+  justify-content: flex-end;
   align-items: center;
+  gap: calc(var(--ui-spacing) / 5);
+  min-height: 32px;
+  padding: 4px 4px 4px 32px;
   background-color: var(--syntax-background-color);
   z-index: 1;
 }
-.git-panel-CommitView-editor .git-panel-CommitView-hardwrap {
-  padding: calc(var(--ui-spacing) / 5) calc(var(--ui-spacing) / 2);
+.git-panel-CommitView-editor .git-panel-CommitView-hardwrap,
+.git-panel-CommitView-coAuthorToggle,
+.git-panel-CommitView-expandButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  padding: 0;
   line-height: 1;
   border: none;
+  border-radius: var(--ui-border-radius);
   background-color: var(--syntax-background-color);
   cursor: default;
-  color: var(--syntax-text-color);
+  color: var(--text-color-subtle);
   opacity: 1;
 }
-.git-panel-CommitView-editor .git-panel-CommitView-hardwrap:hover {
+.git-panel-CommitView-editor .git-panel-CommitView-hardwrap:hover,
+.git-panel-CommitView-coAuthorToggle:hover,
+.git-panel-CommitView-expandButton:hover {
+  color: var(--syntax-text-color);
   background-color: color-mix(in srgb, var(--syntax-text-color) 8%, var(--syntax-background-color));
 }
-.git-panel-CommitView-editor .git-panel-CommitView-hardwrap:active {
+.git-panel-CommitView-editor .git-panel-CommitView-hardwrap:active,
+.git-panel-CommitView-coAuthorToggle:active,
+.git-panel-CommitView-expandButton:active {
   background-color: color-mix(
     in srgb,
     var(--syntax-text-color) 14%,
     var(--syntax-background-color)
   );
 }
+.git-panel-CommitView-hardwrap:empty {
+  display: none;
+}
+.git-panel-CommitView-hardwrap svg {
+  display: block;
+}
+.git-panel-CommitView-editorControls button:focus-visible,
+.git-panel-CommitView-coAuthorToggle:focus-visible {
+  outline: 1px solid var(--accent-indicator-color);
+  outline-offset: -1px;
+}
 .git-panel-CommitView-editor.hidden {
   display: none;
 }
 .git-panel-CommitView-editor lumine-text-editor {
-  height: 100px;
+  height: 72px;
   padding: calc(var(--ui-spacing) / 2);
   background-color: transparent;
 }
@@ -249,37 +273,28 @@
 }
 .git-panel-CommitView-coAuthorToggle {
   position: absolute;
-  left: 0;
-  bottom: 0;
-  padding: calc(var(--ui-spacing) / 2);
-  line-height: 1;
-  border: none;
-  background-color: var(--syntax-background-color);
-  cursor: default;
-  color: var(--syntax-text-color);
-  opacity: 1;
-  z-index: 1;
+  left: 4px;
+  bottom: 4px;
+  z-index: 2;
 }
-.git-panel-CommitView-coAuthorToggle:hover {
-  background-color: color-mix(in srgb, var(--syntax-text-color) 8%, var(--syntax-background-color));
-}
-.git-panel-CommitView-coAuthorToggle:active {
-  background-color: color-mix(
-    in srgb,
-    var(--syntax-text-color) 14%,
-    var(--syntax-background-color)
-  );
+.git-panel-CommitView-coAuthorToggleIcon,
+.git-panel-CommitView-expandButton svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .git-panel-CommitView-coAuthorToggle.focused {
-  opacity: 1;
-}
-.git-panel-CommitView-coAuthorToggleIcon {
-  width: 12px;
-  height: 7px;
-  fill: currentColor;
-}
-.git-panel-CommitView-coAuthorToggleIcon.focused {
-  fill: var(--accent-indicator-color);
+  color: var(--accent-indicator-color);
+  background-color: color-mix(
+    in srgb,
+    var(--accent-indicator-color) 10%,
+    var(--syntax-background-color)
+  );
 }
 .git-panel-CommitView-coAuthorEditor {
   position: relative;
@@ -407,28 +422,6 @@
 .git-panel-CommitView-coAuthorEditor .new-author {
   font-style: italic;
 }
-.git-panel-CommitView-expandButton {
-  padding: calc(var(--ui-spacing) / 2);
-  line-height: 1;
-  border: none;
-  background-color: var(--syntax-background-color);
-  cursor: default;
-  color: var(--syntax-text-color);
-  opacity: 1;
-}
-.git-panel-CommitView-expandButton:hover {
-  background-color: color-mix(in srgb, var(--syntax-text-color) 8%, var(--syntax-background-color));
-}
-.git-panel-CommitView-expandButton:active {
-  background-color: color-mix(
-    in srgb,
-    var(--syntax-text-color) 14%,
-    var(--syntax-background-color)
-  );
-}
-.git-panel-CommitView-expandButton:before {
-  margin: 0;
-}
 .git-panel-CommitView-bar {
   display: flex;
   align-items: center;
@@ -448,15 +441,17 @@
   margin-right: var(--ui-spacing);
 }
 .git-panel-CommitView-remaining-characters {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 2ch;
-  text-align: right;
-  padding: calc(var(--ui-spacing) / 5) calc(var(--ui-spacing) / 2);
-  margin-right: calc(var(--ui-spacing) / 4);
-  font-size: 0.85em;
+  height: 24px;
+  padding: 0 4px;
+  font-size: 0.95em;
   line-height: 1;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
-  background-color: var(--input-background-color);
+  background-color: var(--syntax-background-color);
   color: var(--text-color-subtle);
   pointer-events: none;
 }
@@ -487,7 +482,7 @@
   background-color: transparent;
   color: var(--text-color-subtle);
 }
-.git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton::before {
+.git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton svg {
   margin-right: calc(var(--ui-spacing) / 2);
 }
 .git-panel-CommitView-editor.is-expanded .git-panel-CommitView-expandButton::after {
