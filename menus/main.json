@@ -117,11 +117,11 @@
         "type": "separator"
       },
       {
-        "label": "Open Selected Files",
+        "label": "Open Files",
         "command": "git-panel:jump-to-file"
       },
       {
-        "label": "Open Selected Files in Next Pane",
+        "label": "Open Files in Next Pane",
         "command": "git-panel:jump-to-file-in-next-pane"
       },
       {
