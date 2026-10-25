@@ -31,6 +31,8 @@ describe("conflict resolution against a real Git repository", () => {
   let containers;
 
   beforeEach(async () => {
+    const language = await lumine.packages.activatePackage("language-text");
+    await language.resourceLoadPromise;
     editors = [];
     roots = [];
     containers = [];

@@ -117,6 +117,11 @@ function conflictText(size = 7, ours = "ours", theirs = "theirs") {
 }
 
 describe("conflict parsing", () => {
+  beforeEach(async () => {
+    const language = await lumine.packages.activatePackage("language-text");
+    await language.resourceLoadPromise;
+  });
+
   it("discovers custom-width conflicts in an editor buffer", () => {
     const editor = lumine.workspace.buildTextEditor();
     const layer = editor.addMarkerLayer({ persistent: false });

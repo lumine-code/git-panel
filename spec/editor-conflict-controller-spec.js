@@ -19,6 +19,47 @@ class TestPoint {
 }
 
 describe("EditorConflictController", () => {
+  it("clears conflict analysis for None and resumes when a grammar returns", async () => {
+    const pkg = await lumine.packages.activatePackage("language-text");
+    await pkg.resourceLoadPromise;
+    const editor = lumine.workspace.buildTextEditor();
+    const grammar = lumine.grammars.grammarForId("text.plain");
+    editor.setGrammar(grammar);
+    editor.setText("<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> branch\n");
+    const resolutionProgress = {
+      reportBufferMarkerCount: jasmine.createSpy("reportBufferMarkerCount"),
+      clearBuffer: jasmine.createSpy("clearBuffer"),
+    };
+    const controller = createViewModel(EditorConflictController, {
+      editor,
+      isRebase: false,
+      resolutionProgress,
+      refreshResolutionProgress() {},
+    });
+    controller.updateState = (state) => {
+      Object.assign(controller.state, state);
+      controller.updateMarkerCount();
+    };
+    controller.didMount();
+    try {
+      expect(controller.state.conflicts.size).toBe(1);
+      const scan = spyOn(editor.getBuffer(), "scan").and.callThrough();
+      resolutionProgress.reportBufferMarkerCount.calls.reset();
+      editor.setGrammar(lumine.grammars.nullGrammar);
+      expect(controller.state.conflicts.size).toBe(0);
+      expect(controller.layer.getMarkerCount()).toBe(0);
+      expect(resolutionProgress.clearBuffer).toHaveBeenCalled();
+      expect(resolutionProgress.reportBufferMarkerCount).not.toHaveBeenCalled();
+      expect(scan).not.toHaveBeenCalled();
+      editor.setGrammar(grammar);
+      expect(scan).toHaveBeenCalled();
+      expect(controller.state.conflicts.size).toBe(1);
+    } finally {
+      controller.willDestroy();
+      editor.destroy();
+    }
+  });
+
   it("owns a private marker layer and scopes commands to its editor element", () => {
     const layer = {
       clear: jasmine.createSpy("clear"),
