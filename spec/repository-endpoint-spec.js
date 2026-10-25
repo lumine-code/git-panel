@@ -61,6 +61,7 @@ describe("Git repository endpoints", () => {
     expect(getDiff).toHaveBeenCalledWith({
       from: { type: "empty" },
       to: { type: "commit", revision: sha256 },
+      maxBytes: 256 * 1024 * 1024,
       detectRenames: false,
       format: "structured",
     });
