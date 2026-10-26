@@ -168,6 +168,11 @@ describe("conflict parsing", () => {
     expect(await Conflict.countFromStream(Readable.from(chunks))).toBe(2);
   });
 
+  it("treats Unicode separators in Git labels as label text", async () => {
+    const text = "<<<<<<< branch\u2028name\nours\n=======\ntheirs\n>>>>>>> branch\u2029other\n";
+    expect(await Conflict.countFromStream(Readable.from([text]))).toBe(1);
+  });
+
   it("counts a criss-cross conflict once while validating its nested base conflict", async () => {
     const text = [
       `${marker("<")} ours`,

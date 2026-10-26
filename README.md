@@ -16,6 +16,8 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 
 The pending diff tab is shared by staged and unstaged files, all staged changes, and commits across repositories. Opening another patch replaces its document in place, keeping the native editors and layout and starting at the new document's first hunk. The current diff remains visible while the next one loads, and a newer selection supersedes an earlier load. Empty patches keep the same renderer ready for the next document; promoting the tab keeps it open separately.
 
+Conflict bodies, retained patch buffers, side-by-side projections and commit drafts keep immutable text snapshots. Large conflict analysis yields between bounded parsing steps and publishes markers only for the current revision; disk marker checks scan the complete text stream, including markers beyond the first eight megabytes. Conflict labels show a bounded preview while resolution and undo preserve the exact full text. Git diff and blob previews use a 256 MiB input budget, including untracked files and files that grow during reading; patch string publication checks a 256 Mi UTF-16 transport budget before formatting. Commit submission and automatic template/merge-message reads use separate 32 Mi budgets; oversized drafts remain editable. Repository URL, path, reference and identity fields are limited to 64 Ki UTF-16 units before string reads. Rejected operations report the limit without truncating file content.
+
 ![Review an unstaged patch beside the Git staging panel.](.github/demo.png)
 
 ![Drag the divider between old and new image versions in the unified patch view.](.github/demo-images.png)

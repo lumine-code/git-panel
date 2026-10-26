@@ -3,6 +3,7 @@ import { createViewModel } from "./helpers/etch.js";
 
 import EditorConflictController from "../lib/controllers/editor-conflict-controller.js";
 import { BASE } from "../lib/models/conflicts/source.js";
+import { TextBuffer } from "lumine";
 
 class TestPoint {
   constructor(value) {
@@ -43,7 +44,7 @@ describe("EditorConflictController", () => {
     controller.didMount();
     try {
       expect(controller.state.conflicts.size).toBe(1);
-      const scan = spyOn(editor.getBuffer(), "scan").and.callThrough();
+      const scan = spyOn(editor.getBuffer(), "getTextSnapshotInRange").and.callThrough();
       resolutionProgress.reportBufferMarkerCount.calls.reset();
       editor.setGrammar(lumine.grammars.nullGrammar);
       expect(controller.state.conflicts.size).toBe(0);
@@ -66,7 +67,7 @@ describe("EditorConflictController", () => {
       destroy: jasmine.createSpy("destroy"),
     };
     const element = document.createElement("lumine-text-editor");
-    const buffer = { scan: jasmine.createSpy("scan") };
+    const buffer = new TextBuffer();
     const editor = {
       addMarkerLayer: jasmine.createSpy("addMarkerLayer").and.returnValue(layer),
       getElement: () => element,
@@ -94,6 +95,7 @@ describe("EditorConflictController", () => {
     expect(controller.commandTarget).toBe(element);
 
     controller.willDestroy();
+    buffer.destroy();
     expect(layer.destroy).toHaveBeenCalled();
     expect(resolutionProgress.clearBuffer).toHaveBeenCalledWith("conflicted.txt");
   });

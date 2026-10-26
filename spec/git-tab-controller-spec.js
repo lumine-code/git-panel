@@ -67,8 +67,8 @@ describe("GitTabController identity editor state", () => {
       },
       notificationManager: { addError: jasmine.createSpy("addError") },
     };
-    controller.usernameBuffer = { getText: () => "Author" };
-    controller.emailBuffer = { getText: () => "author@example.com" };
+    controller.usernameBuffer = { getLength: () => 6, getText: () => "Author" };
+    controller.emailBuffer = { getLength: () => 18, getText: () => "author@example.com" };
     controller.closeIdentityEditor = jasmine.createSpy("closeIdentityEditor");
     return controller;
   }

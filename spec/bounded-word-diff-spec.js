@@ -44,6 +44,15 @@ describe("bounded detailed word highlighting", () => {
     expect(model.getAdditionLayer().getMarkerCount()).toBe(1);
     expect(model.getDeletionLayer().getMarkerCount()).toBe(1);
     expect(model.getFilePatches()[0].getRawContentPatch()).toBe(raw);
+    const read = spyOn(model.getBuffer(), "lineForRow").and.throwError(
+      "Must reject before reading the whole line",
+    );
+    const repeated = populateBoundedWordDiffs(
+      model.getPatchBuffer(),
+      model.getFilePatches()[0].getHunks(),
+    );
+    expect(repeated.reasons.lineLength).toBe(1);
+    expect(read).not.toHaveBeenCalled();
     const staged = model.getStagePatchForLines(new Set([0, 1]));
     owned.push(staged);
     expect(staged.toString().trimEnd()).toBe(model.toString().trimEnd());
