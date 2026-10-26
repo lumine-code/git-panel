@@ -15,6 +15,7 @@ const ticks = async () => {
 describe("Git panel audit data boundaries", () => {
   let scratch, temporaryRoot, coreRepository, repository, strategy;
   beforeEach(async () => {
+    jasmine.useRealClock();
     for (const name of ["openPath", "openExternal", "openApplication", "showItemInFolder"])
       spyOn(lumine.shell, name).and.resolveTo();
     temporaryRoot = await fs.realpath(os.tmpdir());

@@ -15,22 +15,21 @@ import { Keys } from "../lib/models/repository-states/cache/keys.js";
 
 const require = createRequire(import.meta.url);
 
-// A tick budget, not a wall-clock one: the specs run with the clock frozen, so
-// setImmediate turns are all there is to wait on. The condition is usually met
-// within a handful, but a git worker round trip is real I/O — 500 turns burn
-// away in a millisecond or two and expire before the answer comes back. 10000
-// matches the other suites here and costs nothing when the wait is short.
-async function waitUntil(check, attempts = 10000) {
-  for (let i = 0; i < attempts; i++) {
+// Git workers and debounced filesystem refreshes both need real event-loop time.
+async function waitUntil(check, timeout = 4000) {
+  const deadline = performance.now() + timeout;
+  do {
     if (await check()) {
       return;
     }
-    await new Promise((resolve) => setImmediate(resolve));
-  }
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  } while (performance.now() < deadline);
   throw new Error("Condition was not met");
 }
 
 describe("Lumine Git transport", () => {
+  beforeEach(() => jasmine.useRealClock());
+
   it("reads effective Git config without a repository", async () => {
     spyOn(lumine.repositories, "add").and.returnValue(Promise.resolve(null));
     const executeGit = spyOn(lumine.repositories, "executeGit").and.callFake((args) => {
