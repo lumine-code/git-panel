@@ -187,18 +187,18 @@ describe("staging selection across asynchronous refreshes", () => {
     const pending = pendingWorkspaceItem();
     const staleSync = view.syncWithWorkspace();
     const current = {
-      whenHydrated: () => Promise.resolve(patchItem("e.txt")),
+      whenHydrated: () => Promise.resolve(patchItem("a.txt")),
     };
     activeItem.and.returnValue(current);
     await flushViews(() => view.syncWithWorkspace());
-    expect(selectedPaths()).toEqual(["e.txt"]);
+    expect(selectedPaths()).toEqual(["a.txt"]);
 
     await flushViews(() => {
       pending.resolve(patchItem("b.txt"));
       return staleSync;
     });
 
-    expect(selectedPaths()).toEqual(["e.txt"]);
+    expect(selectedPaths()).toEqual(["a.txt"]);
   });
 
   it("keeps the range when a pending diff activates after the user extends its selection", async () => {
