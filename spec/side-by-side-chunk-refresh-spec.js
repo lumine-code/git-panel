@@ -106,14 +106,27 @@ describe("mounted Side by Side chunk refreshes", () => {
   }
 
   async function settle() {
-    for (let pass = 0; pass < 4; pass++) {
+    // Stop when the actual wrap and viewport work has settled. Repeating four
+    // complete render passes after every operation needlessly exhausts this
+    // test's deadline on a slower compositor, even when the first pass is ready.
+    for (let pass = 0; pass < 20; pass++) {
       await flushViews(() => {});
       const elements = sides.map((side) => editor(side).getElement());
       const updates = elements.map((element) => element.getNextUpdatePromise());
       for (const element of elements) element.getComponent().scheduleUpdate();
       await Promise.all(updates);
       await new Promise((resolve) => requestAnimationFrame(resolve));
+      if (
+        !pair().wrapAlignment.pending &&
+        !pair().patchViewportRestoration &&
+        elements.every((element) => {
+          const component = element.getComponent();
+          return !component.nextUpdatePromise;
+        })
+      )
+        return;
     }
+    throw new Error("Side by Side wrapping and viewport restoration did not settle.");
   }
 
   async function mount(hunks) {
