@@ -149,15 +149,33 @@ describe("git panel theme roles", () => {
 
   it("uses the indicator accent for focus borders and the accent pair for focused commit rows", () => {
     container.innerHTML =
-      '<button class="git-panel-Dialog--insetButton">Focus</button><div tabindex="0" class="git-panel-RecentCommits"><div class="git-panel-RecentCommit is-selected">Commit</div></div>';
+      '<input><button class="git-panel-Dialog--insetButton">Focus</button><div tabindex="0" class="git-panel-RecentCommits"><div class="git-panel-RecentCommit is-selected">Commit</div></div>';
     const button = container.querySelector("button");
+    container.querySelector("input").focus();
     button.focus();
+    expect(button.matches(":focus-visible")).toBe(true);
     expect(getComputedStyle(button).borderTopColor).toBe("rgb(10, 20, 30)");
     const commits = container.querySelector(".git-panel-RecentCommits");
     commits.focus();
     const selected = getComputedStyle(commits.firstElementChild);
     expect(selected.color).toBe("rgb(230, 240, 250)");
     expect(selected.backgroundColor).toBe("rgb(40, 50, 60)");
+  });
+
+  it("shows keyboard focus on details and radio labels without changing their selection", () => {
+    container.innerHTML =
+      '<input type="text"><details class="git-panel-RemoteConfiguration-details"><summary>Protocol</summary></details><label class="git-panel-RemoteConfiguration-protocolOption"><input type="radio" name="protocol" checked>HTTPS</label><label class="git-panel-Create-visibilityOption"><input type="radio" name="visibility" checked>Public</label>';
+    container.querySelector('input[type="text"]').focus();
+    const summary = container.querySelector("summary");
+    summary.focus();
+    expect(summary.matches(":focus-visible")).toBe(true);
+    expect(getComputedStyle(summary).borderTopColor).toBe("rgb(10, 20, 30)");
+    for (const radio of container.querySelectorAll('input[type="radio"]')) {
+      radio.focus();
+      expect(radio.matches(":focus-visible")).toBe(true);
+      expect(getComputedStyle(radio.parentElement).borderTopColor).toBe("rgb(10, 20, 30)");
+      expect(radio.checked).toBe(true);
+    }
   });
 
   it("colors Git metadata from Git status tokens independently of diagnostic colors", () => {

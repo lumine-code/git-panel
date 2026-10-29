@@ -726,7 +726,7 @@ lumine-text-editor .git-panel-ResolvedLines {
 .git-panel-Dialog--insetButton:hover {
   color: var(--text-color-highlight);
 }
-.git-panel-Dialog--insetButton:focus {
+.git-panel-Dialog--insetButton:focus-visible {
   border: solid 1px var(--accent-indicator-color);
   border-radius: 4px;
 }
@@ -815,7 +815,7 @@ lumine-text-editor .git-panel-ResolvedLines {
   user-select: none;
   margin: var(--ui-spacing) 0;
 }
-.git-panel-RemoteConfiguration-details summary:focus {
+.git-panel-RemoteConfiguration-details summary:focus-visible {
   border: solid 1px var(--accent-indicator-color);
   border-radius: 4px;
 }
@@ -836,7 +836,7 @@ lumine-text-editor .git-panel-ResolvedLines {
   padding: calc(var(--ui-spacing) / 4);
   margin-right: var(--ui-spacing);
 }
-.git-panel-RemoteConfiguration-protocolOption:focus-within {
+.git-panel-RemoteConfiguration-protocolOption:has(:focus-visible) {
   border: solid 1px var(--accent-indicator-color);
   border-radius: 4px;
 }
@@ -866,7 +866,7 @@ lumine-text-editor .git-panel-ResolvedLines {
   padding: calc(var(--ui-spacing) / 4);
   margin-right: var(--ui-spacing);
 }
-.git-panel-Create-visibilityOption:focus-within {
+.git-panel-Create-visibilityOption:has(:focus-visible) {
   border: solid 1px var(--accent-indicator-color);
   border-radius: 4px;
 }
