@@ -99,14 +99,12 @@ describe("GitPackage startup repository selection", () => {
 
     GitPackage.prototype.registerGlobalCommands.call(packageInstance);
     await commands["git-panel:toggle-focus"]();
-    await commands["git-panel:clone"].didDispatch();
 
     expect(packageInstance.commands.add.calls.argsFor(0)[0]).toBe("lumine-workspace");
-    expect(commands["git-panel:clone"].description).toBe(
-      "Clone a remote repository into a folder you choose.",
-    );
+    expect(commands["git-panel:clone"]).toBeUndefined();
+    expect(commands["git-panel:initialize"]).toBeUndefined();
     expect(root.gitTabTracker.toggleFocus).toHaveBeenCalled();
-    expect(packageInstance.invokeGitController).toHaveBeenCalledWith("openCloneDialog");
+    expect(packageInstance.invokeGitController).not.toHaveBeenCalled();
   });
 
   it("coalesces a burst of active-context updates to the latest trailing request", async () => {

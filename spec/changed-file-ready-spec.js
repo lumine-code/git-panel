@@ -182,7 +182,7 @@ describe("current-file diff command guards", () => {
     expect(warning).toHaveBeenCalledOnceWith("Save the file before viewing its Git changes.");
   });
 
-  it("uses the package initializer before retrying the current-file diff", async () => {
+  it("uses the connected setup provider before retrying the current-file diff", async () => {
     const controller = Object.create(GitRootController.prototype);
     const projectPath = "example-project";
     let options;
@@ -205,13 +205,50 @@ describe("current-file diff command guards", () => {
           return notification;
         },
       },
-      initialize: jasmine.createSpy("initialize repository").and.resolveTo(projectPath),
+      repositorySetup: {
+        openInitializeDialog: jasmine.createSpy("initialize repository").and.resolveTo({
+          getWorkingDirectory: () => projectPath,
+        }),
+      },
     };
     await controller.viewChangesForCurrentFile("unstaged");
     spyOn(controller, "viewChangesForCurrentFile").and.resolveTo();
     await options.buttons[0].onDidClick();
-    expect(controller.props.initialize).toHaveBeenCalledOnceWith(projectPath);
+    expect(controller.props.repositorySetup.openInitializeDialog).toHaveBeenCalledOnceWith({
+      event: undefined,
+      directoryPath: projectPath,
+    });
     expect(controller.viewChangesForCurrentFile).toHaveBeenCalledOnceWith("unstaged", undefined);
     expect(notification.dismiss).toHaveBeenCalled();
+  });
+
+  it("does not retry a cancelled setup and omits it without a connected provider", async () => {
+    const controller = Object.create(GitRootController.prototype);
+    let options;
+    controller.props = {
+      repositories: {
+        getCommandContext: () => ({
+          editor: { getPath: () => import.meta.filename },
+          repository: null,
+        }),
+        getForPath: () => null,
+        resolveForPath: async () => null,
+      },
+      project: { relativizePath: () => [path.dirname(import.meta.filename), "example.txt"] },
+      notificationManager: {
+        addWarning: (_message, chosen) => {
+          options = chosen;
+          return { dismiss() {} };
+        },
+      },
+    };
+    await controller.viewChangesForCurrentFile("unstaged");
+    expect(options.buttons).toEqual([]);
+
+    controller.props.repositorySetup = { openInitializeDialog: async () => null };
+    await controller.viewChangesForCurrentFile("unstaged");
+    const retry = spyOn(controller, "viewChangesForCurrentFile");
+    await options.buttons[0].onDidClick();
+    expect(retry).not.toHaveBeenCalled();
   });
 });

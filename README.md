@@ -12,7 +12,7 @@ Derived from Pulsar's [`github`](https://github.com/pulsar-edit/github) package,
 - **Patch navigation**: browse files and hunks in Navigation Panel, including collapsed diffs, and follow file and hunk markers on the scrollbar in both layouts.
 - **Shared rendering**: provide native diff layouts to other packages through the git-panel.diff service.
 - **Conflict resolution**: resolve merge conflicts with in-editor controls.
-- **Repository management**: initialize, clone, and work with multiple repositories.
+- **Repository context**: follow the selected repository and offer repository setup through Git Center.
 
 The pending diff tab is shared by staged and unstaged files, all staged changes, and commits across repositories. Opening another patch replaces its document in place, keeping the native editors and layout and starting at the new document's first hunk. The current diff remains visible while the next one loads, and a newer selection supersedes an earlier load. Empty patches keep the same renderer ready for the next document; promoting the tab keeps it open separately.
 
@@ -42,8 +42,6 @@ Commands available in `lumine-workspace`:
 - `git-panel:unstage-all-changes`: unstage all staged changes,
 - `git-panel:discard-all-changes`: discard all unstaged changes,
 - `git-panel:undo-last-discard-in-git-tab`: undo last discard,
-- `git-panel:clone`: open clone dialog,
-- `git-panel:initialize`: initialize a new git repository,
 - `git-panel:open-commit`: open commit by SHA dialog,
 - `git-panel:toggle-commit-preview`: toggle commit preview pane,
 - `git-panel:view-unstaged-changes-for-current-file`: show unstaged diff for current file,
@@ -129,7 +127,8 @@ Override the package custom properties in your `styles.css` to adjust its accent
 ## Services
 
 - `background-tips.provider`: provided to teach the package's headline workflow on the empty workspace.
-- [`git-panel`](docs/git-panel.md): provided to navigate to the Git tab and its init and clone dialogs.
+- [`git-panel`](docs/git-panel.md): provided to navigate to the Git tab.
+- `git-center.repository-setup`: consumed to open initialization and cloning from the empty panel.
 - [`git-panel.diff`](docs/git-panel.diff.md): provided to build patch snapshots and render shared native diff layouts.
 - `navigation.adapter`: provided to outline the current patch's files and hunks in Navigation Panel.
 - `scrollmap.widget`: consumed to mark file and hunk headers on the scrollbar.

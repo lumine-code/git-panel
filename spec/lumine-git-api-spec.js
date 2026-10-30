@@ -61,13 +61,9 @@ describe("Lumine Git transport", () => {
     const createPanelService = loaded.default || loaded;
     const service = createPanelService({
       openGitTab: () => "git",
-      openCloneDialog: () => "clone",
-      openInitializeDialog: () => "init",
     });
-    expect(Object.keys(service)).toEqual(["openGitTab", "openCloneDialog", "openInitializeDialog"]);
+    expect(Object.keys(service)).toEqual(["openGitTab"]);
     expect(service.openGitTab()).toBe("git");
-    expect(service.openCloneDialog()).toBe("clone");
-    expect(service.openInitializeDialog()).toBe("init");
   });
 
   it("stages through the panel repository model and its composite strategy proxy", async () => {

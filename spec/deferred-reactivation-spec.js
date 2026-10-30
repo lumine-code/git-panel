@@ -4,7 +4,7 @@ const path = require("path");
 
 const PACKAGE_NAME = "git-panel";
 const PACKAGE_PATH = path.join(__dirname, "..");
-const COMMAND_NAME = "git-panel:clone";
+const COMMAND_NAME = "git-panel:show-cache-diagnostics";
 
 describe("git-panel reactivation", () => {
   let invokeGitController;
@@ -12,7 +12,7 @@ describe("git-panel reactivation", () => {
   beforeEach(async () => {
     jasmine.attachToDOM(lumine.views.getView(lumine.workspace));
     if (lumine.packages.isPackageLoaded(PACKAGE_NAME)) {
-      await lumine.packages.unloadPackage(PACKAGE_NAME);
+      await lumine.packages.deactivatePackage(PACKAGE_NAME);
     }
     await lumine.packages.startPackage(PACKAGE_PATH);
     const gitPackageModule = requireCurrent("../lib/git-package");
@@ -22,7 +22,7 @@ describe("git-panel reactivation", () => {
 
   afterEach(async () => {
     if (lumine.packages.isPackageLoaded(PACKAGE_NAME)) {
-      await lumine.packages.unloadPackage(PACKAGE_NAME);
+      await lumine.packages.deactivatePackage(PACKAGE_NAME);
     }
   });
 
@@ -37,7 +37,7 @@ describe("git-panel reactivation", () => {
     await lumine.commands.dispatch(workspaceElement, COMMAND_NAME);
     expect(lumine.packages.getPackageLifecycleState(PACKAGE_NAME)).toBe("active");
     expect(hasWorkspaceCommand()).toBe(true);
-    expect(invokeGitController).toHaveBeenCalledOnceWith("openCloneDialog");
+    expect(invokeGitController).toHaveBeenCalledOnceWith("showCacheDiagnostics");
 
     await lumine.packages.deactivatePackage(PACKAGE_NAME);
     expect(lumine.packages.getPackageLifecycleState(PACKAGE_NAME)).toBe("loaded");

@@ -1,6 +1,6 @@
 # git-panel
 
-Open the local Git panel and its repository setup dialogs.
+Open and focus the local Git panel.
 
 | Field       | Value                               |
 | ----------- | ----------------------------------- |
@@ -15,11 +15,9 @@ Declare `git-panel` in `consumedServices` at `^1.0.0`. Consumption is passive an
 
 ## Contract
 
-| Required field         | Type                     | Description                                |
-| ---------------------- | ------------------------ | ------------------------------------------ |
-| `openGitTab`           | `() => Promise<unknown>` | Show and focus the Git panel.              |
-| `openCloneDialog`      | `() => Promise<unknown>` | Open the clone dialog.                     |
-| `openInitializeDialog` | `() => Promise<unknown>` | Open the repository initialization dialog. |
+| Required field | Type                     | Description                   |
+| -------------- | ------------------------ | ----------------------------- |
+| `openGitTab`   | `() => Promise<unknown>` | Show and focus the Git panel. |
 
 Repository discovery, selection, snapshots, typed reads, operations and policy are owned by `lumine.repositories`. This package also provides native patch rendering through `git-panel.diff`.
 
@@ -39,7 +37,7 @@ openLocalChanges() {
 
 ## Behavior
 
-The methods construct the panel view graph on demand. The separate `git-panel.diff` service can render a diff without opening the panel. Both services follow this package's lifecycle; core repository APIs remain available independently.
+The method constructs the panel view graph on demand. Repository initialization and cloning belong to `git-center.repository-setup`; the empty panel consumes that service and disables its setup buttons while no provider is connected. The separate `git-panel.diff` service can render a diff without opening the panel. Both Git Panel services follow this package's lifecycle; core repository APIs remain available independently.
 
 ## Teardown
 

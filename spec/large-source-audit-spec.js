@@ -17,7 +17,6 @@ import buildSideBySidePatch from "../lib/models/patch/side-by-side.js";
 import readFileBounded from "../lib/read-file-bounded.js";
 import { commitText, hasMessageContent } from "../lib/commit-message-source.js";
 import { buildMultiFilePatch } from "../lib/models/patch/index.js";
-import CloneDialog from "../lib/views/clone-dialog.js";
 
 function giantSource() {
   let source = textSource("x".repeat(32768));
@@ -260,30 +259,6 @@ describe("large source Git operations", () => {
     expect(() => commitText(source)).toThrowError(/commit messages exceed/i);
     expect(hasMessageContent(textSource("# comment\r\n\t😀\r\n"))).toBe(true);
     expect(hasMessageContent(textSource("# comment\r\n \t\r\n"))).toBe(false);
-  });
-
-  it("checks clone input metadata before automatic path suggestions or submission", async () => {
-    const accept = jasmine.createSpy("clone request");
-    const dialog = createViewModel(CloneDialog, {
-      request: { getParams: () => ({}), accept },
-      config: { get: () => "/tmp" },
-    });
-    dialog.updateState = (state) => Object.assign(dialog.state, state);
-    const read = spyOn(dialog.sourceURL, "getText").and.throwError("Whole URL read");
-    spyOn(lumine.notifications, "addError");
-    try {
-      dialog.sourceURL.setTextInRange(dialog.sourceURL.getRange(), giantSource());
-      expect(dialog.state.acceptEnabled).toBe(false);
-      await dialog.accept();
-      expect(read).not.toHaveBeenCalled();
-      expect(accept).not.toHaveBeenCalled();
-      expect(lumine.notifications.addError).toHaveBeenCalled();
-    } finally {
-      dialog.subs.dispose();
-      dialog.sourceURL.destroy();
-      dialog.destinationPath.destroy();
-      dialog.remoteName.destroy();
-    }
   });
 });
 

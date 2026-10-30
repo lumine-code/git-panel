@@ -61,6 +61,13 @@ describe("git-panel lazy bootstrap", () => {
       main.initialize();
       main.activate({});
       const service = main.provideGitPanel(); const lease = main.consumeBusySignal({ marker: true });
+      const setup = { openInitializeDialog() {}, openCloneDialog() {} };
+      const setupLease = main.consumeRepositorySetup(setup);
+      const setupProviders = require(${JSON.stringify(path.join(root, "lib/repository-setup.js"))});
+      assert.equal(setupProviders.getRepositorySetup(), setup);
+      assert.deepEqual(Object.keys(service), ['openGitTab']);
+      assert.equal(commands['git-panel:initialize'], undefined);
+      assert.equal(commands['git-panel:clone'], undefined);
       assert.equal(runtimeLoads, 0);
       assert.equal(registrations, 1);
       assert.equal(main.serialize, undefined);
@@ -74,11 +81,18 @@ describe("git-panel lazy bootstrap", () => {
       
       (async () => {
         await main.deactivate();
+        assert.equal(setupProviders.getRepositorySetup(), null);
         assert.equal(registrations, 0);
         main.activate({});
+        const replacement = { openInitializeDialog() {}, openCloneDialog() {} };
+        const replacementLease = main.consumeRepositorySetup(replacement);
+        setupLease.dispose();
+        assert.equal(setupProviders.getRepositorySetup(), replacement);
         assert.equal(runtimeLoads, 1);
         assert.equal(activations, 2);
         await main.deactivate();
+        replacementLease.dispose();
+        assert.equal(setupProviders.getRepositorySetup(), null);
         assert.equal(registrations, 0);
       })().catch(error => { console.error(error); process.exitCode = 1; });
     `,

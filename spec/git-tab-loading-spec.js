@@ -85,8 +85,10 @@ describe("Git tab initial repository loading", () => {
       lastCommit: nullCommit,
       currentBranch: nullBranch,
       selectedCoAuthors: [],
-      openInitializeDialog: jasmine.createSpy("open initialize dialog"),
-      openCloneDialog: jasmine.createSpy("open clone dialog"),
+      repositorySetup: {
+        openInitializeDialog: jasmine.createSpy("open initialize dialog"),
+        openCloneDialog: jasmine.createSpy("open clone dialog"),
+      },
       ...props,
     });
     jasmine.attachToDOM(view.element);
@@ -160,10 +162,59 @@ describe("Git tab initial repository loading", () => {
       "Create repository",
       "Clone repository",
     ]);
+    const events = [];
+    actions.forEach((button) => button.addEventListener("click", (event) => events.push(event)));
     actions[0].click();
     actions[1].click();
-    expect(view.props.openInitializeDialog).toHaveBeenCalledOnceWith(null);
-    expect(view.props.openCloneDialog).toHaveBeenCalledTimes(1);
+    expect(view.props.repositorySetup.openInitializeDialog).toHaveBeenCalledOnceWith({
+      event: events[0],
+      directoryPath: null,
+    });
+    expect(view.props.repositorySetup.openCloneDialog).toHaveBeenCalledOnceWith({
+      event: events[1],
+    });
+  });
+
+  it("disables setup while its provider is absent and restores actions when it returns", async () => {
+    await mount({ repository: repository({ absent: true }) });
+    const provider = view.props.repositorySetup;
+    await flushViews(() => view.update({ ...view.props, repositorySetup: null }));
+    const actions = Array.from(view.element.querySelectorAll(".no-repository button"));
+    expect(actions.every((button) => button.disabled)).toBe(true);
+    expect(view.noRepoControls()).toEqual([]);
+    actions[0].click();
+    actions[1].click();
+    expect(provider.openInitializeDialog).not.toHaveBeenCalled();
+    expect(provider.openCloneDialog).not.toHaveBeenCalled();
+
+    const replacement = {
+      openInitializeDialog: jasmine.createSpy("replacement initialize"),
+      openCloneDialog: jasmine.createSpy("replacement clone"),
+    };
+    await flushViews(() => view.update({ ...view.props, repositorySetup: replacement }));
+    expect(actions.every((button) => !button.disabled)).toBe(true);
+    actions[0].click();
+    actions[1].click();
+    expect(replacement.openInitializeDialog).toHaveBeenCalledTimes(1);
+    expect(replacement.openCloneDialog).toHaveBeenCalledTimes(1);
+    expect(provider.openInitializeDialog).not.toHaveBeenCalled();
+    expect(provider.openCloneDialog).not.toHaveBeenCalled();
+  });
+
+  it("initializes the panel's directory rather than deriving a different active project", async () => {
+    await mount({
+      repository: {
+        ...repository({ absent: true }),
+        isAbsent: () => false,
+        getWorkingDirectoryPath: () => workdir,
+      },
+    });
+    const event = { preventDefault: jasmine.createSpy("prevent default") };
+    await view.initializeRepo(event);
+    expect(view.props.repositorySetup.openInitializeDialog).toHaveBeenCalledOnceWith({
+      event,
+      directoryPath: workdir,
+    });
   });
 
   it("reopens with the accepted content while refreshing changes made with the panel closed", async () => {

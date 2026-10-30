@@ -36,9 +36,9 @@ describe("Git Panel command availability", () => {
     };
   }
 
-  it("leaves setup actions available while disabling operations without a repository", () => {
-    expect(commands["git-panel:initialize"].isAvailable).toBeUndefined();
-    expect(commands["git-panel:clone"].isAvailable).toBeUndefined();
+  it("omits repository setup commands and disables operations without a repository", () => {
+    expect(commands["git-panel:initialize"]).toBeUndefined();
+    expect(commands["git-panel:clone"]).toBeUndefined();
     expect(commands["git-panel:open-commit"].isAvailable({})).toBe(false);
     expect(commands["git-panel:toggle-commit-preview"].isAvailable({})).toBe(false);
     expect(commands["git-panel:close-all-diff-views"].isAvailable({})).toBe(false);

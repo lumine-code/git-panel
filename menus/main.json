@@ -4,21 +4,6 @@
       "label": "Git",
       "submenu": [
         {
-          "label": "Create Repository",
-          "group": "repository",
-          "order": 40,
-          "submenu": [
-            {
-              "label": "Initialize Repository…",
-              "command": "git-panel:initialize"
-            },
-            {
-              "label": "Clone Repository…",
-              "command": "git-panel:clone"
-            }
-          ]
-        },
-        {
           "label": "Toggle Git Panel",
           "command": "git-panel:toggle-git-tab",
           "group": "changes",
@@ -94,17 +79,6 @@
             {
               "label": "Close Empty Diff Views",
               "command": "git-panel:close-empty-diff-views"
-            },
-            {
-              "type": "separator"
-            },
-            {
-              "label": "Initialize Repository…",
-              "command": "git-panel:initialize"
-            },
-            {
-              "label": "Clone Repository…",
-              "command": "git-panel:clone"
             }
           ]
         }

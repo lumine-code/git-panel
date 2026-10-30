@@ -34,6 +34,7 @@
     "node": ">=24"
   },
   "specPackages": [
+    "git-center",
     "navigation-panel",
     "scrollmap",
     "marker"
@@ -76,6 +77,11 @@
     "diff": "^9.0.0"
   },
   "consumedServices": {
+    "git-center.repository-setup": {
+      "versions": {
+        "^1.0.0": "consumeRepositorySetup"
+      }
+    },
     "scrollmap.widget": {
       "versions": {
         "^1.0.0": "consumeScrollmapWidget"
