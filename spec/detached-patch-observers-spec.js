@@ -115,7 +115,7 @@ describe("Patch measurement across presentation windows", () => {
     expect(pair.headerResizeObserver instanceof extra.getDOMWindow().ResizeObserver).toBeTrue();
   });
 
-  it("rebinds the scrollbar widget's editor observer on transfer", async () => {
+  it("keeps the scrollbar widget on the core track after transfer", async () => {
     const editor = await lumine.workspace.open();
     const widgets = [];
     class Widget {
@@ -130,7 +130,6 @@ describe("Patch measurement across presentation windows", () => {
       }
     }
     leases.push(consumeScrollmapWidget(Widget));
-    const source = spyOn(window, "ResizeObserver").and.callThrough();
     leases.push(
       addPatchScrollmap({
         getScrollmapEditor: () => editor,
@@ -142,12 +141,12 @@ describe("Patch measurement across presentation windows", () => {
       }),
     );
     await globalThis.waitForFrames(() => widgets.length === 1);
-    const observer = source.calls.mostRecent().returnValue;
-    const disconnect = spyOn(observer, "disconnect").and.callThrough();
     await lumine.workspace.movePaneItem(editor, {
       targetPane: extra.getEditorContainer().getActivePane(),
     });
-    expect(disconnect).toHaveBeenCalled();
+    expect(widgets[0].element.parentNode).toBe(
+      lumine.scrollbars.getVerticalTrack(editor.getElement()),
+    );
   });
 
   it("rebinds image preview sizing to the destination document", async () => {

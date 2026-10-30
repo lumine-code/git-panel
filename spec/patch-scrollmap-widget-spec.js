@@ -122,7 +122,7 @@ describe("patch scrollbar widget", () => {
       expect(widget.items[index].height).toBeUndefined();
     }
     expect(widget.element.style.width).toBe(
-      `${component.getVerticalScrollbarWidth() || lumine.config.get("scrollmap.overlayWidth") || 0}px`,
+      `${lumine.scrollbars.getGeometry(state.editor.getElement()).verticalSize}px`,
     );
     expect(widget.element.style.height).toBe(`${component.getScrollContainerClientHeight()}px`);
   }
@@ -157,7 +157,9 @@ describe("patch scrollbar widget", () => {
       const widget = widgets[0];
       const state = view.getScrollmapState();
       expect(widget.update).not.toHaveBeenCalled();
-      expect(widget.element.parentElement).toBe(state.editor.getElement());
+      expect(widget.element.parentElement).toBe(
+        lumine.scrollbars.getVerticalTrack(state.editor.getElement()),
+      );
       expect(widget.items.filter((item) => item.cls.includes("marker-git-file")).length).toBe(2);
       expect(widget.items.filter((item) => item.cls.includes("marker-git-hunk")).length).toBe(4);
       expect(widget.items.every((item) => item.position === undefined)).toBe(true);
@@ -236,7 +238,9 @@ describe("patch scrollbar widget", () => {
     const widget = widgets.at(-1);
     expect(previous.destroy).toHaveBeenCalledTimes(1);
     expect(previousEditor.isDestroyed()).toBe(true);
-    expect(widget.element.parentElement).toBe(pair.editors.new.get().getElement());
+    expect(widget.element.parentElement).toBe(
+      lumine.scrollbars.getVerticalTrack(pair.editors.new.get().getElement()),
+    );
     expect(view.element.querySelectorAll(".git-panel-patch-scrollmap").length).toBe(1);
     pair.editors.old.get().getElement().focus();
     expect(pair.activeSide).toBe("old");
@@ -245,7 +249,9 @@ describe("patch scrollbar widget", () => {
     expect(widget.items.filter((item) => item.cls.includes("marker-git-hunk current")).length).toBe(
       1,
     );
-    expect(widget.element.parentElement).toBe(pair.editors.new.get().getElement());
+    expect(widget.element.parentElement).toBe(
+      lumine.scrollbars.getVerticalTrack(pair.editors.new.get().getElement()),
+    );
     assertPercentages(widget);
   });
 
@@ -262,6 +268,19 @@ describe("patch scrollbar widget", () => {
     expect(view.getNavigationHeaders()[0].text).toBe("new.txt");
     expect(view.element.querySelectorAll(".git-panel-patch-scrollmap").length).toBe(1);
     assertPercentages(widget);
+  });
+
+  it("moves the thumb without rebuilding file and hunk markers", async () => {
+    subscriptions.add(consumeScrollmapWidget(Widget));
+    await mount(build([diff("first.txt"), diff("second.txt")]), "unified");
+    await paint();
+    const editor = view.getScrollmapEditor();
+    const state = spyOn(view, "getScrollmapState").and.callThrough();
+    const count = widgets[0].setItems.calls.count();
+    editor.getElement().setScrollTop(100);
+    await paint();
+    expect(state).not.toHaveBeenCalled();
+    expect(widgets[0].setItems.calls.count()).toBe(count);
   });
 
   it("waits for patch-host hydration and removes widgets on service withdrawal", async () => {
@@ -392,6 +411,7 @@ describe("patch scrollbar widget", () => {
         const items = widget.items;
         const baseItem = { prc: 95 };
         widget.setItems([...items, baseItem]);
+        lumine.views.performDocumentUpdate();
         const drawn = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
         const columns = (item) => {
           const row = Math.min(canvas.height - 1, Math.ceil((item.prc / 100) * canvas.height));
@@ -433,19 +453,15 @@ describe("patch scrollbar widget", () => {
       expect(getComputedStyle(currentHunkProbe).height).toBe("2px");
       expect(getComputedStyle(currentFileProbe).opacity).toBe("1");
       expect(getComputedStyle(currentHunkProbe).opacity).toBe("1");
-      const overlayWidth = lumine.config.get("scrollmap.overlayWidth");
-      try {
-        spyOn(
-          view.getScrollmapState().editor.getElement().getComponent(),
-          "getVerticalScrollbarWidth",
-        ).and.returnValue(0);
-        lumine.config.set("scrollmap.overlayWidth", 3);
-        await paint();
-        expect(widget.element.style.width).toBe("3px");
-        assertDefaultCenter();
-      } finally {
-        lumine.config.set("scrollmap.overlayWidth", overlayWidth);
-      }
+      const readGeometry = lumine.scrollbars.getGeometry.bind(lumine.scrollbars);
+      spyOn(lumine.scrollbars, "getGeometry").and.callFake((element) => ({
+        ...readGeometry(element),
+        verticalSize: 3,
+      }));
+      widget.update();
+      await paint();
+      expect(widget.element.style.width).toBe("3px");
+      assertDefaultCenter();
     } finally {
       lease?.dispose();
       if (!scrollmapWasActive) await lumine.packages.deactivatePackage("scrollmap");
