@@ -646,73 +646,6 @@ lumine-text-editor .git-panel-ResolvedLines {
   background-color: color-mix(in srgb, var(--syntax-color-added) 15%, transparent);
 }
 
-/* dialog.css */
-.git-panel-DialogPrompt {
-  margin: var(--ui-spacing);
-  text-align: center;
-  font-size: 1.2em;
-  user-select: none;
-}
-.git-panel-DialogForm {
-  display: flex;
-  flex-direction: column;
-  padding: calc(var(--ui-spacing) / 2);
-}
-.git-panel-DialogLabel {
-  flex: 1;
-  margin: calc(var(--ui-spacing) / 2);
-  position: relative;
-  line-height: 2;
-}
-.git-panel-DialogLabel--horizontal {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-}
-.git-panel-DialogLabel--horizontal input {
-  margin: 0 var(--ui-spacing);
-}
-.git-panel-DialogLabel--horizontal input[type="text"],
-.git-panel-DialogLabel--horizontal input[type="password"] {
-  width: 85%;
-}
-.git-panel-DialogLabel .git-panel-LumineTextEditor-container {
-  margin-top: calc(var(--ui-spacing) / 2);
-}
-.git-panel-DialogFooter {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.git-panel-DialogInfo {
-  display: inline-block;
-  flex-grow: 1;
-  margin: calc(var(--ui-spacing) / 2);
-  padding: calc(var(--ui-spacing) / 2);
-}
-.git-panel-DialogInfo li {
-  display: inline-block;
-}
-.git-panel-DialogButtons {
-  flex-grow: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: calc(var(--ui-spacing) / 2);
-}
-.platform-win32 .git-panel-DialogButtons {
-  flex-direction: row-reverse;
-  justify-content: flex-start;
-}
-.git-panel-DialogButtons .btn {
-  margin: calc(var(--ui-spacing) / 2);
-}
-.git-panel-DialogButtons-leftItem,
-.git-panel-DialogButtons-leftItem.btn {
-  margin: calc(var(--ui-spacing) / 2);
-  margin-right: auto;
-}
 .git-panel-Dialog--insetButton {
   position: absolute;
   background: transparent;
@@ -729,30 +662,6 @@ lumine-text-editor .git-panel-ResolvedLines {
 .git-panel-Dialog--insetButton:focus-visible {
   border: solid 1px var(--accent-indicator-color);
   border-radius: 4px;
-}
-.git-panel-DialogSpinner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--ui-spacing);
-}
-.git-panel-DialogSpinner .loading {
-  margin: var(--ui-spacing);
-}
-.git-panel-Dialog-row {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-}
-.git-panel-Dialog lumine-text-editor[mini].editor {
-  margin: 0;
-}
-.git-panel-Dialog lumine-text-editor[mini].editor[readOnly] {
-  color: var(--text-color-subtle);
-}
-.git-panel-Dialog:not(:focus-within) {
-  padding-bottom: 1px;
-  transition: padding-bottom 0.01s;
 }
 .git-panel-TabbableWrapper {
   display: flex;
