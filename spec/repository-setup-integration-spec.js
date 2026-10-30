@@ -62,7 +62,8 @@ describe("Git Panel repository setup service integration", () => {
     document.querySelector(".no-repository button").click();
     await conditionPromise(() => document.querySelector(".git-center-repository-dialog"));
     const form = document.querySelector(".git-center-repository-dialog");
-    expect(form.querySelector('[name="destinationPath"]').value).toBe(directory);
+    const destination = form.querySelector('lumine-text-editor[data-field="destinationPath"]');
+    expect(destination.getModel().getText()).toBe(directory);
     await lumine.commands.dispatch(form, "core:confirm");
     const repository = await initialize.calls.mostRecent().returnValue;
     expect(path.normalize(repository.getWorkingDirectory())).toBe(path.normalize(directory));
