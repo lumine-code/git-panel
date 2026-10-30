@@ -1819,9 +1819,8 @@ pre.git-panel-Message-description {
      column. Keep change and explicit-selection backgrounds intact. */
   box-shadow: none;
 }
-.git-panel-SideBySidePatchView-column[data-diff-side="old"] .vertical-scrollbar,
-.git-panel-SideBySidePatchView-column[data-diff-side="old"] .scrollbar-corner {
-  /* The right editor's native scrollbar controls both aligned columns. Keep
+.git-panel-SideBySidePatchView-column[data-diff-side="old"] .vertical-scrollbar {
+  /* The right editor's scrollbar controls both aligned columns. Keep
      both editors' scrollbar measurements equal without drawing a second one. */
   visibility: hidden !important;
 }

@@ -561,7 +561,15 @@ describe("mounted side-by-side diff view", () => {
       newElement.getMaxScrollTop(),
     );
     expect(sharedScrollbar.getBoundingClientRect().height).toBeCloseTo(
-      geometry.viewportHeight - (geometry.canScrollHorizontally ? geometry.horizontalSize : 0),
+      newElement.getComponent().getScrollContainerHeight(),
+      0,
+    );
+    expect(geometry.verticalTrackSize).toBeCloseTo(
+      sharedScrollbar.getBoundingClientRect().height,
+      0,
+    );
+    expect(sharedScrollbar.getBoundingClientRect().bottom).toBeCloseTo(
+      newElement.getComponent().refs.scrollContainer.getBoundingClientRect().bottom,
       0,
     );
     expectThumbPosition(newElement.getScrollTop());
