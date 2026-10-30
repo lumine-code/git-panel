@@ -159,7 +159,7 @@ describe("the commit view controls", () => {
       expect(messageEditor.getModel().getScrollPastEnd()).toBe(false);
       expect(messageEditor.getMaxScrollTop()).toBe(0);
       expect(editorComponent.canScrollVertically()).toBe(false);
-      expect(verticalScrollbar.style.visibility).toBe("hidden");
+      expect(getComputedStyle(verticalScrollbar).visibility).toBe("hidden");
     } finally {
       lumine.config.set("editor.scrollPastEnd", previousScrollPastEnd);
       await globalThis.flushMicrotasks();

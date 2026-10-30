@@ -485,6 +485,32 @@ describe("mounted side-by-side diff view", () => {
     expect(newElement.getMaxScrollTop()).toBeGreaterThan(240);
     const oldScrollbar = oldElement.querySelector(".vertical-scrollbar");
     const sharedScrollbar = newElement.querySelector(".vertical-scrollbar");
+    const thumb = sharedScrollbar.querySelector(".scrollbar-thumb");
+    const expectThumbPosition = (position) => {
+      const geometry = lumine.scrollbars.getGeometry(newElement);
+      const trackBounds = sharedScrollbar.getBoundingClientRect();
+      const thumbBounds = thumb.getBoundingClientRect();
+      const travel = trackBounds.height - thumbBounds.height;
+      const maximum = geometry.scrollHeight - geometry.viewportHeight;
+      expect(thumbBounds.top - trackBounds.top).toBeCloseTo((position / maximum) * travel, 0);
+    };
+    const clickTrackAt = (position) => {
+      const geometry = lumine.scrollbars.getGeometry(newElement);
+      const trackBounds = sharedScrollbar.getBoundingClientRect();
+      const thumbBounds = thumb.getBoundingClientRect();
+      const travel = trackBounds.height - thumbBounds.height;
+      const maximum = geometry.scrollHeight - geometry.viewportHeight;
+      const pointer = {
+        bubbles: true,
+        cancelable: true,
+        pointerId: 1,
+        button: 0,
+        clientX: trackBounds.left + trackBounds.width / 2,
+        clientY: trackBounds.top + thumbBounds.height / 2 + (position / maximum) * travel,
+      };
+      sharedScrollbar.dispatchEvent(new PointerEvent("pointerdown", pointer));
+      sharedScrollbar.dispatchEvent(new PointerEvent("pointerup", pointer));
+    };
     const visibleScrollbars = Array.from(
       view.element.querySelectorAll(".vertical-scrollbar"),
     ).filter((scrollbar) => getComputedStyle(scrollbar).visibility !== "hidden");
@@ -498,19 +524,18 @@ describe("mounted side-by-side diff view", () => {
     await renderEditors();
     expect(oldElement.getScrollTop()).toBe(120);
     expect(newElement.getScrollTop()).toBe(120);
-    expect(sharedScrollbar.scrollTop).toBe(120);
+    expectThumbPosition(120);
     newElement.setScrollTop(240);
     await renderEditors();
     expect(newElement.getScrollTop()).toBe(240);
     expect(oldElement.getScrollTop()).toBe(240);
-    expect(sharedScrollbar.scrollTop).toBe(240);
-    sharedScrollbar.scrollTop = 360;
-    sharedScrollbar.dispatchEvent(new Event("scroll"));
+    expectThumbPosition(240);
+    clickTrackAt(360);
     await renderEditors();
-    expect(newElement.getScrollTop()).toBe(360);
-    expect(oldElement.getScrollTop()).toBe(360);
-    sharedScrollbar.scrollTop = sharedScrollbar.scrollHeight;
-    sharedScrollbar.dispatchEvent(new Event("scroll"));
+    expect(newElement.getScrollTop()).toBeCloseTo(360, 0);
+    expect(oldElement.getScrollTop()).toBeCloseTo(360, 0);
+    expectThumbPosition(newElement.getScrollTop());
+    clickTrackAt(newElement.getScrollHeight());
     await renderEditors();
     expect(newElement.getScrollTop()).toBe(newElement.getMaxScrollTop());
     expect(oldElement.getScrollTop()).toBe(oldElement.getMaxScrollTop());
@@ -520,7 +545,7 @@ describe("mounted side-by-side diff view", () => {
     await renderEditors();
     await renderEditors();
     // Forced paints can finish before ResizeObserver delivers the new height.
-    // Compare extents only after both native editors measure that input size.
+    // Compare extents only after both editors measure that input size.
     await globalThis.waitForFrames(
       () =>
         [oldElement, newElement].every((element) => {
@@ -531,9 +556,15 @@ describe("mounted side-by-side diff view", () => {
         }),
       { description: "both diff editors to measure the resized viewport" },
     );
-    expect(sharedScrollbar.scrollHeight - sharedScrollbar.clientHeight).toBe(
+    const geometry = lumine.scrollbars.getGeometry(newElement);
+    expect(Math.round(geometry.scrollHeight - geometry.viewportHeight)).toBe(
       newElement.getMaxScrollTop(),
     );
+    expect(sharedScrollbar.getBoundingClientRect().height).toBeCloseTo(
+      geometry.viewportHeight - (geometry.canScrollHorizontally ? geometry.horizontalSize : 0),
+      0,
+    );
+    expectThumbPosition(newElement.getScrollTop());
     expect(newElement.getMaxScrollTop()).toBe(oldElement.getMaxScrollTop());
   });
 
