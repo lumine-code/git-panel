@@ -67,6 +67,10 @@
   ".git-panel-Dialog input": {
     "enter": "core:confirm"
   },
+  ".git-panel-Dialog": {
+    "tab": "core:focus-next",
+    "shift-tab": "core:focus-previous"
+  },
   ".git-panel-TabbableWrapper": {
     "down": "git-panel:selectbox-down",
     "up": "git-panel:selectbox-up",

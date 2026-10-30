@@ -2,15 +2,22 @@
 /** @jsx h */
 import { h, flushViews, createViewHost } from "./helpers/etch.js";
 import OpenCommitDialog from "../lib/views/open-commit-dialog.js";
+import path from "node:path";
+import { ipcRenderer } from "electron";
 
 describe("Git commit dialog presentation", () => {
-  let host, root, view, request;
+  let host, root, view, request, bindings;
 
   beforeEach(() => {
+    jasmine.useRealClock();
     jasmine.attachToDOM(lumine.workspace.getElement());
     host = document.createElement("div");
     document.body.append(host);
     root = createViewHost(host);
+    bindings = lumine.keymaps.add(
+      "git-dialog-presentation-spec",
+      lumine.keymaps.readKeymap(path.join(import.meta.dirname, "../keymaps/main.json")),
+    );
     request = {
       accept: jasmine.createSpy("accept").and.resolveTo(undefined),
       cancel: jasmine.createSpy("cancel"),
@@ -20,6 +27,7 @@ describe("Git commit dialog presentation", () => {
   afterEach(async () => {
     await flushViews(async () => root.destroy());
     host.remove();
+    bindings.dispose();
   });
 
   function render(inProgress = false, error = null) {
@@ -62,6 +70,10 @@ describe("Git commit dialog presentation", () => {
     expect(editor.isReadOnly()).toBe(true);
     expect(input.hasFocus()).toBe(true);
     expect(accept.disabled).toBe(true);
+    expect(cancel.disabled).toBe(true);
+    expect(lumine.commands.canDispatch(input, "core:cancel")).toBe(false);
+    await lumine.commands.dispatch(input, "core:cancel");
+    expect(request.cancel).not.toHaveBeenCalled();
     await lumine.commands.dispatch(input, "core:confirm");
     expect(request.accept).not.toHaveBeenCalled();
 
@@ -74,5 +86,52 @@ describe("Git commit dialog presentation", () => {
     expect(request.accept).toHaveBeenCalledOnceWith("refs/heads/main");
     await flushViews(async () => root.destroy());
     expect(editor.isDestroyed()).toBe(true);
+  });
+
+  jasmine.itWithDocumentFocus(
+    "moves between the mini and Cancel with real Tab and Shift-Tab",
+    async () => {
+      await render();
+      const form = document.querySelector(".git-panel-Dialog");
+      const input = form.querySelector("lumine-text-editor[mini]");
+      input.focus();
+      for (const type of ["keyDown", "keyUp"])
+        await ipcRenderer.invoke("lumine:window", "sendInputEvent", { type, keyCode: "Tab" });
+      await flushViews(async () => {});
+      expect(document.activeElement).toBe(form.querySelector(".dialog-actions button"));
+      for (const type of ["keyDown", "keyUp"])
+        await ipcRenderer.invoke("lumine:window", "sendInputEvent", {
+          type,
+          keyCode: "Tab",
+          modifiers: ["shift"],
+        });
+      await flushViews(async () => {});
+      expect(input.hasFocus()).toBe(true);
+    },
+  );
+
+  it("dismisses an idle outside click but keeps a pending operation visible", async () => {
+    await render(true);
+    const form = document.querySelector(".git-panel-Dialog");
+    const panel = lumine.workspace
+      .getModalPanels()
+      .find((item) => item.getElement().contains(form));
+    const outside = document.createElement("button");
+    document.body.append(outside);
+    const clickOutside = async () => {
+      outside.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    };
+    try {
+      await clickOutside();
+      expect(panel.isVisible()).toBe(true);
+      expect(request.cancel).not.toHaveBeenCalled();
+      await render(false);
+      await clickOutside();
+      expect(panel.isVisible()).toBe(false);
+      expect(request.cancel).toHaveBeenCalledTimes(1);
+    } finally {
+      outside.remove();
+    }
   });
 });
