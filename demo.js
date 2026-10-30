@@ -1,4 +1,11 @@
 // Authentic package usage. Run with lumine/script/demo.js; fixtures stay in demo/.
+function avatarsReady() {
+  const images = Array.from(
+    document.querySelectorAll(".git-panel-Project-avatar, .git-panel-RecentCommit-avatar"),
+  ).filter((image) => image.getClientRects().length > 0);
+  return images.length >= 2 && images.every((image) => image.complete && image.naturalWidth > 0);
+}
+
 function selectDiffView(layout) {
   const button = document.querySelector(
     `.git-panel-DiffViewToggle button[data-diff-view="${layout}"]`,
@@ -17,6 +24,7 @@ function imageVersionsReady(layout) {
         `.git-panel-DiffViewToggle button[data-diff-view="${layout}"].selected`,
       ),
     ) &&
+    avatarsReady() &&
     images.length === 2 &&
     images.every((image) => image.complete && image.naturalWidth === 640) &&
     document.body.innerText.includes("Working Tree") &&
@@ -69,6 +77,7 @@ module.exports = {
         const logo = document.querySelector(".app-icon img");
         return Boolean(
           document.body.innerText.includes("Unstaged Changes") &&
+          avatarsReady() &&
           logo?.complete &&
           logo.naturalWidth > 0,
         );
