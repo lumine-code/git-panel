@@ -124,7 +124,10 @@ describe("patch scrollbar widget", () => {
     expect(widget.element.style.width).toBe(
       `${lumine.scrollbars.getGeometry(state.editor.getElement()).verticalSize}px`,
     );
-    expect(widget.element.style.height).toBe(`${component.getScrollContainerClientHeight()}px`);
+    const geometry = lumine.scrollbars.getGeometry(state.editor.getElement());
+    expect(widget.element.style.height).toBe(
+      `${geometry.verticalTrackSize ?? geometry.viewportHeight}px`,
+    );
   }
 
   function longLineScreenRows(editor) {
