@@ -5,17 +5,18 @@ const os = require("node:os");
 const path = require("node:path");
 
 describe("Git Panel repository setup service integration", () => {
-  let main, directory;
+  let main, directory, editor, temporaryRoot;
   beforeEach(async () => {
     jasmine.useRealClock();
     spyOn(lumine.window, "whenLoaded").and.resolveTo(0);
     jasmine.attachToDOM(lumine.views.getView(lumine.workspace));
-    directory = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), "git-panel-setup-")));
+    temporaryRoot = await fs.realpath(os.tmpdir());
+    directory = await fs.realpath(await fs.mkdtemp(path.join(temporaryRoot, "git-panel-setup-")));
     const filePath = path.join(directory, "example.txt");
     await fs.writeFile(filePath, "Repository setup integration.\n");
     lumine.project.setPaths([directory]);
     lumine.repositories.setActiveRepository(null);
-    await lumine.workspace.open(filePath);
+    editor = await lumine.workspace.open(filePath);
     main = (await lumine.packages.startPackage("git-panel")).mainModule;
     await lumine.packages.startPackage("git-center");
     await main.provideGitPanel().openGitTab();
@@ -25,9 +26,22 @@ describe("Git Panel repository setup service integration", () => {
   afterEach(async () => {
     await lumine.packages.deactivatePackage("git-panel");
     await lumine.packages.deactivatePackage("git-center");
+    editor?.destroy();
+    const repository = lumine.repositories.getForPath(directory);
+    if (repository) await lumine.repositories.forget(repository);
     lumine.project.setPaths([]);
     await lumine.fileWatchClient.settlePendingTeardown();
-    await fs.rm(directory, { recursive: true, force: true });
+    const resolved = await fs.realpath(directory);
+    const relative = path.relative(temporaryRoot, resolved);
+    if (
+      !relative ||
+      relative === ".." ||
+      relative.startsWith(`..${path.sep}`) ||
+      path.isAbsolute(relative)
+    )
+      throw new Error("Fixture cleanup escaped its owned temporary root.");
+    await fs.rm(resolved, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+    editor = directory = temporaryRoot = null;
   });
 
   it("updates the mounted panel when the provider withdraws and returns", async () => {
