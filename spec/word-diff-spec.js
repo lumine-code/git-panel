@@ -6,6 +6,7 @@ import { buildFilePatch } from "../lib/models/patch/index.js";
 import MultiFilePatchView from "../lib/views/multi-file-patch-view.js";
 import LumineTextEditor from "../lib/lumine/lumine-text-editor.js";
 import RefHolder from "../lib/models/ref-holder.js";
+import { useDeterministicWordDiffClock } from "./helpers/word-diff-clock.js";
 
 function buildReplacement(oldText, newText, options) {
   return buildFilePatch(
@@ -80,6 +81,8 @@ class WordDiffEditor extends View {
 }
 
 describe("word diff decorations", () => {
+  beforeEach(useDeterministicWordDiffClock);
+
   it("preserves each side's columns when unchanged words have different spacing", () => {
     const patch = buildReplacement("foo    bar old", "foo bar new");
     expect(rangesFromBufferLayer(patch.getWordDeletionLayer())).toEqual([
@@ -258,6 +261,10 @@ describe("word diff decorations", () => {
       oldText,
       "$\\displaystyle {{\\alpha}}_{ult}=\\dfrac{246.7\\,\\mathrm{MPa}}{70.4\\,\\mathrm{MPa}}=3.506$",
     );
+    for (const patch of [intermediatePatch, nextPatch]) {
+      expect(patch.getWordDiffStats().detailedPairs).toBe(1);
+      expect(patch.getWordDiffStats().omittedPairs).toBe(0);
+    }
     const container = document.createElement("div");
     const root = createViewHost(container);
     const refDeletionLayer = new RefHolder();

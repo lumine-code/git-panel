@@ -1,6 +1,7 @@
 /** @babel */
 import { buildMultiFilePatch } from "../lib/models/patch/index.js";
 import { populateBoundedWordDiffs, WORD_DIFF_LIMITS } from "../lib/models/patch/word-diff.js";
+import { useDeterministicWordDiffClock, withDiffDateClock } from "./helpers/word-diff-clock.js";
 
 function replacement(oldLines, newLines) {
   return {
@@ -65,7 +66,9 @@ describe("bounded detailed word highlighting", () => {
     const model = build(replacement([oldText], [newText]));
     const raw = model.toString();
     const hunk = model.getFilePatches()[0].getHunks()[0];
-    const stats = populateBoundedWordDiffs(model.getPatchBuffer(), [hunk], { clock: () => 0 });
+    const stats = withDiffDateClock(() =>
+      populateBoundedWordDiffs(model.getPatchBuffer(), [hunk], { clock: () => 0 }),
+    );
     expect(stats.omittedPairs).toBe(1);
     expect(stats.reasons.editOrTimeLimit).toBe(1);
     expect(model.getWordAdditionLayer().getMarkerCount()).toBe(0);
@@ -90,12 +93,31 @@ describe("bounded detailed word highlighting", () => {
   });
 
   it("keeps exact UTF-16 columns for normal emoji replacements", () => {
+    useDeterministicWordDiffClock();
     const model = build(replacement(["😀 old value"], ["😀 new value"]));
     expect(model.getWordDiffStats().omittedPairs).toBe(0);
     const oldRange = model.getWordDeletionLayer().getMarkers()[0].getRange();
     const newRange = model.getWordAdditionLayer().getMarkers()[0].getRange();
     expect([oldRange.start.row, oldRange.start.column, oldRange.end.column]).toEqual([0, 3, 6]);
     expect([newRange.start.row, newRange.start.column, newRange.end.column]).toEqual([1, 3, 6]);
+  });
+
+  it("reports omitted detail when the monotonic line budget expires after diff completion", () => {
+    const model = build(replacement(["before value"], ["after value"]));
+    const hunks = model.getFilePatches()[0].getHunks();
+    let calls = 0;
+    const dateNow = Date.now;
+    const stats = withDiffDateClock(() =>
+      populateBoundedWordDiffs(model.getPatchBuffer(), hunks, {
+        clock: () => (++calls < 5 ? 0 : 9),
+      }),
+    );
+    expect(stats.detailedPairs).toBe(0);
+    expect(stats.omittedPairs).toBe(1);
+    expect(stats.reasons.editOrTimeLimit).toBe(1);
+    expect(model.getWordAdditionLayer().getMarkerCount()).toBe(0);
+    expect(model.getWordDeletionLayer().getMarkerCount()).toBe(0);
+    expect(Date.now).toBe(dateNow);
   });
 
   it("updates omission metadata after deferred expansion and removes it again after collapse", () => {
