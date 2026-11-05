@@ -428,7 +428,7 @@ describe("mounted side-by-side diff view", () => {
     await layout("side-by-side");
     for (const side of ["old", "new"]) {
       editor(side).setSoftWrapped(false);
-      editor(side).update({ maxScreenLineLength: Infinity });
+      editor(side).update({ unwrappedLineLengthLimit: Infinity });
     }
     await renderEditors();
     const oldElement = editor("old").getElement();
