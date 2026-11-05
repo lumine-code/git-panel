@@ -1,6 +1,6 @@
 {
   // `alt-g` is the git family's chord prefix, shared with github-panel,
-  // open-repository, git-diff and git-command. It is never a complete binding
+  // open-repository, git-chunk and git-command. It is never a complete binding
   // on its own: an exact match alongside a chord prefix stalls every press for
   // a second while the keymap waits for the rest of the chord.
   "lumine-workspace": {
