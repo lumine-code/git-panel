@@ -334,12 +334,17 @@ describe("shared side-by-side diff headers", () => {
       });
     }
     await paint();
+    // Mounting selects the whole hunk and may reveal its end. Start with the
+    // first header on screen before checking its motion during wheel input.
+    for (const side of ["old", "new"]) pair.editors[side].get().getElement().setScrollTop(0);
+    await paint();
     for (const component of [oldComponent, newComponent]) {
       component.element.setUpdatedSynchronously(false);
       component.scrollAnimator.raf = () => 0;
       component.scrollAnimator.caf = () => {};
     }
     const record = pair.sharedHeaders[0];
+    expect(record.element.style.visibility).toBe("visible");
     for (const [side, deltaY] of [
       ["old", 35],
       ["new", -20],
