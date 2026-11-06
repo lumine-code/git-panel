@@ -1241,36 +1241,42 @@ pre.git-panel-Message-description {
   color: transparent;
   overflow: hidden;
 }
-.git-panel-Project-lock.btn {
-  width: 40px;
-  height: 20px;
-  padding: 0;
-  display: flex;
-  flex-direction: row;
+.git-panel-Project-lock {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  align-items: baseline;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  margin-left: var(--ui-spacing);
+  padding: 0;
+  line-height: 1;
   border: none;
+  border-radius: var(--ui-border-radius);
   background-color: transparent;
-  background-image: none;
+  color: var(--text-color);
+  cursor: default;
 }
-.git-panel-Project-lock.btn:active,
-.git-panel-Project-lock.btn:hover {
-  background-color: transparent;
-  background-image: none;
+.git-panel-Project-lock:hover:not(:disabled) {
+  background-color: var(--background-color-highlight);
+  color: var(--text-color-highlight);
+}
+.git-panel-Project-lock:focus-visible {
+  outline: 1px solid var(--accent-indicator-color);
+  outline-offset: -1px;
+}
+.git-panel-Project-lock:disabled {
+  opacity: 0.5;
 }
 .git-panel-Project .icon {
   padding: 0;
   margin: 0;
   line-height: 1em;
-  fill: var(--text-color);
-}
-.git-panel-Project .icon:hover {
-  fill: var(--text-color-highlight);
+  fill: currentColor;
 }
 .git-panel-Project .icon.icon-unlock {
-  width: 21px;
+  width: 20px;
   height: 17px;
-  padding-left: 1px;
 }
 
 /* recent-commits.css */
