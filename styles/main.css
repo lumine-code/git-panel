@@ -935,8 +935,10 @@ lumine-dock.right .git-panel-CommitDetailView-moreText {
   -webkit-user-select: none;
   cursor: default;
 }
-.git-panel-FilePatchListView > .git-panel-FilePatchListView-item:hover,
-.git-panel-FilePatchListView > .git-panel-MergeConflictListView-item:hover {
+.git-panel-FilePatchListView
+  > .git-panel-FilePatchListView-item:is(:hover, [data-context-menu-hover]),
+.git-panel-FilePatchListView
+  > .git-panel-MergeConflictListView-item:is(:hover, [data-context-menu-hover]) {
   background-color: var(--background-color-highlight);
 }
 .git-panel-FilePatchListView
@@ -1360,7 +1362,7 @@ pre.git-panel-Message-description {
 .git-panel-RecentCommit-time {
   color: var(--text-color-subtle);
 }
-.git-panel-RecentCommit:hover {
+.git-panel-RecentCommit:is(:hover, [data-context-menu-hover]) {
   background: var(--background-color-highlight);
 }
 .git-panel-RecentCommit.is-selected {
