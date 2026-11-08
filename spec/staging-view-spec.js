@@ -48,6 +48,19 @@ describe("native staging list updates", () => {
     expect(render.calls.count()).toBe(2);
   });
 
+  it("reveals the active staging list for navigation at its boundary", async () => {
+    await createView(1);
+    await flushViews(() => view.selectFirst());
+    const reveal = spyOn(lumine.scrollbars, "reveal");
+    await flushViews(() => view.selectPrevious());
+    const list = view.listRefs.get(view.state.selection.getActiveListKey()).getOr(null);
+    expect(list?.classList.contains("git-panel-StagingView-list")).toBe(true);
+    expect(reveal).toHaveBeenCalledWith(list);
+    reveal.calls.reset();
+    view.element.dispatchEvent(new KeyboardEvent("keydown", { key: "q", bubbles: true }));
+    expect(reveal).not.toHaveBeenCalled();
+  });
+
   it("tracks refreshed row objects without replacing their keyed DOM", async () => {
     const changes = await createView(2);
     const oldRows = Array.from(view.element.querySelectorAll(".git-panel-FilePatchListView-item"));

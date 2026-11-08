@@ -85,6 +85,16 @@ describe("recent commit history interactions", () => {
     expect(view.props.selectLastCommit).toHaveBeenCalledTimes(1);
   });
 
+  it("reveals navigation even when the controller keeps the same commit selected", () => {
+    const reveal = spyOn(lumine.scrollbars, "reveal");
+    lumine.commands.dispatch(view.element, "core:move-down");
+    expect(view.props.selectNextCommit).toHaveBeenCalledTimes(1);
+    expect(reveal).toHaveBeenCalledWith(view.element);
+    reveal.calls.reset();
+    lumine.commands.dispatch(view.element, "git-panel:copy-commit-sha");
+    expect(reveal).not.toHaveBeenCalled();
+  });
+
   it("makes copy and checkout commands available at the focused history root", () => {
     view.element.focus();
     lumine.commands.dispatch(view.element, "git-panel:copy-commit-sha");
