@@ -95,6 +95,30 @@ describe("recent commit history interactions", () => {
     expect(reveal).not.toHaveBeenCalled();
   });
 
+  for (const command of ["core:confirm", "git-panel:dive"]) {
+    it(`signals accepted ${command} once without changing the history scroll offset`, () => {
+      const reveal = spyOn(lumine.scrollbars, "reveal");
+      const before = view.element.scrollTop;
+      lumine.commands.dispatch(view.element, command);
+      expect(openCommit).toHaveBeenCalledOnceWith({ sha: "second", preserveFocus: false });
+      expect(view.element.scrollTop).toBe(before);
+      expect(reveal).toHaveBeenCalledOnceWith(view.element);
+    });
+  }
+
+  it("reports accepted navigation before the opener replaces the selected history state", async () => {
+    const reveal = spyOn(lumine.scrollbars, "reveal");
+    openCommit.and.callFake(() => {
+      expect(reveal).toHaveBeenCalledOnceWith(view.element);
+      return view.update({ ...view.props, selectedCommitSha: "" });
+    });
+
+    await lumine.commands.dispatch(view.element, "git-panel:dive");
+
+    expect(openCommit).toHaveBeenCalledOnceWith({ sha: "second", preserveFocus: false });
+    expect(reveal).toHaveBeenCalledOnceWith(view.element);
+  });
+
   it("makes copy and checkout commands available at the focused history root", () => {
     view.element.focus();
     lumine.commands.dispatch(view.element, "git-panel:copy-commit-sha");
@@ -117,6 +141,7 @@ describe("recent commit history interactions", () => {
   });
 
   it("ignores empty and stale selections for opening, copying and checkout", async () => {
+    const reveal = spyOn(lumine.scrollbars, "reveal");
     for (const selectedCommitSha of ["", "missing"]) {
       await flushViews(() => view.update({ ...view.props, selectedCommitSha }));
       for (const command of [
@@ -128,6 +153,7 @@ describe("recent commit history interactions", () => {
       ]) {
         lumine.commands.dispatch(view.element, command);
       }
+      expect(reveal).not.toHaveBeenCalled();
     }
 
     expect(openCommit).not.toHaveBeenCalled();
@@ -169,6 +195,7 @@ describe("recent commit history interactions", () => {
   });
 
   it("leaves Enter on the Undo button to its native button activation", () => {
+    const reveal = spyOn(lumine.scrollbars, "reveal");
     const button = view.element.querySelector(".git-panel-RecentCommit-undoButton");
     button.focus();
     lumine.commands.dispatch(button, "core:confirm");
@@ -178,6 +205,7 @@ describe("recent commit history interactions", () => {
     const abortKeyBinding = jasmine.createSpy("abort Undo Enter binding");
     view.confirmSelectedCommit({ target: button, abortKeyBinding });
     expect(abortKeyBinding).toHaveBeenCalledTimes(1);
+    expect(reveal).not.toHaveBeenCalled();
   });
 
   describe("loading older history", () => {
