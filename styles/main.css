@@ -1682,7 +1682,7 @@ pre.git-panel-Message-description {
 .git-panel-FilePatchView-header {
   display: flex;
   flex-wrap: nowrap;
-  align-items: center;
+  align-items: stretch;
   border: 1px solid var(--base-border-color);
   border-radius: var(--ui-border-radius);
   font-family: var(--ui-font-family);
@@ -1691,26 +1691,23 @@ pre.git-panel-Message-description {
   background-color: var(--panel-heading-background-color);
   cursor: default;
 }
-.git-panel-FilePatchView-header .btn {
-  font-size: 0.9em;
+.git-panel-FilePatchHeaderView-button {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
-.git-panel-FilePatchView-header .btn.icon-move-up::before,
-.git-panel-FilePatchView-header .btn.icon-move-down::before {
+.git-panel-FilePatchHeaderView-button.icon-move-up::before,
+.git-panel-FilePatchHeaderView-button.icon-move-down::before {
   font-size: 1em;
   margin-right: 0.5em;
 }
-.git-panel-FilePatchView-header .btn-group {
-  margin: calc(var(--ui-spacing) / 2);
-  flex-shrink: 0;
-  flex-wrap: nowrap;
-  white-space: nowrap;
-}
 .git-panel-FilePatchView-title {
   flex: 1;
+  min-width: 0;
+  line-height: 2.4;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-left: var(--ui-spacing);
+  padding: 0 var(--ui-spacing);
 }
 .git-panel-FilePatchView-message {
   color: var(--syntax-text-color);
@@ -1734,7 +1731,7 @@ pre.git-panel-Message-description {
   padding: calc(var(--ui-spacing) / 1.5);
 }
 .git-panel-FilePatchView-collapseButton + .git-panel-FilePatchView-title {
-  margin-left: 0;
+  padding-left: 0;
 }
 .git-panel-FilePatchView-collapseButtonIcon:before {
   margin-right: 0;
@@ -2270,30 +2267,36 @@ pre.git-panel-Message-description {
   text-overflow: ellipsis;
   -webkit-font-smoothing: antialiased;
 }
-.git-panel-HunkHeaderView-title:hover {
-  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
+.git-panel-HunkHeaderView-title:hover,
+.git-panel-DiffHeaderButton:enabled:is(:hover, :focus-visible) {
+  color: var(--git-panel-header-hover-color, var(--text-color));
+  background: var(--git-panel-header-hover-background, var(--background-color-highlight));
 }
-.git-panel-HunkHeaderView-title:active {
-  background-color: color-mix(in srgb, var(--syntax-text-color) 2%, var(--syntax-background-color));
+.git-panel-HunkHeaderView-title:active,
+.git-panel-DiffHeaderButton:enabled:active {
+  color: var(--git-panel-header-active-color, var(--text-color-selected));
+  background: var(--git-panel-header-active-background, var(--background-color-selected));
 }
-.git-panel-HunkHeaderView-stageButton,
-:is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton) {
+.git-panel-DiffHeaderButton {
+  height: auto;
   line-height: 1;
-  padding-left: var(--ui-spacing);
-  padding-right: var(--ui-spacing);
+  padding: 0 var(--ui-spacing);
   font-family: var(--ui-font-family);
+  font-size: inherit;
   border: none;
   border-left: inherit;
-  background-color: transparent;
+  border-radius: 0;
+  color: inherit;
+  background: transparent;
   cursor: default;
 }
-.git-panel-HunkHeaderView-stageButton:hover,
-:is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton):hover {
-  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
+.git-panel-DiffHeaderButton:last-of-type {
+  border-top-right-radius: inherit;
+  border-bottom-right-radius: inherit;
 }
-.git-panel-HunkHeaderView-stageButton:active,
-:is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton):active {
-  background-color: color-mix(in srgb, var(--syntax-text-color) 2%, var(--syntax-background-color));
+.git-panel-DiffHeaderButton:focus-visible {
+  outline: 2px auto var(--accent-indicator-color);
+  outline-offset: -2px;
 }
 .git-panel-HunkHeaderView-stageButton .keystroke,
 :is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton) .keystroke {
@@ -2304,69 +2307,21 @@ pre.git-panel-Message-description {
   width: auto;
   vertical-align: 2px;
 }
-.git-panel-HunkHeaderView-title:hover,
-.git-panel-HunkHeaderView-stageButton:hover,
-:is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton):hover {
-  background-color: color-mix(in srgb, var(--syntax-text-color) 4%, var(--syntax-background-color));
-}
-.git-panel-HunkHeaderView-title:active,
-.git-panel-HunkHeaderView-stageButton:active,
-:is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton):active {
-  background-color: color-mix(in srgb, var(--syntax-text-color) 2%, var(--syntax-background-color));
-}
 .git-panel-HunkHeaderView--isSelected {
   color: var(--text-color-selected);
   background-color: var(--background-color-selected);
   border-color: transparent;
 }
-.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-title {
+.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-title:not(:hover):not(:active) {
   color: inherit;
 }
-.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-title:hover,
-.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-stageButton:hover,
-.git-panel-HunkHeaderView--isSelected
-  :is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton):hover {
-  background-color: var(--background-color-highlight);
-}
-.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-title:active,
-.git-panel-HunkHeaderView--isSelected .git-panel-HunkHeaderView-stageButton:active,
-.git-panel-HunkHeaderView--isSelected
-  :is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton):active {
-  background-color: var(--background-color-selected);
-}
 .git-panel-FilePatchView:focus-within .git-panel-HunkHeaderView--isSelected {
+  --git-panel-header-hover-color: var(--accent-foreground-color);
+  --git-panel-header-active-color: var(--accent-foreground-color);
+  --git-panel-header-hover-background: hsl(from var(--accent-background-color) h s calc(l - 2));
+  --git-panel-header-active-background: hsl(from var(--accent-background-color) h s calc(l - 4));
   color: var(--accent-foreground-color);
   background-color: var(--accent-background-color);
-}
-.git-panel-FilePatchView:focus-within
-  .git-panel-HunkHeaderView--isSelected
-  .git-panel-HunkHeaderView-title:hover,
-.git-panel-FilePatchView:focus-within
-  .git-panel-HunkHeaderView--isSelected
-  .git-panel-HunkHeaderView-stageButton:hover,
-.git-panel-FilePatchView:focus-within
-  .git-panel-HunkHeaderView--isSelected
-  :is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton):hover {
-  background-color: color-mix(
-    in srgb,
-    var(--accent-background-color) 96%,
-    lch(from var(--accent-foreground-color) calc((49.44 - l) * infinity) 0 0)
-  );
-}
-.git-panel-FilePatchView:focus-within
-  .git-panel-HunkHeaderView--isSelected
-  .git-panel-HunkHeaderView-title:active,
-.git-panel-FilePatchView:focus-within
-  .git-panel-HunkHeaderView--isSelected
-  .git-panel-HunkHeaderView-stageButton:active,
-.git-panel-FilePatchView:focus-within
-  .git-panel-HunkHeaderView--isSelected
-  :is(.git-panel-HunkHeaderView-copyButton, .git-panel-HunkHeaderView-discardButton):active {
-  background-color: color-mix(
-    in srgb,
-    var(--accent-background-color) 92%,
-    lch(from var(--accent-foreground-color) calc((49.44 - l) * infinity) 0 0)
-  );
 }
 
 /* lumine-text-editor.css */

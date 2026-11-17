@@ -266,7 +266,9 @@ describe("image previews in mounted patch layouts", () => {
           expect(img.getBoundingClientRect().height).toBeLessThanOrEqual(img.naturalHeight + 0.01);
         }
       }
-      const stageButton = block.querySelector('[title="Stage File"]');
+      const stageButton = block.querySelector(
+        ".git-panel-FilePatchHeaderView-button.icon-move-down",
+      );
       expect(stageButton).not.toBeNull();
       await flushViews(() => stageButton.click());
       expect(view.props.toggleFile).toHaveBeenCalledOnceWith(filePatch);
@@ -299,12 +301,12 @@ describe("image previews in mounted patch layouts", () => {
                 ["image.png", { type: "commit", revision: "selected-commit" }],
               ],
         );
-        expect(view.element.querySelector('[title="Unstage File"]') !== null).toBe(
-          surface === "staged",
-        );
         expect(
-          view.element.querySelector(".git-panel-FilePatchView-header .btn-group") === null,
-        ).toBe(surface === "commit");
+          view.element.querySelector(".git-panel-FilePatchHeaderView-button.icon-move-up") !== null,
+        ).toBe(surface === "staged");
+        expect(view.element.querySelector(".git-panel-FilePatchHeaderView-button") === null).toBe(
+          surface === "commit",
+        );
       });
     }
 

@@ -311,8 +311,7 @@ describe("full-width diff controls", () => {
       const selectors = [
         ".git-panel-FilePatchView-header",
         ".git-panel-FilePatchView-title",
-        ".git-panel-FilePatchView-header .btn-group",
-        ".git-panel-FilePatchView-header .btn",
+        ".git-panel-FilePatchHeaderView-button",
         ".git-panel-HunkHeaderView",
         ".git-panel-HunkHeaderView-title",
         ".git-panel-HunkHeaderView-stageButton",

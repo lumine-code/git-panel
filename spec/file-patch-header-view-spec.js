@@ -21,7 +21,9 @@ describe("file patch headers", () => {
       expect(view.element.querySelector(".git-panel-FilePatchView-title").textContent).toContain(
         "example.txt",
       );
-      expect(view.element.querySelectorAll(".btn-group").length).toBe(itemType === "file" ? 1 : 0);
+      expect(view.element.querySelectorAll(".git-panel-FilePatchHeaderView-button").length).toBe(
+        itemType === "file" ? 2 : 0,
+      );
     });
   }
 });

@@ -156,7 +156,7 @@ describe("shared read-only diff views", () => {
     }
     expect(view.element.querySelector(".git-panel-HunkHeaderView-stageButton")).toBeNull();
     expect(view.element.querySelector(".git-panel-FilePatchView-metaButton")).toBeNull();
-    expect(view.element.querySelector('button[title="Unstage File"]')).toBeNull();
+    expect(view.element.querySelector(".git-panel-FilePatchHeaderView-button")).toBeNull();
     const file = controller().props.multiFilePatch.getFilePatches()[0];
     await controller().toggleRows(new Set([1]), "line");
     await controller().toggleFile(file);
