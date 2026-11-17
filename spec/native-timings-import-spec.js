@@ -68,5 +68,21 @@ describe("Git timings selected File import", () => {
     expect(restored).not.toHaveBeenCalled();
     expect(errors).not.toHaveBeenCalled();
   });
+
+  it("reports an invalid selected file with its literal name in the details", async () => {
+    const selected = new File(["invalid json"], "[timings]_sample_`name`.json");
+    const transfer = new DataTransfer();
+    transfer.items.add(selected);
+    const imported = clickImport();
+    input.files = transfer.files;
+    input.dispatchEvent(new Event("change"));
+    await imported;
+
+    const [message, options] = errors.calls.mostRecent().args;
+    expect(message).toBe("Could not import Git timings");
+    expect(options.detail).toContain(`File: ${selected.name}\n\n`);
+    expect(options.description).toBeUndefined();
+    expect(restored).not.toHaveBeenCalled();
+  });
 });
 /* global conditionPromise */
