@@ -360,7 +360,7 @@ describe("copying a diff from mounted chunk controls", () => {
     await flushViews(() => clickCopy(0));
     expectCopyFeedback(0, false);
     expect(notificationManager.addError).toHaveBeenCalledOnceWith("Unable to copy diff", {
-      description: "Clipboard write rejected",
+      detail: "Clipboard write rejected",
       dismissable: true,
     });
     expectNoMutation();
@@ -385,7 +385,7 @@ describe("copying a diff from mounted chunk controls", () => {
     await flushViews(() => {});
     expectCopyFeedback(0, false);
     expect(notificationManager.addError).toHaveBeenCalledOnceWith("Unable to copy diff", {
-      description: "Clipboard write rejected",
+      detail: "Clipboard write rejected",
       dismissable: true,
     });
     expectNoMutation();

@@ -64,6 +64,11 @@ describe("shared Git operation outcomes", () => {
       await expectAsync(pipeline.run(() => Promise.reject(refusal), {})).toBeRejectedWith(refusal);
       expect(notifications.addError).not.toHaveBeenCalled();
       expect(notifications.addWarning).toHaveBeenCalledTimes(warnings);
+      if (warnings)
+        expect(notifications.addWarning).toHaveBeenCalledOnceWith("Git push could not start", {
+          detail: refusal.message,
+          dismissable: true,
+        });
     });
   }
 });

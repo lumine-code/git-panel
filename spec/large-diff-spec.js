@@ -109,7 +109,7 @@ describe("large Git diffs", () => {
       await StagingView.prototype.showFilePatchItem.call(view, "large.txt", "unstaged");
 
       expect(notificationManager.addError).toHaveBeenCalledOnceWith("Unable to display Git diff", {
-        description: error.message,
+        detail: error.message,
         dismissable: true,
       });
     });
