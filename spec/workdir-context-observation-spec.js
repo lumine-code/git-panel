@@ -24,7 +24,6 @@ describe("WorkdirContext observation leases", () => {
     const value = {
       onDidChange: (cb) => emitter.on("change", cb),
       onDidInvalidate: (cb) => emitter.on("invalidate", cb),
-      onDidChangeWorkdirOrHead: (cb) => emitter.on("head", cb),
       start: jasmine.createSpy("start observer").and.returnValue(ready),
       destroy: jasmine.createSpy("destroy observer").and.callFake(() => {
         emitter.dispose();

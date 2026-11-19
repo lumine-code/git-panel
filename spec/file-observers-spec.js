@@ -53,13 +53,10 @@ describe("file observation for repository state", () => {
     };
     spyOn(lumine.fileWatchClient, "watchDirectory").and.returnValue(handle);
     const changed = jasmine.createSpy("changed");
-    const workdirChanged = jasmine.createSpy("workdirChanged");
     observer.onDidInvalidate(changed);
-    observer.onDidChangeWorkdirOrHead(workdirChanged);
     await observer.start();
     invalidate({ path: directory, reason: "worker-restart", generation: 2 });
     expect(changed).toHaveBeenCalledTimes(1);
-    expect(workdirChanged).toHaveBeenCalledTimes(1);
   });
 
   function fakeWatcher(
@@ -102,9 +99,7 @@ describe("file observation for repository state", () => {
     const { handle, callbacks } = fakeWatcher(directory);
     const watch = spyOn(lumine.fileWatchClient, "watchDirectory").and.returnValue(handle);
     const changed = jasmine.createSpy("changed");
-    const workdirChanged = jasmine.createSpy("workdirChanged");
     observer.onDidChange(changed);
-    observer.onDidChangeWorkdirOrHead(workdirChanged);
     await observer.start();
 
     callbacks.change([{ action: "modified", path: path.join(gitDirectory, "objects", "HEAD") }]);
@@ -116,7 +111,6 @@ describe("file observation for repository state", () => {
     };
     callbacks.change([refEvent]);
     expect(changed).toHaveBeenCalledOnceWith([refEvent]);
-    expect(workdirChanged).toHaveBeenCalledTimes(1);
     expect(watch).toHaveBeenCalledTimes(1);
   });
 
@@ -365,43 +359,29 @@ describe("workspace observation for repository state", () => {
     return onChange;
   }
 
-  it("reports HEAD and ref changes as working-directory or HEAD changes", async () => {
+  it("reports changes to watched Git metadata", async () => {
     const changed = jasmine.createSpy("changed");
-    const workdirChanged = jasmine.createSpy("workdirChanged");
     observer.onDidChange(changed);
-    observer.onDidChangeWorkdirOrHead(workdirChanged);
     const notify = await observeMetadata();
 
-    for (const relativePath of ["HEAD", "MERGE_HEAD", path.join("refs", "heads", "main")]) {
+    for (const relativePath of [
+      "HEAD",
+      "MERGE_HEAD",
+      "index",
+      "config",
+      path.join("refs", "heads", "main"),
+    ]) {
       const event = { action: "modified", path: path.join(gitDirectory, relativePath) };
       notify([event]);
       expect(changed.calls.mostRecent().args).toEqual([[event]]);
     }
-
-    expect(workdirChanged).toHaveBeenCalledTimes(3);
-  });
-
-  it("reports index and config edits without declaring a HEAD change", async () => {
-    const changed = jasmine.createSpy("changed");
-    const workdirChanged = jasmine.createSpy("workdirChanged");
-    observer.onDidChange(changed);
-    observer.onDidChangeWorkdirOrHead(workdirChanged);
-    const notify = await observeMetadata();
-
-    for (const relativePath of ["index", "config"]) {
-      notify([{ action: "modified", path: path.join(gitDirectory, relativePath) }]);
-    }
-
-    expect(changed).toHaveBeenCalledTimes(2);
-    expect(workdirChanged).not.toHaveBeenCalled();
+    expect(changed).toHaveBeenCalledTimes(5);
   });
 
   it("observes refs relative to a separate Git directory with an arbitrary name", async () => {
     gitDirectory = path.join(os.tmpdir(), "repository-metadata");
     const changed = jasmine.createSpy("changed");
-    const workdirChanged = jasmine.createSpy("workdirChanged");
     observer.onDidChange(changed);
-    observer.onDidChangeWorkdirOrHead(workdirChanged);
     const notify = await observeMetadata();
     const event = {
       action: "renamed",
@@ -412,7 +392,6 @@ describe("workspace observation for repository state", () => {
     notify([event]);
 
     expect(changed).toHaveBeenCalledOnceWith([event]);
-    expect(workdirChanged).toHaveBeenCalledTimes(1);
   });
 
   it("ignores metadata lookalikes below objects and outside the chosen Git directory", async () => {

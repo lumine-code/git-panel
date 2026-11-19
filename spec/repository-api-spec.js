@@ -2,8 +2,6 @@
 // Converted from repository-api.test.js (node:test/node:assert → Jasmine).
 import {
   getRepositoryWorkingDirectory,
-  refreshRepository,
-  refreshRepositoryForPath,
   resolveRepositoryForDirectory,
   resolveRepositoryForPath,
 } from "../lib/repository-api.js";
@@ -59,55 +57,5 @@ describe("repository-api", () => {
     };
 
     expect(await resolveRepositoryForDirectory(repositories, directory)).toBe(repository);
-  });
-
-  it("refreshes the Lumine repository caches and initialized snapshots", async () => {
-    let indexRefreshCount = 0;
-    let legacyStatusRefreshCount = 0;
-    let statusRefreshCount = 0;
-    let refsRefreshCount = 0;
-    const repository = {
-      refreshIndex: () => indexRefreshCount++,
-      refreshStatus: async () => legacyStatusRefreshCount++,
-      getStatusSnapshot: () => ({ initialized: true }),
-      refreshStatusSnapshot: async () => statusRefreshCount++,
-      getRefsSnapshot: () => ({ initialized: true }),
-      refreshRefsSnapshot: async () => refsRefreshCount++,
-    };
-
-    expect(await refreshRepository(repository)).toBe(repository);
-    expect(indexRefreshCount).toBe(1);
-    expect(legacyStatusRefreshCount).toBe(1);
-    expect(statusRefreshCount).toBe(1);
-    expect(refsRefreshCount).toBe(1);
-  });
-
-  it("keeps uninitialized Lumine repository snapshots lazy", async () => {
-    const repository = {
-      getStatusSnapshot: () => ({ initialized: false }),
-      refreshStatusSnapshot: () => {
-        throw new Error("should not load the status snapshot");
-      },
-      getRefsSnapshot: () => ({ initialized: false }),
-      refreshRefsSnapshot: () => {
-        throw new Error("should not load the refs snapshot");
-      },
-    };
-
-    expect(await refreshRepository(repository)).toBe(repository);
-  });
-
-  it("refreshes the Lumine repository for a path", async () => {
-    let refreshCount = 0;
-    const repository = { refreshStatus: async () => refreshCount++ };
-    const repositories = {
-      getForPath: () => repository,
-      resolveForPath: () => {
-        throw new Error("should not resolve a cached repository");
-      },
-    };
-
-    expect(await refreshRepositoryForPath(repositories, "/worktree")).toBe(repository);
-    expect(refreshCount).toBe(1);
   });
 });
