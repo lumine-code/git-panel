@@ -20,7 +20,27 @@ async function removeFixture(workingDirectory, temporaryRoot) {
 }
 
 describe("large Git diffs", () => {
-  it("requests the panel's larger budget for file, status, staged and commit diffs", async () => {
+  it("keeps conflict metadata requests bounded when many paths are conflicted", async () => {
+    const strategy = new GitShellOutStrategy(process.cwd());
+    const paths = Array.from({ length: 150 }, (_, index) => index + "-" + "x".repeat(175) + ".txt");
+    const getDiff = jasmine.createSpy("getDiff").and.callFake(async ({ paths: batch }) => ({
+      files: batch.map((filePath) => ({ path: filePath, status: "modified" })),
+    }));
+    spyOn(strategy, "getCoreRepository").and.resolveTo({ getDiff });
+
+    try {
+      const statuses = await strategy.getConflictFileStatuses(paths, "a".repeat(40));
+      const requests = getDiff.calls.allArgs().map(([request]) => request);
+      expect(requests.length).toBeGreaterThan(1);
+      expect(requests.every((request) => request.format === "name-status")).toBeTrue();
+      expect(requests.flatMap((request) => request.paths)).toEqual(paths);
+      expect(Object.keys(statuses)).toEqual(paths);
+    } finally {
+      strategy.destroy();
+    }
+  });
+
+  it("requests the panel's larger budget for file, staged and commit diffs", async () => {
     const repository = {
       getDiff: jasmine.createSpy("getDiff").and.resolveTo({ files: [] }),
       getStatusSnapshot: () => ({ initialized: true, head: { unborn: false } }),
@@ -38,15 +58,13 @@ describe("large Git diffs", () => {
     };
     const strategy = new GitShellOutStrategy(process.cwd());
     spyOn(strategy, "getCoreRepository").and.resolveTo(repository);
-    spyOn(strategy, "getUntrackedFiles").and.resolveTo([]);
 
     try {
       await strategy.getDiffsForFilePath("large.txt", { staged: true });
-      await strategy.diffFileStatus({ target: "HEAD" });
       await strategy.getStagedChangesPatch();
       await strategy.getCommits({ includePatch: true });
 
-      expect(repository.getDiff).toHaveBeenCalledTimes(4);
+      expect(repository.getDiff).toHaveBeenCalledTimes(3);
       for (const [options] of repository.getDiff.calls.allArgs()) {
         expect(options.maxBytes).toBe(256 * 1024 * 1024);
         expect(options.format).toBe("structured");

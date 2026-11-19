@@ -398,7 +398,7 @@ describe("Lumine Git transport", () => {
     }
   });
 
-  it("shares one in-flight status refresh between concurrent bundle rebuilds", async () => {
+  it("shares one in-flight status refresh between concurrent snapshot reads", async () => {
     const workingDirectory = fs.realpathSync.native(
       fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-status-refresh-share-")),
     );
@@ -408,9 +408,8 @@ describe("Lumine Git transport", () => {
     const strategy = new GitShellOutStrategy(workingDirectory);
 
     try {
-      // Build once so the snapshot is initialized, then observe a change so both concurrent
-      // reads below fall into the refresh branch rather than reusing that snapshot.
-      await strategy.getStatusBundle();
+      // Initialize before observing a change so both reads below await its refresh.
+      await strategy.getStatusSnapshot();
       strategy.observeStatusChange();
 
       const originalRefresh = coreRepository.refreshStatusSnapshot.bind(coreRepository);
@@ -420,13 +419,13 @@ describe("Lumine Git transport", () => {
         return originalRefresh(...args);
       };
 
-      const [bundleA, bundleB] = await Promise.all([
-        strategy.getStatusBundle(),
-        strategy.getStatusBundle(),
+      const [snapshotA, snapshotB] = await Promise.all([
+        strategy.getStatusSnapshot(),
+        strategy.getStatusSnapshot(),
       ]);
 
       expect(refreshes).toBe(1);
-      expect(bundleA).toEqual(bundleB);
+      expect(snapshotA).toBe(snapshotB);
     } finally {
       strategy.destroy();
       lumine.repositories.forget(coreRepository);
@@ -756,12 +755,21 @@ describe("Lumine Git transport", () => {
       const stagedPatch = await strategy.getStagedChangesPatch();
       expect(stagedPatch.some((diff) => diff.newPath === "staged.txt")).toBe(true);
 
-      const statusToHead = await strategy.diffFileStatus({ target: "HEAD" });
-      expect(statusToHead["tracked.txt"]).toBe("modified");
-      expect(statusToHead["staged.txt"]).toBe("added");
-      expect(statusToHead["new.txt"]).toBe("added");
       expect(getDiff.calls.allArgs().every(([options]) => options.format === "structured")).toBe(
         true,
+      );
+      const headOid = repository.getStatusSnapshot().head.oid;
+      expect(
+        await strategy.getConflictFileStatuses(["tracked.txt", "staged.txt"], headOid),
+      ).toEqual({ "tracked.txt": "modified", "staged.txt": "added" });
+      expect(getDiff.calls.mostRecent().args[0]).toEqual(
+        jasmine.objectContaining({
+          from: { type: "commit", revision: headOid },
+          to: { type: "worktree" },
+          paths: ["tracked.txt", "staged.txt"],
+          format: "name-status",
+          detectRenames: false,
+        }),
       );
     } finally {
       strategy.destroy();
@@ -960,16 +968,21 @@ describe("Lumine Git transport", () => {
       await panelRepository.getLoadPromise();
       const observeStatusChange = spyOn(panelRepository.git, "observeStatusChange");
 
-      // A ref moving invalidates branches and the last commit, never the status bundle.
+      // Reflogs do not change the status summary; publishing a ref can move HEAD.
       panelRepository.observeFilesystemChange([
-        { path: path.join(workingDirectory, ".git", "refs", "heads", "main"), action: "modified" },
+        { path: path.join(workingDirectory, ".git", "logs", "HEAD"), action: "modified" },
       ]);
       expect(observeStatusChange).not.toHaveBeenCalled();
 
       panelRepository.observeFilesystemChange([
+        { path: path.join(workingDirectory, ".git", "refs", "heads", "main"), action: "modified" },
+      ]);
+      expect(observeStatusChange).toHaveBeenCalledTimes(1);
+
+      panelRepository.observeFilesystemChange([
         { path: path.join(workingDirectory, ".git", "index"), action: "modified" },
       ]);
-      expect(observeStatusChange).toHaveBeenCalled();
+      expect(observeStatusChange).toHaveBeenCalledTimes(2);
     } finally {
       panelRepository.destroy();
       lumine.repositories.forget(coreRepository);
@@ -984,6 +997,7 @@ describe("Lumine Git transport", () => {
       initialBranch: "main",
     });
     const strategy = new GitShellOutStrategy(workingDirectory);
+    const panelRepository = new Repository(workingDirectory);
 
     try {
       await strategy.setConfig("user.name", "Git Panel Specs");
@@ -997,28 +1011,24 @@ describe("Lumine Git transport", () => {
       fs.writeFileSync(path.join(workingDirectory, "c.txt"), "three\n");
       await strategy.exec(["mv", "b.txt", "d.txt"]);
 
-      const bundle = await strategy.getStatusBundle();
+      await panelRepository.getLoadPromise();
+      const bundle = await panelRepository.getStatusBundle();
       expect(bundle.branch.head).toBe("main");
       expect(bundle.branch.aheadBehind).toEqual({ ahead: null, behind: null });
-      expect(bundle.changedEntries.length).toBe(1);
-      expect(bundle.changedEntries[0].filePath).toBe("a.txt");
-      expect(bundle.changedEntries[0].unstagedStatus).toBe("M");
-      expect(bundle.changedEntries[0].stagedStatus).toBeFalsy();
-      expect(bundle.untrackedEntries).toEqual([{ filePath: "c.txt" }]);
-      expect(bundle.renamedEntries.length).toBe(1);
-      expect(bundle.renamedEntries[0].filePath).toBe("d.txt");
-      expect(bundle.renamedEntries[0].origFilePath).toBe("b.txt");
-      expect(bundle.renamedEntries[0].stagedStatus).toBe("R");
-      expect(bundle.unmergedEntries).toEqual([]);
+      expect(bundle.stagedFiles).toEqual({ "b.txt": "deleted", "d.txt": "added" });
+      expect(bundle.unstagedFiles).toEqual({ "a.txt": "modified", "c.txt": "added" });
+      expect(bundle.mergeConflictFiles).toEqual({});
+      expect(await panelRepository.getStatusBundle()).toBe(bundle);
 
       // A bundle built right after a delegated write reuses the snapshot the registry
       // already refreshed instead of spawning another status subprocess.
       await strategy.stageFiles(["c.txt"]);
       const generation = repository.getStatusSnapshot().generation;
-      const afterWrite = await strategy.getStatusBundle();
-      expect(afterWrite.changedEntries.some((entry) => entry.filePath === "c.txt")).toBe(true);
+      const afterWrite = await panelRepository.getStatusBundle();
+      expect(afterWrite.stagedFiles["c.txt"]).toBe("added");
       expect(repository.getStatusSnapshot().generation).toBe(generation);
     } finally {
+      panelRepository.destroy();
       strategy.destroy();
       lumine.repositories.forget(repository);
     }

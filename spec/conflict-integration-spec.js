@@ -151,6 +151,50 @@ describe("conflict resolution against a real Git repository", () => {
     return controller;
   }
 
+  it("shares a path-limited status read and preserves known changes if that read fails", async () => {
+    jasmine.useRealClock();
+    await createTwoFileMergeConflict();
+    fs.writeFileSync(path.join(workingDirectory, "staged.txt"), "staged\n");
+    await strategy.stageFiles(["staged.txt"]);
+    fs.writeFileSync(path.join(workingDirectory, "untracked.txt"), "untracked\n");
+    const snapshot = await coreRepository.refreshStatusSnapshot();
+    const getDiff = spyOn(coreRepository, "getDiff").and.callThrough();
+
+    const [unstaged, staged, conflicts] = await Promise.all([
+      panelRepository.getUnstagedChanges(),
+      panelRepository.getStagedChanges(),
+      panelRepository.getMergeConflicts(),
+    ]);
+    expect(getDiff).toHaveBeenCalledOnceWith({
+      from: { type: "commit", revision: snapshot.head.oid },
+      to: { type: "worktree" },
+      paths: ["custom.txt", "standard.txt"],
+      format: "name-status",
+      detectRenames: false,
+    });
+    expect(unstaged).toEqual([{ filePath: "untracked.txt", status: "added" }]);
+    expect(staged).toEqual([{ filePath: "staged.txt", status: "added" }]);
+    expect(conflicts).toHaveSize(2);
+    expect(conflicts[0].status.file).toBe("modified");
+
+    const conflictPath = path.join(workingDirectory, "custom.txt");
+    fs.writeFileSync(conflictPath, "main\n");
+    panelRepository.observeFilesystemChange([{ path: conflictPath, action: "modified" }]);
+    const resolved = await panelRepository.getStatusBundle();
+    expect(coreRepository.getStatusSnapshot()).toBe(snapshot);
+    expect(getDiff).toHaveBeenCalledTimes(2);
+    expect(resolved.mergeConflictFiles["custom.txt"].file).toBe("equivalent");
+
+    getDiff.and.rejectWith(new Error("Metadata read failed"));
+    panelRepository.observeFilesystemChange([{ path: conflictPath, action: "modified" }]);
+    const fallback = await panelRepository.getStatusBundle();
+    expect(getDiff).toHaveBeenCalledTimes(3);
+    expect(fallback.branch.head).toBe("main");
+    expect(fallback.stagedFiles).toEqual({ "staged.txt": "added" });
+    expect(fallback.unstagedFiles).toEqual({ "untracked.txt": "added" });
+    expect(Object.keys(fallback.mergeConflictFiles)).toEqual(["custom.txt", "standard.txt"]);
+  });
+
   it("isolates editors, blocks dirty resolutions, and stages saved standard and custom markers", async () => {
     await createTwoFileMergeConflict();
     const mergeConflicts = await panelRepository.getMergeConflicts();
