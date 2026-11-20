@@ -7,11 +7,14 @@ import os from "os";
 import path from "path";
 import { Disposable } from "lumine";
 
+import GitTabContainer from "../lib/containers/git-tab-container.js";
 import GitShellOutStrategy from "../lib/git-shell-out-strategy.js";
 import ModelObserver from "../lib/models/model-observer.js";
 import Repository from "../lib/models/repository.js";
 import WorkdirContext from "../lib/models/workdir-context.js";
 import { Keys } from "../lib/models/repository-states/cache/keys.js";
+import ObserveModel from "../lib/views/observe-model.js";
+import { createViewHost, createViewModel, h } from "./helpers/etch.js";
 
 const require = createRequire(import.meta.url);
 
@@ -902,6 +905,98 @@ describe("Lumine Git transport", () => {
       if (originalRefresh) {
         coreRepository.refreshStatusSnapshot = originalRefresh;
       }
+      observation.dispose();
+      await context.destroy();
+      lumine.repositories.forget(coreRepository);
+    }
+  });
+
+  it("shows published staging status while a later watcher refresh is pending", async () => {
+    // Drive the watcher event below so an actual OS event cannot release the
+    // deliberately stalled request or add another refresh to the test.
+    spyOn(lumine.fileWatchClient, "watchDirectory").and.callFake((root) => ({
+      path: root,
+      ready: Promise.resolve(),
+      closed: Promise.resolve(),
+      onDidChange: () => new Disposable(),
+      onDidInvalidate: () => new Disposable(),
+      onDidError: () => new Disposable(),
+      dispose() {},
+    }));
+    const workdir = fs.realpathSync.native(
+      fs.mkdtempSync(path.join(os.tmpdir(), "git-panel-accepted-stage-status-")),
+    );
+    const coreRepository = await lumine.repositories.initialize(workdir, { initialBranch: "main" });
+    const context = new WorkdirContext(workdir);
+    const observation = context.retainObservation();
+    const watcher = Promise.withResolvers();
+    const watcherStarted = Promise.withResolvers();
+    const element = document.createElement("div");
+    jasmine.attachToDOM(element);
+    const root = createViewHost(element);
+    let explicitRead;
+
+    try {
+      await observation.ready;
+      const repository = context.getRepository();
+      await repository.getLoadPromise();
+      fs.writeFileSync(path.join(workdir, "a.txt"), "stage me\n");
+      await coreRepository.refreshStatusSnapshot();
+
+      const tab = createViewModel(GitTabContainer, { repository });
+      await root.update(
+        h(ObserveModel, { model: repository, fetchData: tab.fetchData }, (data) =>
+          h(
+            "div",
+            {},
+            h(
+              "output",
+              { className: "staged" },
+              data?.stagedChanges.map(({ filePath }) => filePath).join(",") ?? "",
+            ),
+            h(
+              "output",
+              { className: "unstaged" },
+              data?.unstagedChanges.map(({ filePath }) => filePath).join(",") ?? "",
+            ),
+          ),
+        ),
+      );
+      const displayed = (list) => element.querySelector(`.${list}`).textContent;
+      await waitUntil(() => displayed("unstaged") === "a.txt");
+
+      const refresh = coreRepository.refreshStatusSnapshot.bind(coreRepository);
+      spyOn(coreRepository, "refreshStatusSnapshot").and.callFake((options) => {
+        if (!options?.debounce) return refresh(options);
+        watcherStarted.resolve();
+        return watcher.promise;
+      });
+      repository.observeFilesystemChange([
+        { path: path.join(coreRepository.getPath(), "index"), action: "modified" },
+      ]);
+      await watcherStarted.promise;
+      let explicitReadFinished = false;
+      explicitRead = repository.getStagedChanges().then((result) => {
+        explicitReadFinished = true;
+        return result;
+      });
+
+      await repository.stageFiles(["a.txt"]);
+      expect(coreRepository.getStatusEntry("a.txt").staged).toBe(true);
+      await waitUntil(() => displayed("staged") === "a.txt" && displayed("unstaged") === "");
+      expect(explicitReadFinished).toBe(false);
+
+      watcher.resolve(coreRepository.getStatusSnapshot());
+      expect((await explicitRead).map(({ filePath }) => filePath)).toEqual(["a.txt"]);
+
+      fs.writeFileSync(path.join(workdir, "b.txt"), "write outside the panel\n");
+      await coreRepository.refreshStatusSnapshot();
+      await waitUntil(() => displayed("unstaged") === "b.txt");
+      expect(displayed("staged")).toBe("a.txt");
+    } finally {
+      watcher.resolve(coreRepository.getStatusSnapshot());
+      await explicitRead;
+      await root.destroy();
       observation.dispose();
       await context.destroy();
       lumine.repositories.forget(coreRepository);
