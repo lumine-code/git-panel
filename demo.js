@@ -1,7 +1,7 @@
 // Authentic package usage. Run with lumine/script/demo.js; fixtures stay in demo/.
 function avatarsReady() {
   const images = Array.from(
-    document.querySelectorAll(".git-panel-Project-avatar, .git-panel-RecentCommit-avatar"),
+    document.querySelectorAll(".git-panel-Project-avatar, .git-panel-RecentCommit-avatar > img"),
   ).filter((image) => image.getClientRects().length > 0);
   return images.length >= 2 && images.every((image) => image.complete && image.naturalWidth > 0);
 }

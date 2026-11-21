@@ -97,11 +97,11 @@ describe("Git author avatars", () => {
   });
 
   const surfaces = [
-    ["repository header", GitTabHeaderView, (view) => view.renderCommitter()],
-    ["recent commit", RecentCommitView, (view, author) => view.renderAuthor(author)],
-    ["commit detail", CommitDetailHeaderView, (view, author) => view.renderAuthor(author)],
+    ["repository header", GitTabHeaderView, (view) => view.renderCommitter(), false],
+    ["recent commit", RecentCommitView, (view, author) => view.renderAuthor(author), true],
+    ["commit detail", CommitDetailHeaderView, (view, author) => view.renderAuthor(author), true],
   ];
-  for (const [name, Type, render] of surfaces) {
+  for (const [name, Type, render, stacked] of surfaces) {
     it(`uses the same decoded fallback in the ${name} avatar`, async () => {
       const author = {
         getEmail: () => "author@example.invalid",
@@ -120,6 +120,7 @@ describe("Git author avatars", () => {
       expect(image).not.toBeNull();
       await untilLoaded(image, FALLBACK_AVATAR);
       expect(image.title).toContain("author@example.invalid");
+      expect(image.parentElement.matches(".git-panel-RecentCommit-avatar")).toBe(stacked);
     });
   }
 });
