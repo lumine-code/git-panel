@@ -68,9 +68,6 @@ jobs:
       HOME: ${{ github.workspace }}/git-panel-spec-home
       USERPROFILE: ${{ github.workspace }}/git-panel-spec-home
       XDG_CONFIG_HOME: ${{ github.workspace }}/git-panel-spec-home
-      TEMP: ${{ github.workspace }}/git-panel-spec-tmp
-      TMP: ${{ github.workspace }}/git-panel-spec-tmp
-      TMPDIR: ${{ github.workspace }}/git-panel-spec-tmp
     steps:
       - uses: actions/checkout@v7
         with:
@@ -84,8 +81,8 @@ jobs:
           node-version-file: lumine/.nvmrc
           cache: npm
           cache-dependency-path: lumine/package-lock.json
-      - name: Create the private temporary directory
-        run: mkdir -p "$TEMP" "$LUMINE_HOME/electronUserData"
+      - name: Create the private home directory
+        run: mkdir -p "$LUMINE_HOME/electronUserData"
       - name: Install Linux build and headless-display dependencies
         if: runner.os == 'Linux'
         run: |
@@ -118,10 +115,20 @@ jobs:
       - name: Rebuild native modules for Electron
         working-directory: lumine
         run: npm run build
+      # Let the native build use the runner's temp directory.
+      - name: Prepare the private temporary directory
+        shell: pwsh
+        run: |
+          $specTemp = Join-Path $env:GITHUB_WORKSPACE 'git-panel-spec-tmp'
+          New-Item -ItemType Directory -Path $specTemp -Force | Out-Null
+          @(
+            "TEMP=$specTemp"
+            "TMP=$specTemp"
+            "TMPDIR=$specTemp"
+          ) | Add-Content -LiteralPath $env:GITHUB_ENV -Encoding utf8
       - name: Install spec packages
         working-directory: lumine
         run: |
-          mkdir -p "$TEMP"
           node script/install-spec-packages.js --package ../git-panel --home "$LUMINE_HOME" --github-env "$GITHUB_ENV"
           # The main process serves package assets from the installation home.
           node -e "const fs = require('node:fs'), path = require('node:path'); fs.symlinkSync(path.resolve('../git-panel'), path.join(process.env.LUMINE_HOME, 'packages', 'git-panel'), process.platform === 'win32' ? 'junction' : 'dir');"
