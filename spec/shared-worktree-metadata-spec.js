@@ -112,11 +112,17 @@ describe("Shared worktree metadata", () => {
     await git(main, "update-ref", "refs/heads/linked-branch", external);
     await git(main, "config", "remote.origin.url", "https://example.invalid/new.git");
     await git(main, "config", "branch.linked-branch.merge", "refs/heads/next");
+    // Either write can produce the first config event. The tracking update
+    // must actually reach the repository snapshot before we check it.
     await globalThis.conditionPromise(
-      () =>
+      async () =>
         changes.some(
           ({ path: target }) => target === path.join(common, "refs", "heads", "linked-branch"),
-        ) && changes.some(({ path: target }) => target === path.join(common, "config")),
+        ) &&
+        changes.some(({ path: target }) => target === path.join(common, "config")) &&
+        (await repository.getCurrentBranch()).getUpstream().getName() ===
+          "refs/remotes/origin/next",
+      "shared worktree metadata and the new upstream to be published",
     );
 
     expect((await repository.getLastCommit()).getSha()).toBe(external);
