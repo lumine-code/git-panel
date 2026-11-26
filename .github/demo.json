@@ -1,9 +1,9 @@
 {
   "title": "git-panel",
   "description": "Review an unstaged patch beside the Git staging panel.",
-  "recordedOn": "2026-11-21",
-  "sourceRevision": "7c78def0a93824c319a984a5ca3a81bee1cbfb17",
-  "themeSourceRevision": "e477cb9a3576f124b0d415183e8d608fbae0182e",
+  "recordedOn": "2026-11-26",
+  "sourceRevision": "eed053467b2a9d8c2d3b285726e0b8517ed3a889",
+  "themeSourceRevision": "0f2c0e4518aa26315df6f13a10792493531b180b",
   "mode": "normal",
   "fontSettings": "default",
   "scenario": "demo.js",
@@ -11,8 +11,8 @@
   "environment": {
     "platform": "win32",
     "arch": "x64",
-    "electron": "45.4.1",
-    "chrome": "156.0.8078.100",
+    "electron": "45.5.0",
+    "chrome": "156.0.8078.109",
     "devicePixelRatio": 1,
     "locale": "en-GB",
     "fontFamily": "Fira Code, Menlo, DejaVu Sans Mono, Consolas, monospace",
@@ -24,32 +24,37 @@
   "privacy": { "version": 1, "location": "workspace-scratch", "textChecked": true },
   "sources": {
     "editor": {
-      "revision": "cf34da37fdbcc4f64bb7f28a3aeec9dc2f84f78d",
-      "dirty": true,
-      "workingTreeHash": "cc4aac29731b750f6dae1bbbdee78ff23b50366519c108e55762d9b40ed06b30"
+      "revision": "3fd6839aae4057f9536f8d78bcdd6e14541e7cb1",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "package": {
-      "revision": "7c78def0a93824c319a984a5ca3a81bee1cbfb17",
-      "dirty": true,
-      "workingTreeHash": "7ffbf2e7f0d13561ddf09a5c4b857b27584e278234ae71955a0d9f325414077f"
+      "revision": "eed053467b2a9d8c2d3b285726e0b8517ed3a889",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "git-panel": {
-      "revision": "7c78def0a93824c319a984a5ca3a81bee1cbfb17",
-      "dirty": true,
-      "workingTreeHash": "7ffbf2e7f0d13561ddf09a5c4b857b27584e278234ae71955a0d9f325414077f"
+      "revision": "eed053467b2a9d8c2d3b285726e0b8517ed3a889",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "language-javascript": {
-      "revision": "fa6112651c5aa3641c7d0eb61a91443b68116c9f",
+      "revision": "ead87cd1d12c56bdf4337095bda8361abb432538",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "one-theme": {
-      "revision": "e477cb9a3576f124b0d415183e8d608fbae0182e",
+      "revision": "0f2c0e4518aa26315df6f13a10792493531b180b",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "status-bar": {
+      "revision": "7612190ea7d75cad65ffa3a3b140cc8db1db0da3",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "tree-view": {
-      "revision": "eadfaa36713bce73460c9fb3d5828348aa03cedb",
+      "revision": "edaf681fd85ce895cb37aed929cc4159e70c2328",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     }
@@ -74,21 +79,21 @@
       "label": "Review an unstaged patch beside the Git staging panel.",
       "width": 1200,
       "height": 600,
-      "sha256": "e0c92b522a613ca29324f7fe1b8a842f47cc3a9fe7b989e7038a3bb998d30a7b"
+      "sha256": "0078acbc64ded019bc523411b070eb2661a365f934be17c7d2b4493e2598e2ca"
     },
     {
       "file": "demo-images.png",
       "label": "Drag the divider between old and new image versions in the unified patch view.",
       "width": 1200,
       "height": 600,
-      "sha256": "056e7b5d3783f23bc3f2341fe094f180e64a6ec89f63e6bc2243f6852704bc3e"
+      "sha256": "ff973726ab6c8d8fcd9418d69d7c826505f20abc6e8bfab18bd1eb4677be07c7"
     },
     {
       "file": "demo-images-side-by-side.png",
       "label": "Inspect old and new image versions side by side.",
       "width": 1200,
       "height": 600,
-      "sha256": "42cc89af9d0623100c302017a85fadd03f8dfb9a6cd4a6caa7fe3e5945ad7caf"
+      "sha256": "fb700eeda9636e6e8f67dd2e096fe3ff20620ef33899eaa6d16f6e949787a808"
     }
   ]
 }
