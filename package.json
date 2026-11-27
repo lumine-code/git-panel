@@ -69,7 +69,7 @@
     }
   },
   "dependencies": {
-    "@lumine-code/etch": "github:lumine-code/etch#f14f6299b97c58df979f817024830eb708a2c738",
+    "@lumine-code/etch": "github:lumine-code/etch#cd78d3c0bf3ba55a69c2f9478e228cad0bacb6de",
     "classnames": "2.5.1",
     "dayjs": "^1.11.23",
     "node-emoji": "2.2.0",
