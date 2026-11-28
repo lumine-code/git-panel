@@ -2,7 +2,7 @@
   "title": "git-panel",
   "description": "Review an unstaged patch beside the Git staging panel.",
   "recordedOn": "2026-11-26",
-  "sourceRevision": "eed053467b2a9d8c2d3b285726e0b8517ed3a889",
+  "sourceRevision": "1a606922fb70eec0c171930bea2a2d011ba289b6",
   "themeSourceRevision": "0f2c0e4518aa26315df6f13a10792493531b180b",
   "mode": "normal",
   "fontSettings": "default",
@@ -24,19 +24,19 @@
   "privacy": { "version": 1, "location": "workspace-scratch", "textChecked": true },
   "sources": {
     "editor": {
-      "revision": "3fd6839aae4057f9536f8d78bcdd6e14541e7cb1",
-      "dirty": false,
-      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      "revision": "f9eaab26dcb826699bae92050fa919330d1930aa",
+      "dirty": true,
+      "workingTreeHash": "aa0ef368575b505f538d18a75760bd6d02511034e95643ae0fe4629383a05cc1"
     },
     "package": {
-      "revision": "eed053467b2a9d8c2d3b285726e0b8517ed3a889",
-      "dirty": false,
-      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      "revision": "1a606922fb70eec0c171930bea2a2d011ba289b6",
+      "dirty": true,
+      "workingTreeHash": "13cfa8ab8feac2af2b84a92a1a307f5d4f4bee8e050689c6de7a544693341f19"
     },
     "git-panel": {
-      "revision": "eed053467b2a9d8c2d3b285726e0b8517ed3a889",
-      "dirty": false,
-      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      "revision": "1a606922fb70eec0c171930bea2a2d011ba289b6",
+      "dirty": true,
+      "workingTreeHash": "13cfa8ab8feac2af2b84a92a1a307f5d4f4bee8e050689c6de7a544693341f19"
     },
     "language-javascript": {
       "revision": "ead87cd1d12c56bdf4337095bda8361abb432538",
@@ -45,18 +45,18 @@
     },
     "one-theme": {
       "revision": "0f2c0e4518aa26315df6f13a10792493531b180b",
-      "dirty": false,
-      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      "dirty": true,
+      "workingTreeHash": "b6ee5bef3d3236a2db8c1f2429210f44e2fdc70d7ebe0b3aeade945bde8d3ff5"
     },
     "status-bar": {
-      "revision": "7612190ea7d75cad65ffa3a3b140cc8db1db0da3",
-      "dirty": false,
-      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      "revision": "c0531d63ff7148503b68f189f4fc6d07b038404b",
+      "dirty": true,
+      "workingTreeHash": "0858a9b6cbd1d0074f0285ee97f57f059c46210f15037f2e80140dc5d1a96e5a"
     },
     "tree-view": {
       "revision": "edaf681fd85ce895cb37aed929cc4159e70c2328",
-      "dirty": false,
-      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      "dirty": true,
+      "workingTreeHash": "0908428506d7d8abadc1b5c0ac34d6150032a6486a52b675e83e0664a8b8a52d"
     }
   },
   "fixtures": [
@@ -79,21 +79,21 @@
       "label": "Review an unstaged patch beside the Git staging panel.",
       "width": 1200,
       "height": 600,
-      "sha256": "0078acbc64ded019bc523411b070eb2661a365f934be17c7d2b4493e2598e2ca"
+      "sha256": "e0c92b522a613ca29324f7fe1b8a842f47cc3a9fe7b989e7038a3bb998d30a7b"
     },
     {
       "file": "demo-images.png",
       "label": "Drag the divider between old and new image versions in the unified patch view.",
       "width": 1200,
       "height": 600,
-      "sha256": "ff973726ab6c8d8fcd9418d69d7c826505f20abc6e8bfab18bd1eb4677be07c7"
+      "sha256": "056e7b5d3783f23bc3f2341fe094f180e64a6ec89f63e6bc2243f6852704bc3e"
     },
     {
       "file": "demo-images-side-by-side.png",
       "label": "Inspect old and new image versions side by side.",
       "width": 1200,
       "height": 600,
-      "sha256": "fb700eeda9636e6e8f67dd2e096fe3ff20620ef33899eaa6d16f6e949787a808"
+      "sha256": "42cc89af9d0623100c302017a85fadd03f8dfb9a6cd4a6caa7fe3e5945ad7caf"
     }
   ]
 }

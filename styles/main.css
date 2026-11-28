@@ -1476,6 +1476,13 @@ pre.git-panel-Message-description {
   color: var(--button-text-color-selected);
   background-color: var(--button-background-color-selected);
 }
+.git-panel-StagingView-bulkResolveButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
 .git-panel-StagingView-title {
   flex: 1;
   margin-right: var(--ui-spacing);
